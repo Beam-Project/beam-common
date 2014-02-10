@@ -21,7 +21,6 @@ package org.inchat.common.crypto;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import org.inchat.common.Message;
 
 /**
  * This class provides needed Digests.
@@ -53,66 +52,5 @@ public class Digest {
             throw new IllegalStateException("The digest could not be computed: " + ex.getMessage());
         }
     }
-
-    /**
-     * Digests certain fields of the given {@code payload}
-     * <p>
-     * The following fields are in this order concatenated into one byte array:
-     * <ol>
-     * <li>{@code version}</li>
-     * <li>{@code participant.id}</li>
-     * <li>{@code initializationVector}</li>
-     * <li>{@code key}</li>
-     * <li>{@code content}</li>
-     * </ol>
-     * The resulting byte array is used to calculate the digest.
-     *
-     * @param payload The message to digest, may not be null. The fields, as
-     * listed above, have to be set.
-     * @return The calculated digest.
-     * @throws IllegalArgumentException If the requirements are not fulfilled.
-     */
-    public static byte[] digestWithSha256(Message payload) {
-        if (payload == null
-                || payload.getVersion() == null
-                || payload.getVersion().isEmpty()
-                || payload.getParticipant() == null
-                || payload.getParticipant().getId() == null
-                || payload.getInitializationVector() == null
-                || payload.getInitializationVector().length == 0
-                || payload.getKey() == null
-                || payload.getKey().length == 0
-                || payload.getContent() == null
-                || payload.getContent().length == 0) {
-            throw new IllegalArgumentException("The argument may not be null "
-                    + "and it has to be correctly initialized.");
-        }
-
-        byte[] combinedFields = combineArrays(
-                payload.getVersion().getBytes(),
-                payload.getParticipant().getId(),
-                payload.getInitializationVector(),
-                payload.getKey(),
-                payload.getContent());
-
-        return digestWithSha256(combinedFields);
-    }
-
-    private static byte[] combineArrays(byte[] ... arrays) {
-        int totalLength = 0;
-        int offset = 0;
-
-        for (byte[] array : arrays) {
-            totalLength += array.length;
-        }
-
-        byte[] combinedArray = new byte[totalLength];
-
-        for (byte[] array : arrays) {
-            System.arraycopy(array, 0, combinedArray, offset, array.length);
-            offset += array.length;
-        }
-
-        return combinedArray;
-    }
+    
 }
