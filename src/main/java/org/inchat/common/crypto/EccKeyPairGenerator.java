@@ -18,37 +18,41 @@
  */
 package org.inchat.common.crypto;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
-import org.bouncycastle.crypto.params.ECDomainParameters;
-import org.bouncycastle.crypto.params.ECKeyGenerationParameters;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 
 /**
- * This Generator generates {@link AsymmetricCipherKeyPair}s for ECIES
- * encryption and decryption.
+ * This Generator generates {@link KeyPair}s for ECIES encryption and
+ * decryption.
  */
 public class EccKeyPairGenerator {
 
+    public final static String ALGORITHM_NAME = "EC";
     public final static String SEC_CURVE_NAME = "secp384r1";
 
     /**
-     * Generates a new {@link AsymmetricCipherKeyPair} for the ECC curve
-     * {@code secp384r1}.
+     * Generates a new {@link KeyPair} for the ECC curve {@code secp384r1}.
      *
      * @return The key pair.
      */
-    public static AsymmetricCipherKeyPair generate() {
-        ECNamedCurveParameterSpec parameterSpec = ECNamedCurveTable.getParameterSpec(SEC_CURVE_NAME);
-        ECDomainParameters domainParameters = new ECDomainParameters(parameterSpec.getCurve(), parameterSpec.getG(), parameterSpec.getN());
-        ECKeyPairGenerator keyPairGenerator = new ECKeyPairGenerator();
-        ECKeyGenerationParameters generationParameters = new ECKeyGenerationParameters(domainParameters, new SecureRandom());
+    public static KeyPair generate() {
+        BouncyCastleIntegrator.initBouncyCastleProvider();
 
-        keyPairGenerator.init(generationParameters);
+        try {
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
+            ECNamedCurveParameterSpec curveParameterSpec = ECNamedCurveTable.getParameterSpec(SEC_CURVE_NAME);
+            keyPairGenerator.initialize(curveParameterSpec, new SecureRandom());
 
-        return keyPairGenerator.generateKeyPair();
+            return keyPairGenerator.generateKeyPair();
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
+            throw new IllegalStateException("Could not generate a KeyPair: " + ex.getMessage());
+        }
     }
 
 }

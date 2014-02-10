@@ -18,17 +18,13 @@
  */
 package org.inchat.common.crypto;
 
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
-import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
-import static org.inchat.common.crypto.EccKeyPairGenerator.SEC_CURVE_NAME;
+import java.security.KeyPair;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class EccKeyPairGeneratorTest {
 
-    private AsymmetricCipherKeyPair keyPair;
+    private KeyPair keyPair;
 
     @Test
     public void testInstantiation() {
@@ -39,16 +35,5 @@ public class EccKeyPairGeneratorTest {
     public void testGenerate() {
         keyPair = EccKeyPairGenerator.generate();
         assertNotNull(keyPair);
-    }
-
-    @Test
-    public void testGenerateOnCurveName() {
-        keyPair = EccKeyPairGenerator.generate();
-        ECPrivateKeyParameters privateKey = (ECPrivateKeyParameters) keyPair.getPrivate();
-        ECNamedCurveParameterSpec expectedParameterSpec = ECNamedCurveTable.getParameterSpec(SEC_CURVE_NAME);
-
-        assertEquals(expectedParameterSpec.getG(), privateKey.getParameters().getG());
-        assertEquals(expectedParameterSpec.getH(), privateKey.getParameters().getH());
-        assertEquals(expectedParameterSpec.getN(), privateKey.getParameters().getN());
     }
 }
