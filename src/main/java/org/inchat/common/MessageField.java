@@ -20,13 +20,22 @@ package org.inchat.common;
 
 public enum MessageField {
 
+    /**
+     * Stands for "Version". This field contains the message format version.
+     */
     VRS("VRS"),
+    /**
+     * Stands for "Participant" and is the id of the target {@link Participant}
+     * of this message.
+     */
     PRT("PRT"),
-    PRM("PRM"),
-    PRM_IV("IV"),
-    PRM_KEY("KEY"),
-    PRM_MAC("MAC"),
+    /**
+     * Stands for "Content" and contains the message as several sub fields.
+     */
     CNT("CNT"),
+    /**
+     * Stands for "Message" and contains the message text itself.
+     */
     CNT_MSG("MSG");
 
     private final String value;
