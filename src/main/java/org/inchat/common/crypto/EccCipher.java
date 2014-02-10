@@ -37,6 +37,7 @@ import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.IESCipher;
+import org.inchat.common.util.Exceptions;
 
 /**
  * This {@link Cipher} allows to encrypt and decrypt data asymmetrically using
@@ -59,12 +60,11 @@ public class EccCipher implements Cipher {
      * not be null.
      * @param remotePublicKey The public key of the remote participant. This may
      * not be null.
-     * @throws IllegalArgumentException If the arguments are null.
+     * @throws IllegalArgumentException If at lest one of the arguments null is.
      */
     public EccCipher(PrivateKey localPrivateKey, PublicKey remotePublicKey) {
-        if (localPrivateKey == null || remotePublicKey == null) {
-            throw new IllegalArgumentException("The arguments may not be null.");
-        }
+        Exceptions.verifyArgumentNotNull(localPrivateKey);
+        Exceptions.verifyArgumentNotNull(remotePublicKey);
 
         this.localPrivateKey = localPrivateKey;
         this.remotePublicKey = remotePublicKey;
@@ -97,9 +97,7 @@ public class EccCipher implements Cipher {
      */
     @Override
     public byte[] encrypt(byte[] plaintext) {
-        if (plaintext == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
+        Exceptions.verifyArgumentNotNull(plaintext);
 
         try {
             cipher.engineInit(ENCRYPT_MODE, remotePublicKey, new SecureRandom());
@@ -120,9 +118,7 @@ public class EccCipher implements Cipher {
      */
     @Override
     public byte[] decrypt(byte[] ciphertext) {
-        if (ciphertext == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
+        Exceptions.verifyArgumentNotNull(ciphertext);
 
         try {
             cipher.engineInit(DECRYPT_MODE, localPrivateKey, new SecureRandom());

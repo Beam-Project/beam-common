@@ -19,16 +19,15 @@
 package org.inchat.common.transfer;
 
 import org.inchat.common.Message;
+import org.inchat.common.util.Exceptions;
 
 public class TransferGraph {
 
     Vertex root;
 
     public TransferGraph(Message root) {
-        if (root == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
+        Exceptions.verifyArgumentNotNull(root);
+        
         this.root = new Vertex(root);
     }
 

@@ -21,6 +21,7 @@ package org.inchat.common.transfer;
 import java.util.LinkedList;
 import java.util.List;
 import org.inchat.common.Message;
+import org.inchat.common.util.Exceptions;
 
 /**
  * A {@link Vertex} is a node of an inchat <i>Transfer Graph</i>. It contains a
@@ -50,10 +51,8 @@ public class Vertex {
      * @throws IllegalArgumentException If the argument is null.
      */
     public Vertex(Message plaintext) {
-        if (plaintext == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
+        Exceptions.verifyArgumentNotNull(plaintext);
+        
         this.plaintext = plaintext;
     }
 
@@ -75,10 +74,8 @@ public class Vertex {
      * @throws IllegalArgumentException If the argument is null.
      */
     public void addChild(Vertex child) {
-        if (child == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
+        Exceptions.verifyArgumentNotNull(child);
+        
         child.setParent(this);
         children.add(child);
     }
@@ -94,10 +91,8 @@ public class Vertex {
     }
 
     void setParent(Vertex parent) {
-        if (parent == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
+        Exceptions.verifyArgumentNotNull(parent);
+        
         this.parent = parent;
     }
 
@@ -112,10 +107,8 @@ public class Vertex {
      * @throws IllegalArgumentException If the argument is null.
      */
     public void setPlaintext(Message plaintext) {
-        if (plaintext == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
+        Exceptions.verifyArgumentNotNull(plaintext);
+        
         this.plaintext = plaintext;
     }
 
@@ -130,10 +123,8 @@ public class Vertex {
      * @throws IllegalArgumentException If the argument is null.
      */
     public void setCiphertext(byte[] ciphertext) {
-        if (ciphertext == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
+        Exceptions.verifyArgumentNotNull(ciphertext);
+        
         this.ciphertext = ciphertext;
     }
 

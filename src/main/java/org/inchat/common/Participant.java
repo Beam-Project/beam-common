@@ -19,6 +19,7 @@
 package org.inchat.common;
 
 import java.security.KeyPair;
+import org.inchat.common.util.Exceptions;
 
 /**
  * Represents a instance in the network that does something with messages. For
@@ -37,8 +38,10 @@ public class Participant {
      * @throws IllegalArgumentException If the argument is null.
      */
     public Participant(byte[] id) {
-        if (id == null || id.length != ID_LENGTH_IN_BYTES) {
-            throw new IllegalArgumentException("The agument may not be null and it has to be exactly " + ID_LENGTH_IN_BYTES + " bytes in length.");
+        Exceptions.verifyArgumentNotNull(id);
+
+        if (id.length != ID_LENGTH_IN_BYTES) {
+            throw new IllegalArgumentException("The agument has to be exactly " + ID_LENGTH_IN_BYTES + " bytes in length.");
         }
 
         this.id = id;
@@ -56,10 +59,8 @@ public class Participant {
      * @throws IllegalArgumentException If the argument is null.
      */
     public void setKeyPair(KeyPair keyPair) {
-        if (keyPair == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
+        Exceptions.verifyArgumentNotNull(keyPair);
+        
         this.keyPair = keyPair;
     }
 

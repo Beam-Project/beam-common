@@ -21,6 +21,7 @@ package org.inchat.common.crypto;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import org.inchat.common.util.Exceptions;
 
 /**
  * This class provides needed Digests.
@@ -39,10 +40,8 @@ public class Digest {
      * @throws IllegalStateException If the digest could not be set up.
      */
     public static byte[] digestWithSha256(byte[] payload) {
-        if (payload == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
+        Exceptions.verifyArgumentNotNull(payload);
+        
         BouncyCastleIntegrator.initBouncyCastleProvider();
 
         try {

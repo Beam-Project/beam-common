@@ -18,6 +18,8 @@
  */
 package org.inchat.common;
 
+import org.inchat.common.util.Exceptions;
+
 /**
  * A message contains all necessary information to transport the content to the
  * targeted participant.
@@ -35,10 +37,8 @@ public class Message {
      * @throws IllegalArgumentException If the argument is null.
      */
     public void setVersion(String version) {
-        if (version == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
+        Exceptions.verifyArgumentNotNull(version);
+        
         this.version = version;
     }
 
@@ -54,10 +54,8 @@ public class Message {
      * @throws IllegalArgumentException If the argument is null.
      */
     public void setParticipant(Participant participant) {
-        if (participant == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
+        Exceptions.verifyArgumentNotNull(participant);
+        
         this.participant = participant;
     }
 
@@ -72,10 +70,8 @@ public class Message {
      * @throws IllegalArgumentException If the argument is null.
      */
     public void setContent(byte[] content) {
-        if (content == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
+        Exceptions.verifyArgumentNotNull(content);
+        
         this.content = content;
     }
 

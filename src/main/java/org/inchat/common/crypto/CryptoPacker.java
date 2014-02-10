@@ -27,14 +27,15 @@ import java.util.Map;
 import org.inchat.common.Message;
 import org.inchat.common.MessageField;
 import org.inchat.common.Participant;
+import org.inchat.common.util.Exceptions;
 import org.msgpack.MessagePack;
 import org.msgpack.template.Template;
 import org.msgpack.template.Templates;
 import org.msgpack.unpacker.Unpacker;
 
 /**
- * Allows to pack-and-encrypt and decrypt-and-unpack using
- * {@link EccCipher} and {@link MessagePack}.
+ * Allows to pack-and-encrypt and decrypt-and-unpack using {@link EccCipher} and
+ * {@link MessagePack}.
  */
 public class CryptoPacker {
 
@@ -56,9 +57,8 @@ public class CryptoPacker {
      * @throws IllegalArgumentException If the argument is null.
      */
     public CryptoPacker(Participant localParticipant, Participant remoteParticipant) {
-        if (localParticipant == null || remoteParticipant == null) {
-            throw new IllegalArgumentException("The arguments may not be null.");
-        }
+        Exceptions.verifyArgumentNotNull(localParticipant);
+        Exceptions.verifyArgumentNotNull(remoteParticipant);
 
         initCipher(localParticipant.getKeyPair().getPrivate(), remoteParticipant.getKeyPair().getPublic());
         messagePack = new MessagePack();
@@ -110,12 +110,11 @@ public class CryptoPacker {
     }
 
     private void validatePlaintext(Message plaintext) {
-        if (plaintext == null
-                || plaintext.getParticipant() == null
-                || plaintext.getParticipant().getKeyPair() == null) {
-            throw new IllegalArgumentException("The argument may not be null and "
-                    + "it has to have a Participant with a KeyPair that contains "
-                    + "at least the public key.");
+        Exceptions.verifyArgumentNotNull(plaintext);
+        
+        if (plaintext.getParticipant() == null || plaintext.getParticipant().getKeyPair() == null) {
+            throw new IllegalArgumentException("The argument has to have a Participant "
+                    + "with a KeyPair that contains at least the public key.");
         }
 
         this.plaintext = plaintext;
@@ -176,11 +175,9 @@ public class CryptoPacker {
         return plaintext;
     }
 
-    private void validateCiphertext(byte[] ciphertext) {
-        if (ciphertext == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
+    private void validateCiphertext(byte[] ciphertext) {  
+        Exceptions.verifyArgumentNotNull(ciphertext);
+        
         this.ciphertext = ciphertext;
     }
 
