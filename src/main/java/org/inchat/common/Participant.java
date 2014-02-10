@@ -18,7 +18,7 @@
  */
 package org.inchat.common;
 
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import java.security.KeyPair;
 
 /**
  * Represents a instance in the network that does something with messages. For
@@ -26,11 +26,16 @@ import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
  */
 public class Participant {
 
-    public final static int ID_LENGTH_IN_BYTES = 256 / 8;
-
+    public final static int ID_LENGTH_IN_BYTES = 32;
     byte[] id;
-    AsymmetricCipherKeyPair keyPair;
+    KeyPair keyPair;
 
+    /**
+     * Creates a new {@link Participant}, initialized with it's id.
+     *
+     * @param id May not be null.
+     * @throws IllegalArgumentException If the argument is null.
+     */
     public Participant(byte[] id) {
         if (id == null || id.length != ID_LENGTH_IN_BYTES) {
             throw new IllegalArgumentException("The agument may not be null and it has to be exactly " + ID_LENGTH_IN_BYTES + " bytes in length.");
@@ -43,7 +48,14 @@ public class Participant {
         return id;
     }
 
-    public void setKeyPair(AsymmetricCipherKeyPair keyPair) {
+    /**
+     * Sets the {@link KeyPair} of this {@link Participant}. If this is a remote
+     * {@link Participant}, only the pulic key might be set in the key pair.
+     *
+     * @param keyPair The key pair.
+     * @throws IllegalArgumentException If the argument is null.
+     */
+    public void setKeyPair(KeyPair keyPair) {
         if (keyPair == null) {
             throw new IllegalArgumentException("The argument may not be null.");
         }
@@ -51,7 +63,7 @@ public class Participant {
         this.keyPair = keyPair;
     }
 
-    public AsymmetricCipherKeyPair getKeyPair() {
+    public KeyPair getKeyPair() {
         return keyPair;
     }
 }

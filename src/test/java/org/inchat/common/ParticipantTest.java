@@ -18,7 +18,7 @@
  */
 package org.inchat.common;
 
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import java.security.KeyPair;
 import org.inchat.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -27,7 +27,7 @@ import org.junit.Before;
 public class ParticipantTest {
 
     private Participant participant;
-    private AsymmetricCipherKeyPair keyPair;
+    private KeyPair keyPair;
 
     @Before
     public void setUp() {
