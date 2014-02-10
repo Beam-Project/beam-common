@@ -90,7 +90,7 @@ public class AesCbcCipher implements Cipher {
      * @param plaintext May not be null.
      * @return The ciphertext. The length is a multiple of 16 bytes.
      * @throws IllegalArgumentException If the argument is null.
-     * @throws EncryptionException If anything goes wrong during encryption.
+     * @throws CryptoException If anything goes wrong during encryption.
      *
      */
     @Override
@@ -106,7 +106,7 @@ public class AesCbcCipher implements Cipher {
             processedBytes += cipher.doFinal(outputBuffer, processedBytes);
             return copyContentBytes(outputBuffer, processedBytes);
         } catch (IllegalArgumentException | DataLengthException | IllegalStateException | InvalidCipherTextException ex) {
-            throw new EncryptionException("Could not encrypt the plaintext: " + ex.getMessage());
+            throw new CryptoException("Could not encrypt the plaintext: " + ex.getMessage());
         }
     }
 
@@ -121,7 +121,7 @@ public class AesCbcCipher implements Cipher {
      * @param ciphertext May not be null.
      * @return The plaintext.
      * @throws IllegalArgumentException If the argument is null.
-     * @throws DecryptionException If anything goes wrong during decryption.
+     * @throws CryptoException If anything goes wrong during decryption.
      *
      */
     @Override
@@ -137,7 +137,7 @@ public class AesCbcCipher implements Cipher {
             processedBytes += cipher.doFinal(outputBuffer, processedBytes);
             return copyContentBytes(outputBuffer, processedBytes);
         } catch (IllegalArgumentException | DataLengthException | IllegalStateException | InvalidCipherTextException ex) {
-            throw new DecryptionException("Could not decrypt the ciphertext: " + ex.getMessage());
+            throw new CryptoException("Could not decrypt the ciphertext: " + ex.getMessage());
         }
     }
 
