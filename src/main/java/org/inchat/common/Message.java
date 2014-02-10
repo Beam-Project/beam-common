@@ -20,19 +20,25 @@ package org.inchat.common;
 
 /**
  * A message contains all necessary information to transport the content to the
- * targeted participant. This also includes key material for the encryption and
- * decryption.
+ * targeted participant.
  */
 public class Message {
 
     String version;
     Participant participant;
-    byte[] initializationVector;
-    byte[] key;
     byte[] content;
-    byte[] mac;
 
+    /**
+     * Sets the version.
+     *
+     * @param version
+     * @throws IllegalArgumentException If the argument is null.
+     */
     public void setVersion(String version) {
+        if (version == null) {
+            throw new IllegalArgumentException("The argument may not be null.");
+        }
+
         this.version = version;
     }
 
@@ -41,7 +47,8 @@ public class Message {
     }
 
     /**
-     * Sets the participant.
+     * Sets the {@link Participant} of this {@link Message}. This is the
+     * <i>recipient</i> (the next server or at the end the target client).
      *
      * @param participant
      * @throws IllegalArgumentException If the argument is null.
@@ -56,61 +63,6 @@ public class Message {
 
     public Participant getParticipant() {
         return participant;
-    }
-
-    /**
-     * Sets the initialization vector (iv) as reference. The array is NOT
-     * copied.
-     *
-     * @param iv
-     * @throws IllegalArgumentException If the argument is null.
-     */
-    public void setInitializationVector(byte[] iv) {
-        if (iv == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
-        this.initializationVector = iv;
-    }
-
-    public byte[] getInitializationVector() {
-        return initializationVector;
-    }
-
-    /**
-     * Sets the key as reference. The array is NOT copied.
-     *
-     * @param key
-     * @throws IllegalArgumentException If the argument is null.
-     */
-    public void setKey(byte[] key) {
-        if (key == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
-        this.key = key;
-    }
-
-    public byte[] getKey() {
-        return key;
-    }
-
-    /**
-     * Sets the MAC as reference. The array is NOT copied.
-     *
-     * @param mac
-     * @throws IllegalArgumentException If the argument is null.
-     */
-    public void setMac(byte[] mac) {
-        if (mac == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-
-        this.mac = mac;
-    }
-
-    public byte[] getMac() {
-        return mac;
     }
 
     /**

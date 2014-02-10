@@ -28,22 +28,21 @@ public class MessageTest {
     private Message message;
     private String version;
     private Participant participant;
-    private byte[] initializationVector;
-    private byte[] key;
     private byte[] content;
-    private byte[] mac;
 
     @Before
     public void setUp() {
         message = new Message();
         version = "1.2a";
         participant = new Participant(ParticipantIdGenerator.generateId());
-        initializationVector = new byte[0];
-        key = new byte[0];
-        mac = new byte[0];
         content = new byte[0];
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetVersionOnNull() {
+        message.setVersion(null);
+    }
+    
     @Test
     public void testSetVersion() {
         message.setVersion(version);
@@ -71,57 +70,6 @@ public class MessageTest {
     public void testGetParticipant() {
         message.participant = participant;
         assertSame(participant, message.getParticipant());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testSetInitializationVectorOnNull() {
-        message.setInitializationVector(null);
-    }
-
-    @Test
-    public void testSetInitializationVector() {
-        message.setInitializationVector(initializationVector);
-        assertSame(initializationVector, message.initializationVector);
-    }
-
-    @Test
-    public void testGetInitializationVector() {
-        message.initializationVector = initializationVector;
-        assertSame(initializationVector, message.getInitializationVector());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testSetKeyOnNull() {
-        message.setKey(null);
-    }
-
-    @Test
-    public void testSetKey() {
-        message.setKey(key);
-        assertSame(key, message.key);
-    }
-
-    @Test
-    public void testGetKey() {
-        message.key = key;
-        assertSame(key, message.getKey());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testSetMacOnNull() {
-        message.setMac(null);
-    }
-
-    @Test
-    public void testSetMac() {
-        message.setMac(mac);
-        assertSame(mac, message.mac);
-    }
-
-    @Test
-    public void testGetMac() {
-        message.mac = mac;
-        assertSame(mac, message.getMac());
     }
 
     @Test(expected = IllegalArgumentException.class)
