@@ -18,19 +18,25 @@
  */
 package org.inchat.common.crypto;
 
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.bouncycastle.crypto.BufferedBlockCipher;
-import org.bouncycastle.crypto.InvalidCipherTextException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import javax.crypto.BadPaddingException;
+import static javax.crypto.Cipher.DECRYPT_MODE;
+import static javax.crypto.Cipher.ENCRYPT_MODE;
+import javax.crypto.IllegalBlockSizeException;
 import org.bouncycastle.crypto.agreement.ECDHBasicAgreement;
+import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.digests.SHA256Digest;
-import org.bouncycastle.crypto.engines.AESFastEngine;
+import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.engines.IESEngine;
 import org.bouncycastle.crypto.generators.KDF2BytesGenerator;
 import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
-import org.bouncycastle.crypto.params.IESParameters;
-import org.bouncycastle.crypto.params.IESWithCipherParameters;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.IESCipher;
 
 /**
  * This {@link Cipher} allows to encrypt and decrypt data asymmetrically using
@@ -38,54 +44,56 @@ import org.bouncycastle.crypto.params.IESWithCipherParameters;
  */
 public class EccCipher implements Cipher {
 
-    AsymmetricCipherKeyPair localKeyPair;
-    AsymmetricCipherKeyPair remoteKeyPair;
-    IESEngine iesEngine;
-    IESParameters iesParameters;
-    boolean isForEncryption;
+    public final static String ENGINE_MODE = "DHAES";
+    PrivateKey localPrivateKey;
+    PublicKey remotePublicKey;
+    IESEngine engine;
+    IESCipher cipher;
 
     /**
      * Initializes the cipher with the given key pairs. To decrypt the
      * {@code localKeyPair} has to contain the private key. To encrypt for the
-     * remote user, the {@code remoteKeyPair} has to contain at least the public
-     * key.
+     * remote user, the {@code keyPair} has to contain at least the public key.
      *
-     * @param localKeyPair The key pair of the local participant. This may not
-     * be null.
-     * @param remoteKeyPair The key pair of the remote participant. This may not
-     * be null.
+     * @param localPrivateKey The private key of the local participant. This may
+     * not be null.
+     * @param remotePublicKey The public key of the remote participant. This may
+     * not be null.
      * @throws IllegalArgumentException If the arguments are null.
      */
-    public EccCipher(AsymmetricCipherKeyPair localKeyPair, AsymmetricCipherKeyPair remoteKeyPair) {
-        if (localKeyPair == null || remoteKeyPair == null) {
+    public EccCipher(PrivateKey localPrivateKey, PublicKey remotePublicKey) {
+        if (localPrivateKey == null || remotePublicKey == null) {
             throw new IllegalArgumentException("The arguments may not be null.");
         }
 
-        this.localKeyPair = localKeyPair;
-        this.remoteKeyPair = remoteKeyPair;
+        this.localPrivateKey = localPrivateKey;
+        this.remotePublicKey = remotePublicKey;
 
         initCipher();
     }
 
     private void initCipher() {
-        BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESFastEngine()));
-        int cipherBlockSizeInBits = cipher.getBlockSize() * 8;
+        engine = new IESEngine(new ECDHBasicAgreement(),
+                new KDF2BytesGenerator(new SHA1Digest()),
+                new HMac(new SHA256Digest()),
+                new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESEngine())));
+        cipher = new IESCipher(engine);
 
-        HMac hmac = new HMac(new SHA256Digest());
-        int hmacBlockSizeInBits = hmac.getMacSize() * 8;
-
-        iesEngine = new IESEngine(new ECDHBasicAgreement(), new KDF2BytesGenerator(new SHA256Digest()), hmac, cipher);
-        iesParameters = new IESWithCipherParameters(null, null, hmacBlockSizeInBits, cipherBlockSizeInBits);
+        try {
+            cipher.engineSetMode(ENGINE_MODE);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalStateException("Could not initialize the cipher correctly since the mode " + ENGINE_MODE + " is not available: " + ex.getMessage());
+        }
     }
 
     /**
      * Encrypts the given plaintext with the initialized public key of the
-     * remote user and the private key of the local user.
+     * remote participant.
      *
      * @param plaintext The plaintext to encrypt, may not be null.
      * @return The ciphertext.
      * @throws IllegalArgumentException If the argument is null.
-     * @throws EncryptionException If something goes wrong during encryption.
+     * @throws CryptoException If something goes wrong during encryption.
      */
     @Override
     public byte[] encrypt(byte[] plaintext) {
@@ -93,24 +101,22 @@ public class EccCipher implements Cipher {
             throw new IllegalArgumentException("The argument may not be null.");
         }
 
-        isForEncryption = true;
-        iesEngine.init(isForEncryption, localKeyPair.getPrivate(), remoteKeyPair.getPublic(), iesParameters);
-
         try {
-            return iesEngine.processBlock(plaintext, 0, plaintext.length);
-        } catch (InvalidCipherTextException ex) {
-            throw new EncryptionException("Could not encrypt the given plaintext: " + ex.getMessage());
+            cipher.engineInit(ENCRYPT_MODE, remotePublicKey, new SecureRandom());
+            return cipher.engineDoFinal(plaintext, 0, plaintext.length);
+        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
+            throw new CryptoException("Could not encrypt the given plaintext: " + ex.getMessage());
         }
     }
 
     /**
      * Decrypts the given ciphertext with the initialized private key of the
-     * local user and the public key of the remote user.
+     * local participant.
      *
      * @param ciphertext The ciphertext to decrypt, may not be null.
      * @return The plaintext.
      * @throws IllegalArgumentException If the argument is null.
-     * @throws DecryptionException If something goes wrong during decryption.
+     * @throws CryptoException If something goes wrong during decryption.
      */
     @Override
     public byte[] decrypt(byte[] ciphertext) {
@@ -118,13 +124,11 @@ public class EccCipher implements Cipher {
             throw new IllegalArgumentException("The argument may not be null.");
         }
 
-        isForEncryption = false;
-        iesEngine.init(isForEncryption, localKeyPair.getPrivate(), remoteKeyPair.getPublic(), iesParameters);
-
         try {
-            return iesEngine.processBlock(ciphertext, 0, ciphertext.length);
-        } catch (InvalidCipherTextException ex) {
-            throw new DecryptionException("Could not decrypt the given ciphertext: " + ex.getMessage());
+            cipher.engineInit(DECRYPT_MODE, localPrivateKey, new SecureRandom());
+            return cipher.engineDoFinal(ciphertext, 0, ciphertext.length);
+        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
+            throw new CryptoException("Could not decrypt the given ciphertext: " + ex.getMessage());
         }
     }
 }

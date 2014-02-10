@@ -18,7 +18,7 @@
  */
 package org.inchat.common.crypto;
 
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import java.security.KeyPair;
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
 import org.junit.Before;
@@ -28,15 +28,13 @@ public class EccCipherTest {
 
     private final int NUMBER_OF_ENCRYPTIONS = 50;
     private EccCipher cipher;
-    private AsymmetricCipherKeyPair localKeyPair;
-    private AsymmetricCipherKeyPair remoteKeyPair;
+    private KeyPair keyPair;
 
     @Before
     public void setUp() {
-        localKeyPair = EccKeyPairGenerator.generate();
-        remoteKeyPair = EccKeyPairGenerator.generate();
+        keyPair = EccKeyPairGenerator.generate();
 
-        cipher = new EccCipher(localKeyPair, remoteKeyPair);
+        cipher = new EccCipher(keyPair.getPrivate(), keyPair.getPublic());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -46,23 +44,23 @@ public class EccCipherTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNullPrivateKey() {
-        cipher = new EccCipher(null, remoteKeyPair);
+        cipher = new EccCipher(null, keyPair.getPublic());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNullPublicKey() {
-        cipher = new EccCipher(localKeyPair, null);
+        cipher = new EccCipher(keyPair.getPrivate(), null);
     }
 
     @Test
     public void testConstructorOnAssignment() {
-        assertEquals(localKeyPair, cipher.localKeyPair);
-        assertEquals(remoteKeyPair, cipher.remoteKeyPair);
+        assertEquals(keyPair.getPrivate(), cipher.localPrivateKey);
+        assertEquals(keyPair.getPublic(), cipher.remotePublicKey);
     }
 
     @Test
     public void testConstructorOnCreatingCipher() {
-        assertNotNull(cipher.iesEngine);
+        assertNotNull(cipher.engine);
     }
 
     @Test(expected = IllegalArgumentException.class)
