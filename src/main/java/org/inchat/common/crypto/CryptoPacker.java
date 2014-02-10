@@ -20,7 +20,8 @@ package org.inchat.common.crypto;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
 import org.inchat.common.Message;
@@ -33,20 +34,14 @@ import org.msgpack.unpacker.Unpacker;
 
 /**
  * Allows to pack-and-encrypt and decrypt-and-unpack using
- * {@link EccCipher}, {@link AesCbcCipher} and {@link MessagePack}.
+ * {@link EccCipher} and {@link MessagePack}.
  */
 public class CryptoPacker {
 
-    public final static int SYMMETRIC_KEY_LENGTH_IN_BYTES = 256 / 8;
-    MessagePack messagePack;
-    Participant localParticipant;
-    Message plaintext;
     EccCipher eccCipher;
-    AesCbcCipher aesCipher;
-    byte[] plaintextMac;
-    byte[] packedParameters;
+    MessagePack messagePack;
+    Message plaintext;
     byte[] packedContent;
-    byte[] encryptedPackedParameters;
     byte[] encryptedPacketContent;
     byte[] ciphertext;
 
@@ -56,14 +51,16 @@ public class CryptoPacker {
      *
      * @param localParticipant The local participant with key material. May not
      * be null.
+     * @param remoteParticipant The remote participant with key material. May
+     * not be null.
      * @throws IllegalArgumentException If the argument is null.
      */
-    public CryptoPacker(Participant localParticipant) {
-        if (localParticipant == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
+    public CryptoPacker(Participant localParticipant, Participant remoteParticipant) {
+        if (localParticipant == null || remoteParticipant == null) {
+            throw new IllegalArgumentException("The arguments may not be null.");
         }
 
-        this.localParticipant = localParticipant;
+        initCipher(localParticipant.getKeyPair().getPrivate(), remoteParticipant.getKeyPair().getPublic());
         messagePack = new MessagePack();
     }
 
@@ -105,14 +102,8 @@ public class CryptoPacker {
     public byte[] packAndEncrypt(Message plaintext) {
         validatePlaintext(plaintext);
 
-        generateKeyAndInitCiphers();
-        calculateMac();
-
-        packParameterField();
         packContentField();
-
-        encryptParameterFieldAsymmetrically();
-        encryptContentFieldSymmetrically();
+        encryptContentField();
         packAllPartsToCiphertext();
 
         return ciphertext;
@@ -130,26 +121,8 @@ public class CryptoPacker {
         this.plaintext = plaintext;
     }
 
-    private void generateKeyAndInitCiphers() {
-        plaintext.setInitializationVector(AesKeyGenerator.generateInitializationVector());
-        plaintext.setKey(AesKeyGenerator.generateKey(SYMMETRIC_KEY_LENGTH_IN_BYTES));
-        aesCipher = new AesCbcCipher(plaintext.getInitializationVector(), plaintext.getKey());
-
-        eccCipher = new EccCipher(localParticipant.getKeyPair(), plaintext.getParticipant().getKeyPair());
-    }
-
-    private void calculateMac() {
-        plaintextMac = Digest.digestWithSha256(plaintext);
-    }
-
-    private void packParameterField() {
-        Map<String, byte[]> map = new HashMap<>();
-
-        map.put(MessageField.PRM_IV.toString(), plaintext.getInitializationVector());
-        map.put(MessageField.PRM_KEY.toString(), plaintext.getKey());
-        map.put(MessageField.PRM_MAC.toString(), plaintextMac);
-
-        packedParameters = serializeMap(map);
+    private void initCipher(PrivateKey localPrivateKey, PublicKey remotePublicKey) {
+        eccCipher = new EccCipher(localPrivateKey, remotePublicKey);
     }
 
     private void packContentField() {
@@ -159,12 +132,8 @@ public class CryptoPacker {
         packedContent = serializeMap(map);
     }
 
-    private void encryptParameterFieldAsymmetrically() {
-        encryptedPackedParameters = eccCipher.encrypt(packedParameters);
-    }
-
-    private void encryptContentFieldSymmetrically() {
-        encryptedPacketContent = aesCipher.encrypt(plaintextMac);
+    private void encryptContentField() {
+        encryptedPacketContent = eccCipher.encrypt(packedContent);
     }
 
     private void packAllPartsToCiphertext() {
@@ -172,7 +141,6 @@ public class CryptoPacker {
 
         map.put(MessageField.VRS.toString(), plaintext.getVersion().getBytes());
         map.put(MessageField.PRT.toString(), plaintext.getParticipant().getId());
-        map.put(MessageField.PRM.toString(), encryptedPackedParameters);
         map.put(MessageField.CNT.toString(), encryptedPacketContent);
 
         ciphertext = serializeMap(map);
@@ -191,28 +159,19 @@ public class CryptoPacker {
      *
      * @param ciphertext The encrypted message, serialized using
      * {@link MessagePack}. This may not be null.
-     * @param remotePartitipant The remote participant, required for it's public
-     * key. This will be removed and is only temporary.
      * @return The plaintext message.
      * @throws IllegalArgumentException If the argument is null.
      * @throws PackerException If anything goes wrong during
      * unpacking/deserializing. Also, when the integrity of the message cannot
      * be verified.
      */
-    public Message decryptAndUnpack(byte[] ciphertext, Participant remotePartitipant) {
+    public Message decryptAndUnpack(byte[] ciphertext) {
         validateCiphertext(ciphertext);
 
         unpackAllPartsFromCiphertext();
 
-        initAsymmetricCipher(remotePartitipant);
-        decyptParameters();
-        unpackParameters();
-
-        initSymmetricCipher();
         decyptContent();
         unpackContent();
-
-        verifyIntegrityViaDigestComparison();
 
         return plaintext;
     }
@@ -232,29 +191,7 @@ public class CryptoPacker {
 
         plaintext.setVersion(readStringFromMap(map, MessageField.VRS));
         plaintext.setParticipant(new Participant(readByteArrayFromMap(map, MessageField.PRT)));
-
-        encryptedPackedParameters = readByteArrayFromMap(map, MessageField.PRM);
         encryptedPacketContent = readByteArrayFromMap(map, MessageField.CNT);
-    }
-
-    private void initAsymmetricCipher(Participant remotePartitipant) {
-        eccCipher = new EccCipher(localParticipant.getKeyPair(), remotePartitipant.getKeyPair());
-    }
-
-    private void decyptParameters() {
-        packedParameters = eccCipher.decrypt(encryptedPackedParameters);
-    }
-
-    private void unpackParameters() {
-        Map<String, byte[]> map = buildMapFromBytes(packedParameters);
-
-        plaintext.setInitializationVector(readByteArrayFromMap(map, MessageField.PRM_IV));
-        plaintext.setKey(readByteArrayFromMap(map, MessageField.PRM_KEY));
-        plaintext.setMac(readByteArrayFromMap(map, MessageField.PRM_MAC));
-    }
-
-    private void initSymmetricCipher() {
-        aesCipher = new AesCbcCipher(plaintext.getInitializationVector(), plaintext.getKey());
     }
 
     private void decyptContent() {
@@ -263,7 +200,6 @@ public class CryptoPacker {
 
     private void unpackContent() {
         Map<String, byte[]> map = buildMapFromBytes(packedContent);
-
         plaintext.setContent(readByteArrayFromMap(map, MessageField.CNT_MSG));
     }
 
@@ -286,15 +222,6 @@ public class CryptoPacker {
 
     private byte[] readByteArrayFromMap(Map<String, byte[]> map, MessageField field) {
         return map.get(field.toString());
-    }
-
-    public void verifyIntegrityViaDigestComparison() {
-        plaintextMac = Digest.digestWithSha256(plaintext);
-
-        if (!Arrays.equals(plaintextMac, plaintext.getMac())) {
-            throw new PackerException("The given ciphertext could not be decrypted and unpacked  since the MACs do not match.");
-        }
-
     }
 
 }

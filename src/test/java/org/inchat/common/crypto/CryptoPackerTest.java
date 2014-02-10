@@ -23,7 +23,6 @@ import org.inchat.common.Participant;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
-import org.junit.Ignore;
 
 public class CryptoPackerTest {
 
@@ -45,24 +44,32 @@ public class CryptoPackerTest {
         plaintext = new Message();
         plaintext.setVersion("1.0");
         plaintext.setParticipant(localParticipant);
-        plaintext.setInitializationVector(AesKeyGenerator.generateInitializationVector());
-        plaintext.setKey(AesKeyGenerator.generateKey(CryptoPacker.SYMMETRIC_KEY_LENGTH_IN_BYTES));
         plaintext.setContent("hello world".getBytes());
 
-        localPacker = new CryptoPacker(localParticipant);
-        remotePacker = new CryptoPacker(reomteParticipant);
+        localPacker = new CryptoPacker(localParticipant, reomteParticipant);
+        remotePacker = new CryptoPacker(reomteParticipant, localParticipant);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnNull() {
-        localPacker = new CryptoPacker(null);
+    public void testConstructorOnNulls() {
+        localPacker = new CryptoPacker(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructorOnNullLocalParticiapant() {
+        localPacker = new CryptoPacker(null, reomteParticipant);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructorOnNullRemoteParticiapant() {
+        localPacker = new CryptoPacker(localParticipant, null);
     }
 
     @Test
     public void testConstructorOnAssignment() {
-        localPacker = new CryptoPacker(localParticipant);
-        assertSame(localParticipant, localPacker.localParticipant);
+        localPacker = new CryptoPacker(localParticipant, reomteParticipant);
         assertNotNull(localPacker.messagePack);
+        assertNotNull(localPacker.eccCipher);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -89,36 +96,20 @@ public class CryptoPackerTest {
     }
 
     @Test
-    public void testPackAndEncryptOnCipherInit() {
-        localPacker.packAndEncrypt(plaintext);
-
-        assertEquals(AesKeyGenerator.IV_LENGTH_IN_BYTES,
-                localPacker.plaintext.getInitializationVector().length);
-        assertEquals(CryptoPacker.SYMMETRIC_KEY_LENGTH_IN_BYTES,
-                localPacker.plaintext.getKey().length);
-
-        assertArrayEquals(localPacker.plaintext.getInitializationVector(),
-                localPacker.aesCipher.parameters.getIV());
-    }
-
-    /**
-     * Ignored since there is a problem with the EccCipher.
-     */
-    @Ignore
-    @Test
     public void testPackAndEncryptAndAlsoDecryptAndUnpack() {
-        int minimalExpectedLenghtForThisMessageInBytes = 200;
+        int expectedCiphertextLength = 216;
 
         ciphertext = localPacker.packAndEncrypt(plaintext);
-        assertTrue(ciphertext.length > minimalExpectedLenghtForThisMessageInBytes);
+        assertEquals(expectedCiphertextLength, ciphertext.length);
 
-        Message decryptedCiphertext = remotePacker.decryptAndUnpack(ciphertext, localParticipant);
+        Message decryptedCiphertext = remotePacker.decryptAndUnpack(ciphertext);
         assertEquals(plaintext.getVersion(), decryptedCiphertext.getVersion());
+        assertArrayEquals(plaintext.getContent(), decryptedCiphertext.getContent());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDecryptAndUnPackOnNull() {
-        localPacker.decryptAndUnpack(null, reomteParticipant);
+        localPacker.decryptAndUnpack(null);
     }
 
 }
