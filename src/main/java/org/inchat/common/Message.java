@@ -38,7 +38,7 @@ public class Message {
      */
     public void setVersion(String version) {
         Exceptions.verifyArgumentNotNull(version);
-        
+
         this.version = version;
     }
 
@@ -55,7 +55,7 @@ public class Message {
      */
     public void setParticipant(Participant participant) {
         Exceptions.verifyArgumentNotNull(participant);
-        
+
         this.participant = participant;
     }
 
@@ -71,7 +71,7 @@ public class Message {
      */
     public void setContent(byte[] content) {
         Exceptions.verifyArgumentNotNull(content);
-        
+
         this.content = content;
     }
 
