@@ -32,7 +32,7 @@ public class Exceptions {
      * {@link IllegalArgumentException} is thrown.
      *
      * @param argument May not be null.
-     * @throws IllegalArgumentException If the arugemnt is null.
+     * @throws IllegalArgumentException If the argument is null.
      */
     public static void verifyArgumentNotNull(Object argument) {
         if (argument == null) {
@@ -53,6 +53,21 @@ public class Exceptions {
 
         for (Object argument : arguments) {
             verifyArgumentNotNull(argument);
+        }
+    }
+
+    /**
+     * Tests if the {@code argument} is empty (or null). If so, an
+     * {@link IllegalArgumentException} is thrown.
+     *
+     * @param argument May not be empty nor null.
+     * @throws IllegalArgumentException If the argument is empty or null.
+     */
+    public static void verifyArgumentNotEmpty(String argument) {
+        verifyArgumentNotNull(argument);
+
+        if (argument.isEmpty()) {
+            throw new IllegalArgumentException("The argument may not be empty.");
         }
     }
 

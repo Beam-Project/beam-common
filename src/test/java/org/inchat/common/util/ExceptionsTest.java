@@ -53,8 +53,23 @@ public class ExceptionsTest {
     }
 
     @Test
-    public void testVerifyArgumentsNotNul() {
+    public void testVerifyArgumentsNotNull() {
         Exceptions.verifyArgumentsNotNull(new String[]{"hello"});
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testVerifyArgumentNotEmptyOnNull() {
+        Exceptions.verifyArgumentNotEmpty(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testVerifyArgumentNotEmptyOnEmpty() {
+        Exceptions.verifyArgumentNotEmpty("");
+    }
+
+    @Test
+    public void testVerifyArgumentNotEmpty() {
+        Exceptions.verifyArgumentNotEmpty("hello");
     }
 
 }
