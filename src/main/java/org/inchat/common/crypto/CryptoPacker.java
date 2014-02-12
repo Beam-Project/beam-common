@@ -40,6 +40,7 @@ import org.msgpack.unpacker.Unpacker;
 public class CryptoPacker {
 
     EccCipher eccCipher;
+    Participant localParticipant;
     MessagePack messagePack;
     Message plaintext;
     byte[] packedContent;
@@ -60,6 +61,7 @@ public class CryptoPacker {
         Exceptions.verifyArgumentNotNull(localParticipant);
         Exceptions.verifyArgumentNotNull(remoteParticipant);
 
+        this.localParticipant = localParticipant;
         initCipher(localParticipant.getKeyPair().getPrivate(), remoteParticipant.getKeyPair().getPublic());
         messagePack = new MessagePack();
     }
@@ -111,7 +113,7 @@ public class CryptoPacker {
 
     private void validatePlaintext(Message plaintext) {
         Exceptions.verifyArgumentNotNull(plaintext);
-        
+
         if (plaintext.getParticipant() == null || plaintext.getParticipant().getKeyPair() == null) {
             throw new IllegalArgumentException("The argument has to have a Participant "
                     + "with a KeyPair that contains at least the public key.");
@@ -175,9 +177,9 @@ public class CryptoPacker {
         return plaintext;
     }
 
-    private void validateCiphertext(byte[] ciphertext) {  
+    private void validateCiphertext(byte[] ciphertext) {
         Exceptions.verifyArgumentNotNull(ciphertext);
-        
+
         this.ciphertext = ciphertext;
     }
 
@@ -187,7 +189,7 @@ public class CryptoPacker {
         plaintext = new Message();
 
         plaintext.setVersion(readStringFromMap(map, MessageField.VRS));
-        plaintext.setParticipant(new Participant(readByteArrayFromMap(map, MessageField.PRT)));
+        plaintext.setParticipant(localParticipant);
         encryptedPacketContent = readByteArrayFromMap(map, MessageField.CNT);
     }
 

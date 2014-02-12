@@ -35,11 +35,9 @@ public class CryptoPackerTest {
 
     @Before
     public void setUp() {
-        localParticipant = new Participant(ParticipantIdGenerator.generateId());
-        localParticipant.setKeyPair(EccKeyPairGenerator.generate());
+        localParticipant = new Participant(EccKeyPairGenerator.generate());
 
-        reomteParticipant = new Participant(ParticipantIdGenerator.generateId());
-        reomteParticipant.setKeyPair(EccKeyPairGenerator.generate());
+        reomteParticipant = new Participant(EccKeyPairGenerator.generate());
 
         plaintext = new Message();
         plaintext.setVersion("1.0");
@@ -83,11 +81,6 @@ public class CryptoPackerTest {
         localPacker.packAndEncrypt(plaintext);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testPackAndEncryptOnParticipantMissingKeyPair() {
-        plaintext.setParticipant(new Participant(ParticipantIdGenerator.generateId()));
-        localPacker.packAndEncrypt(plaintext);
-    }
 
     @Test
     public void testPackAndEncryptOnParticipant() {
