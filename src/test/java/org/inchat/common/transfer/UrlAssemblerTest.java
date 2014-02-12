@@ -20,24 +20,15 @@ package org.inchat.common.transfer;
 
 import javax.xml.bind.DatatypeConverter;
 import org.inchat.common.Participant;
+import org.inchat.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Before;
 
 public class UrlAssemblerTest {
 
-    private final static String SERVER_ID = "b3eacd33433b31b5252351032c9b3e7a2e7aa7738d5decdf0dd6c62680853c06";
-    private final static String CLIENT_ID = "948fe603f61dc036b5c596dc09fe3ce3f3d30dc90f024c85f3c82db2ccab679d";
-    private final static String EXPECTED_URL = "inchat://" + SERVER_ID + "/" + CLIENT_ID;
     private Participant server;
     private Participant client;
     private String output;
-
-    @Before
-    public void setUp() {
-        server = new Participant(DatatypeConverter.parseHexBinary(SERVER_ID));
-        client = new Participant(DatatypeConverter.parseHexBinary(CLIENT_ID));
-    }
 
     @Test(expected = IllegalArgumentException.class)
     public void testToUrlByServerAndClientOnNulls() {
@@ -56,51 +47,16 @@ public class UrlAssemblerTest {
 
     @Test
     public void testToUrlByServerAndClient() {
+        server = new Participant(EccKeyPairGenerator.generate());
+        client = new Participant(EccKeyPairGenerator.generate());
         output = UrlAssembler.toUrlByServerAndClient(server, client);
-        assertEquals(EXPECTED_URL, output);
+
+        String serverPart = DatatypeConverter.printHexBinary(server.getId());
+        String clientPart = DatatypeConverter.printHexBinary(client.getId());
+        String expectedUrl = "inchat://" + serverPart + "/" + clientPart;
+        expectedUrl = expectedUrl.toLowerCase();
+
+        assertEquals(expectedUrl, output);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testToServerByUrlOnNull() {
-        server = UrlAssembler.toServerByUrl(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testToServerByUrlOnEmptyArgument() {
-        server = UrlAssembler.toServerByUrl("");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testToServerByUrlOnNonUrl() {
-        server = UrlAssembler.toServerByUrl("blablup anything else");
-    }
-
-    @Test
-    public void testToServerByUrl() {
-        server = UrlAssembler.toServerByUrl(EXPECTED_URL);
-        byte[] serverId = DatatypeConverter.parseHexBinary(SERVER_ID);
-        assertArrayEquals(serverId, server.getId());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testToClientByUrlOnNull() {
-        server = UrlAssembler.toClientByUrl(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testToClientByUrlOnEmptyArgument() {
-        server = UrlAssembler.toClientByUrl("");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testToClientByUrlOnNonUrl() {
-        server = UrlAssembler.toClientByUrl("blablup anything else");
-    }
-
-    @Test
-    public void testToCleintByUrl() {
-        client = UrlAssembler.toClientByUrl(EXPECTED_URL);
-        byte[] clientId = DatatypeConverter.parseHexBinary(CLIENT_ID);
-        assertArrayEquals(clientId, client.getId());
-    }
 }
