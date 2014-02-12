@@ -29,7 +29,6 @@ public class UrlAssembler {
 
     public final static String SCHEME_PART = "inchat://";
     public final static String SEPERATOR = "/";
-    private final static int LENGTH_OF_HEX_BLOCK = 64;
 
     private UrlAssembler() {
         // Only static access.
@@ -53,53 +52,4 @@ public class UrlAssembler {
         return SCHEME_PART + serverIdAsHex + SEPERATOR + clientIdAsHex;
     }
 
-    /**
-     * Extracts the server part of an inchat URL and creates a new instance of a
-     * {@link Participant} with the id of the URL.
-     *
-     * @param url The URL, may not be null nor empty and it has to be a valid
-     * inchat URL.
-     * @return The initialized server.
-     * @throws IllegalArgumentException If the argument is null or not a valid
-     * inchat URL.
-     */
-    public static Participant toServerByUrl(String url) {
-        Exceptions.verifyArgumentNotEmpty(url);
-        verifyUrlValidity(url);
-
-        int beginIndex = SCHEME_PART.length();
-        int endIndex = beginIndex + LENGTH_OF_HEX_BLOCK;
-        String serverPart = url.substring(beginIndex, endIndex);
-        byte[] serverId = DatatypeConverter.parseHexBinary(serverPart);
-
-        return new Participant(serverId);
-    }
-
-    /**
-     * Extracts the client part of an inchat URL and creates a new instance of a
-     * {@link Participant} with the id of the URL.
-     *
-     * @param url The URL, may not be null nor empty and it has to be a valid
-     * inchat URL.
-     * @return The initialized client.
-     * @throws IllegalArgumentException If the argument is null or not a valid
-     * inchat URL.
-     */
-    public static Participant toClientByUrl(String url) {
-        Exceptions.verifyArgumentNotEmpty(url);
-        verifyUrlValidity(url);
-
-        int beginIndex = SCHEME_PART.length() + LENGTH_OF_HEX_BLOCK + 1;
-        int endIndex = beginIndex + LENGTH_OF_HEX_BLOCK;
-        String clientPart = url.substring(beginIndex, endIndex);
-        byte[] clientId = DatatypeConverter.parseHexBinary(clientPart);
-
-        return new Participant(clientId);
-    }
-
-    private static void verifyUrlValidity(String url) {
-        if (!url.matches(SCHEME_PART + "[a-f0-9]{" + LENGTH_OF_HEX_BLOCK + "}/[a-f0-9]{" + LENGTH_OF_HEX_BLOCK + "}(/.?)?")) {
-            throw new IllegalArgumentException("The URL does not seem to be valid.");
-        }
-    }
 }
