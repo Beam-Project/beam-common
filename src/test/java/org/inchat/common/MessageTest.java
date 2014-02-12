@@ -18,7 +18,7 @@
  */
 package org.inchat.common;
 
-import org.inchat.common.crypto.ParticipantIdGenerator;
+import org.inchat.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -34,7 +34,7 @@ public class MessageTest {
     public void setUp() {
         message = new Message();
         version = "1.2a";
-        participant = new Participant(ParticipantIdGenerator.generateId());
+        participant = new Participant(EccKeyPairGenerator.generate());
         content = new byte[0];
     }
 
