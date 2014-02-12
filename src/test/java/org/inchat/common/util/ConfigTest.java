@@ -24,7 +24,7 @@ import static org.junit.Assert.*;
 
 public class ConfigTest {
 
-    private final static String TEST_FILE = "test-config-file.conf";
+    private final static String TEST_FILE = "src/test/java/org/inchat/common/util/test-config-file.conf";
     private final static String TEST_KEY = "keyword";
     private final static String TEST_VALUE = "please";
 
