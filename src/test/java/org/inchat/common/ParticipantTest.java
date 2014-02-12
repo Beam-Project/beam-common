@@ -19,6 +19,7 @@
 package org.inchat.common;
 
 import java.security.KeyPair;
+import org.inchat.common.crypto.Digest;
 import org.inchat.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -31,31 +32,27 @@ public class ParticipantTest {
 
     @Before
     public void setUp() {
-        participant = new Participant(new byte[Participant.ID_LENGTH_IN_BYTES]);
         keyPair = EccKeyPairGenerator.generate();
+        participant = new Participant(keyPair);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullConstructorOnNull() {
+        participant = new Participant(null);
+    }
+
+    @Test
+    public void testNullConstructorOnAssignment() {
+        participant = new Participant(keyPair);
+        assertSame(keyPair, participant.keyPair);
     }
 
     @Test
     public void testGetId() {
-        assertSame(participant.id, participant.getId());
+        byte[] expectedId = Digest.digestWithSha256(keyPair.getPublic().getEncoded());
+        assertArrayEquals(expectedId, participant.getId());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testNullConstructor() {
-        participant = new Participant(null);
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void testSetKeyPairOnNull() {
-        participant.setKeyPair(null);
-    }
-    
-    @Test
-    public void testSetKeyPair() {
-        participant.setKeyPair(keyPair);
-        assertSame(keyPair, participant.keyPair);
-    }
-    
     @Test
     public void testGetKeyPair() {
         participant.keyPair = keyPair;

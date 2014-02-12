@@ -19,49 +19,39 @@
 package org.inchat.common;
 
 import java.security.KeyPair;
+import org.inchat.common.crypto.Digest;
 import org.inchat.common.util.Exceptions;
 
 /**
  * Represents a instance in the network that does something with messages. For
- * example, a Participant could be a user or a server.
+ * example, a {@link Participant} could be a user or a server.
  */
 public class Participant {
 
-    public final static int ID_LENGTH_IN_BYTES = 32;
-    byte[] id;
     KeyPair keyPair;
 
     /**
-     * Creates a new {@link Participant}, initialized with it's id.
+     * Creates a new {@link Participant}, initialized with its id.
      *
-     * @param id May not be null.
+     * @param keyPair The key pair of this {@link Participant}. If both private
+     * and public key are known, initialize both. Otherwise (if its a remote
+     * participant), only the public key is enough. This may not be null.
      * @throws IllegalArgumentException If the argument is null.
      */
-    public Participant(byte[] id) {
-        Exceptions.verifyArgumentNotNull(id);
+    public Participant(KeyPair keyPair) {
+        Exceptions.verifyArgumentNotNull(keyPair);
 
-        if (id.length != ID_LENGTH_IN_BYTES) {
-            throw new IllegalArgumentException("The agument has to be exactly " + ID_LENGTH_IN_BYTES + " bytes in length.");
-        }
-
-        this.id = id;
-    }
-
-    public byte[] getId() {
-        return id;
+        this.keyPair = keyPair;
     }
 
     /**
-     * Sets the {@link KeyPair} of this {@link Participant}. If this is a remote
-     * {@link Participant}, only the pulic key might be set in the key pair.
+     * Returns the id of this {@link Participant}. Actually, it's only the
+     * SHA-256 digest of the public key.
      *
-     * @param keyPair The key pair.
-     * @throws IllegalArgumentException If the argument is null.
+     * @return The id of this {@link Participant}.
      */
-    public void setKeyPair(KeyPair keyPair) {
-        Exceptions.verifyArgumentNotNull(keyPair);
-        
-        this.keyPair = keyPair;
+    public byte[] getId() {
+        return Digest.digestWithSha256(keyPair.getPublic().getEncoded());
     }
 
     public KeyPair getKeyPair() {
