@@ -33,29 +33,7 @@ public class EccCipherTest {
     @Before
     public void setUp() {
         keyPair = EccKeyPairGenerator.generate();
-
-        cipher = new EccCipher(keyPair.getPrivate(), keyPair.getPublic());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnNulls() {
-        cipher = new EccCipher(null, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnNullPrivateKey() {
-        cipher = new EccCipher(null, keyPair.getPublic());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnNullPublicKey() {
-        cipher = new EccCipher(keyPair.getPrivate(), null);
-    }
-
-    @Test
-    public void testConstructorOnAssignment() {
-        assertEquals(keyPair.getPrivate(), cipher.localPrivateKey);
-        assertEquals(keyPair.getPublic(), cipher.remotePublicKey);
+        cipher = new EccCipher();
     }
 
     @Test
@@ -64,13 +42,33 @@ public class EccCipherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testEncryptOnNull() {
-        cipher.encrypt(null);
+    public void testEncryptOnNulls() {
+        cipher.encrypt(null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testDecryptOnNull() {
-        cipher.decrypt(null);
+    public void testEncryptOnNullPlaintext() {
+        cipher.encrypt(null, keyPair.getPublic());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEncryptOnNullPublicKey() {
+        cipher.encrypt("".getBytes(), null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDecryptOnNulls() {
+        cipher.decrypt(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDecryptOnNullCiphertext() {
+        cipher.decrypt(null, keyPair.getPrivate());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDecryptOnNullPrivateKey() {
+        cipher.decrypt("".getBytes(), null);
     }
 
     @Test
@@ -84,10 +82,10 @@ public class EccCipherTest {
         for (int i = 0; i < NUMBER_OF_ENCRYPTIONS; i++) {
             plaintext = workingText.getBytes();
 
-            ciphertext = cipher.encrypt(plaintext);
+            ciphertext = cipher.encrypt(plaintext, keyPair.getPublic());
             assertThat(workingText, not(equalTo(new String(ciphertext))));
 
-            output = cipher.decrypt(ciphertext);
+            output = cipher.decrypt(ciphertext, keyPair.getPrivate());
             assertArrayEquals(plaintext, output);
 
             workingText += textAddition + textAddition;

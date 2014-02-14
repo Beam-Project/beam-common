@@ -37,38 +37,23 @@ import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.IESCipher;
+import org.inchat.common.Participant;
 import org.inchat.common.util.Exceptions;
 
 /**
- * This {@link Cipher} allows to encrypt and decrypt data asymmetrically using
- * Elliptic Curve Cryptography (ECC).
+ * This allows to encrypt and decrypt data asymmetrically using Elliptic Curve
+ * Cryptography (ECC).
  */
-public class EccCipher implements Cipher {
+public class EccCipher {
 
     public final static String ENGINE_MODE = "DHAES";
-    PrivateKey localPrivateKey;
-    PublicKey remotePublicKey;
     IESEngine engine;
     IESCipher cipher;
 
     /**
-     * Initializes the cipher with the given key pairs. To decrypt the
-     * {@code localKeyPair} has to contain the private key. To encrypt for the
-     * remote user, the {@code keyPair} has to contain at least the public key.
-     *
-     * @param localPrivateKey The private key of the local participant. This may
-     * not be null.
-     * @param remotePublicKey The public key of the remote participant. This may
-     * not be null.
-     * @throws IllegalArgumentException If at lest one of the arguments null is.
+     * Initializes the cipher.
      */
-    public EccCipher(PrivateKey localPrivateKey, PublicKey remotePublicKey) {
-        Exceptions.verifyArgumentNotNull(localPrivateKey);
-        Exceptions.verifyArgumentNotNull(remotePublicKey);
-
-        this.localPrivateKey = localPrivateKey;
-        this.remotePublicKey = remotePublicKey;
-
+    public EccCipher() {
         initCipher();
     }
 
@@ -91,13 +76,15 @@ public class EccCipher implements Cipher {
      * remote participant.
      *
      * @param plaintext The plaintext to encrypt, may not be null.
+     * @param remotePublicKey The public key of the remote {@link Participant}
+     * to encrypt the plaintext.
      * @return The ciphertext.
      * @throws IllegalArgumentException If the argument is null.
-     * @throws CryptoException If something goes wrong during encryption.
+     * @throws CryptoException If something goes wrong during encryption. This
+     * may not be null.
      */
-    @Override
-    public byte[] encrypt(byte[] plaintext) {
-        Exceptions.verifyArgumentNotNull(plaintext);
+    public byte[] encrypt(byte[] plaintext, PublicKey remotePublicKey) {
+        Exceptions.verifyArgumentsNotNull(plaintext, remotePublicKey);
 
         try {
             cipher.engineInit(ENCRYPT_MODE, remotePublicKey, new SecureRandom());
@@ -112,13 +99,14 @@ public class EccCipher implements Cipher {
      * local participant.
      *
      * @param ciphertext The ciphertext to decrypt, may not be null.
+     * @param localPrivateKey The private key of the local {@link Participant}
+     * to decrypt the ciphertext. This may not be null.
      * @return The plaintext.
      * @throws IllegalArgumentException If the argument is null.
      * @throws CryptoException If something goes wrong during decryption.
      */
-    @Override
-    public byte[] decrypt(byte[] ciphertext) {
-        Exceptions.verifyArgumentNotNull(ciphertext);
+    public byte[] decrypt(byte[] ciphertext, PrivateKey localPrivateKey) {
+        Exceptions.verifyArgumentsNotNull(ciphertext, localPrivateKey);
 
         try {
             cipher.engineInit(DECRYPT_MODE, localPrivateKey, new SecureRandom());
