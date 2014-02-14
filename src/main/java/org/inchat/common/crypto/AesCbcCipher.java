@@ -27,9 +27,9 @@ import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 
 /**
- * This {@link Cipher} encrypts and decrypts AES in CBC mode.
+ * This encrypts and decrypts AES in CBC mode.
  */
-public class AesCbcCipher implements Cipher {
+public class AesCbcCipher {
 
     private final int[] VALID_KEY_LENGTHS_IN_BYTES = {16, 24, 32};
     PaddedBufferedBlockCipher cipher;
@@ -76,7 +76,6 @@ public class AesCbcCipher implements Cipher {
      * @throws CryptoException If anything goes wrong during encryption.
      *     
 */
-    @Override
     public byte[] encrypt(byte[] plaintext) {
         if (plaintext == null) {
             throw new IllegalArgumentException("The argument may not be null.");
@@ -107,7 +106,6 @@ public class AesCbcCipher implements Cipher {
      * @throws CryptoException If anything goes wrong during decryption.
      *     
 */
-    @Override
     public byte[] decrypt(byte[] ciphertext) {
         if (ciphertext == null) {
             throw new IllegalArgumentException("The argument may not be null.");
