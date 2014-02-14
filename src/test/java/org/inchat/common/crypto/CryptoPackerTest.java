@@ -36,7 +36,6 @@ public class CryptoPackerTest {
     @Before
     public void setUp() {
         localParticipant = new Participant(EccKeyPairGenerator.generate());
-
         reomteParticipant = new Participant(EccKeyPairGenerator.generate());
 
         plaintext = new Message();
@@ -44,65 +43,68 @@ public class CryptoPackerTest {
         plaintext.setParticipant(localParticipant);
         plaintext.setContent("hello world".getBytes());
 
-        localPacker = new CryptoPacker(localParticipant, reomteParticipant);
-        remotePacker = new CryptoPacker(reomteParticipant, localParticipant);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnNulls() {
-        localPacker = new CryptoPacker(null, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnNullLocalParticiapant() {
-        localPacker = new CryptoPacker(null, reomteParticipant);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnNullRemoteParticiapant() {
-        localPacker = new CryptoPacker(localParticipant, null);
+        localPacker = new CryptoPacker();
+        remotePacker = new CryptoPacker();
     }
 
     @Test
     public void testConstructorOnAssignment() {
-        localPacker = new CryptoPacker(localParticipant, reomteParticipant);
         assertNotNull(localPacker.messagePack);
         assertNotNull(localPacker.eccCipher);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testPackAndEncryptOnNull() {
-        localPacker.packAndEncrypt(null);
+    public void testPackAndEncryptOnNulls() {
+        localPacker.packAndEncrypt(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPackAndEncryptOnNullPlaintext() {
+        localPacker.packAndEncrypt(null, localParticipant);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPackAndEncryptOnNullParticipant() {
+        localPacker.packAndEncrypt(plaintext, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testPackAndEncryptOnNotSetParticipant() {
         plaintext = new Message();
-        localPacker.packAndEncrypt(plaintext);
+        localPacker.packAndEncrypt(plaintext, reomteParticipant);
     }
-
 
     @Test
     public void testPackAndEncryptOnParticipant() {
         plaintext.setParticipant(localParticipant);
-        localPacker.packAndEncrypt(plaintext);
+        localPacker.packAndEncrypt(plaintext, reomteParticipant);
     }
 
     @Test
     public void testPackAndEncryptAndAlsoDecryptAndUnpack() {
         int expectedCiphertextLength = 216;
 
-        ciphertext = localPacker.packAndEncrypt(plaintext);
+        ciphertext = localPacker.packAndEncrypt(plaintext, reomteParticipant);
         assertEquals(expectedCiphertextLength, ciphertext.length);
 
-        Message decryptedCiphertext = remotePacker.decryptAndUnpack(ciphertext);
+        Message decryptedCiphertext = remotePacker.decryptAndUnpack(ciphertext, reomteParticipant);
         assertEquals(plaintext.getVersion(), decryptedCiphertext.getVersion());
         assertArrayEquals(plaintext.getContent(), decryptedCiphertext.getContent());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testDecryptAndUnPackOnNull() {
-        localPacker.decryptAndUnpack(null);
+    public void testDecryptAndUnPackOnNulls() {
+        remotePacker.decryptAndUnpack(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDecryptAndUnPackOnNullCiphertext() {
+        remotePacker.decryptAndUnpack(null, reomteParticipant);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDecryptAndUnPackOnNullParticipant() {
+        remotePacker.decryptAndUnpack("".getBytes(), null);
     }
 
 }

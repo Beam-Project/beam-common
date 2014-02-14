@@ -20,8 +20,6 @@ package org.inchat.common.crypto;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
 import org.inchat.common.Message;
@@ -40,7 +38,7 @@ import org.msgpack.unpacker.Unpacker;
 public class CryptoPacker {
 
     EccCipher eccCipher;
-    Participant localParticipant;
+    Participant participant;
     MessagePack messagePack;
     Message plaintext;
     byte[] packedContent;
@@ -48,61 +46,31 @@ public class CryptoPacker {
     byte[] ciphertext;
 
     /**
-     * Instantiates a new {@link CryptoPacker} with the {@code localParticipant}
-     * which contains key material for signing and decryption.
-     *
-     * @param localParticipant The local participant with key material. May not
-     * be null.
-     * @param remoteParticipant The remote participant with key material. May
-     * not be null.
-     * @throws IllegalArgumentException If the argument is null.
+     * Instantiates a new {@link CryptoPacker}.
      */
-    public CryptoPacker(Participant localParticipant, Participant remoteParticipant) {
-        Exceptions.verifyArgumentNotNull(localParticipant);
-        Exceptions.verifyArgumentNotNull(remoteParticipant);
-
-        this.localParticipant = localParticipant;
-        initCipher(localParticipant.getKeyPair().getPrivate(), remoteParticipant.getKeyPair().getPublic());
+    public CryptoPacker() {
+        eccCipher = new EccCipher();
         messagePack = new MessagePack();
     }
 
     /**
      * Packs and encrypts the given {@code plaintext} to a {@link MessagePack}
      * byte array.<p>
-     * The following fields <b>will not be</b> encrypted:
-     * <ul>
-     * <li>Version: {@code VRS}</li>
-     * <li>Participant: {@code PRT}</li>
-     * </ul><p>
-     * The following fields <b>will be</b> be encrypted:
-     * <ul>
-     * <li>Parameters: {@code PRM} with it's <i>inner Fields</i></li>
-     * <ul>
-     * <li>Initalization Vector for AES: {@code IV}</li>
-     * <li>Key for AES: {@code KEY}</li>
-     * <li>Initalization Vector: {@code iv}</li>
-     * <li>MAC of defined attributes: {@code MAC}</li>
-     * </ul>
-     * <li>Content: {@code CNT}</li>
-     * <ul>
-     * <li>The effective message: {@code MSG}</li>
-     * <li>All other fields in {@code CNT}</li>
-     * </ul>
-     * </ul>
-     * The AES initialization vector and key
-     * ({@code plaintext.initializationVector} respectively
-     * {@code plaintext.key}) will be generated and set to {@code plaintext}.
+     * The field Content ({@code CNT}) will be encrypted.<p>
+     * The fields Version ({@code VRS}) and Participant ({@code PRT}) will
+     * <b>not</b> be encrypted.
      *
-     * @param plaintext The unencrypted {@link Message}. This may not be null
-     * and has to have a initialized {@link Participant} with key pair.
+     * @param plaintext The unencrypted {@link Message}. This may not be null.
+     * @param participant The {@link Participant} with the needed key, in this
+     * case the public key of the remote side. This may not be null.
      * @return The messagePacked and encrypted message.
-     * @throws IllegalArgumentException If the argument is null or it's
-     * {@link Participant} is not set up correctly.
+     * @throws IllegalArgumentException If at least one argument is null.
      * @throws PackerException If anything goes wrong during
      * packing/serializing.
      */
-    public byte[] packAndEncrypt(Message plaintext) {
+    public byte[] packAndEncrypt(Message plaintext, Participant participant) {
         validatePlaintext(plaintext);
+        validateParticipant(participant);
 
         packContentField();
         encryptContentField();
@@ -122,8 +90,10 @@ public class CryptoPacker {
         this.plaintext = plaintext;
     }
 
-    private void initCipher(PrivateKey localPrivateKey, PublicKey remotePublicKey) {
-        eccCipher = new EccCipher(localPrivateKey, remotePublicKey);
+    private void validateParticipant(Participant participant) {
+        Exceptions.verifyArgumentNotNull(participant);
+
+        this.participant = participant;
     }
 
     private void packContentField() {
@@ -134,7 +104,7 @@ public class CryptoPacker {
     }
 
     private void encryptContentField() {
-        encryptedPacketContent = eccCipher.encrypt(packedContent);
+        encryptedPacketContent = eccCipher.encrypt(packedContent, participant.getKeyPair().getPublic());
     }
 
     private void packAllPartsToCiphertext() {
@@ -160,14 +130,17 @@ public class CryptoPacker {
      *
      * @param ciphertext The encrypted message, serialized using
      * {@link MessagePack}. This may not be null.
+     * @param participant The {@link Participant} with the needed key, in this
+     * case the private key of the local side. This may not be null.
      * @return The plaintext message.
-     * @throws IllegalArgumentException If the argument is null.
+     * @throws IllegalArgumentException If at lest one argument is null.
      * @throws PackerException If anything goes wrong during
      * unpacking/deserializing. Also, when the integrity of the message cannot
      * be verified.
      */
-    public Message decryptAndUnpack(byte[] ciphertext) {
+    public Message decryptAndUnpack(byte[] ciphertext, Participant participant) {
         validateCiphertext(ciphertext);
+        validateParticipant(participant);
 
         unpackAllPartsFromCiphertext();
 
@@ -189,12 +162,12 @@ public class CryptoPacker {
         plaintext = new Message();
 
         plaintext.setVersion(readStringFromMap(map, MessageField.VRS));
-        plaintext.setParticipant(localParticipant);
+        plaintext.setParticipant(participant);
         encryptedPacketContent = readByteArrayFromMap(map, MessageField.CNT);
     }
 
     private void decyptContent() {
-        packedContent = eccCipher.decrypt(encryptedPacketContent);
+        packedContent = eccCipher.decrypt(encryptedPacketContent, participant.getKeyPair().getPrivate());
     }
 
     private void unpackContent() {
