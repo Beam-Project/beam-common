@@ -78,4 +78,10 @@ public class ParticipantTest {
         assertArrayEquals(keyPair.getPrivate().getEncoded(), participant.getPrivateKeyAsBytes());
     }
 
+    @Test
+    public void testGetKeyPair() {
+        participant.keyPair = keyPair;
+        assertSame(keyPair, participant.getKeyPair());
+    }
+
 }

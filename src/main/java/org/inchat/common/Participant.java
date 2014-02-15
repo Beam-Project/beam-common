@@ -65,5 +65,9 @@ public class Participant {
     public byte[] getPrivateKeyAsBytes() {
         return getPrivateKey().getEncoded();
     }
+    
+    public KeyPair getKeyPair() {
+        return keyPair;
+    }
 
 }
