@@ -18,7 +18,6 @@
  */
 package org.inchat.common.transfer;
 
-import javax.xml.bind.DatatypeConverter;
 import org.inchat.common.Participant;
 import org.inchat.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
@@ -51,12 +50,28 @@ public class UrlAssemblerTest {
         client = new Participant(EccKeyPairGenerator.generate());
         output = UrlAssembler.toUrlByServerAndClient(server, client);
 
-        String serverPart = DatatypeConverter.printHexBinary(server.getKeyPair().getPublic().getEncoded());
-        String clientPart = DatatypeConverter.printHexBinary(client.getKeyPair().getPublic().getEncoded());
+        String serverPart = server.getPublicKeyAsHex();
+        String clientPart = client.getPublicKeyAsHex();
         String expectedUrl = "inchat:" + serverPart + "." + clientPart;
         expectedUrl = expectedUrl.toLowerCase();
 
         assertEquals(expectedUrl, output);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testToUrlByServerOnNull() {
+        output = UrlAssembler.toUrlByServer(null);
+    }
+
+    @Test
+    public void testToUrlByServer() {
+        server = new Participant(EccKeyPairGenerator.generate());
+        output = UrlAssembler.toUrlByServer(server);
+
+        String serverPart = server.getPublicKeyAsHex();
+        String expectedUrl = "inchat:" + serverPart;
+        expectedUrl = expectedUrl.toLowerCase();
+
+        assertEquals(expectedUrl, output);
+    }
 }
