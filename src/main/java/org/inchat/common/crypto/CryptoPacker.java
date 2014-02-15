@@ -82,9 +82,8 @@ public class CryptoPacker {
     private void validatePlaintext(Message plaintext) {
         Exceptions.verifyArgumentNotNull(plaintext);
 
-        if (plaintext.getParticipant() == null || plaintext.getParticipant().getKeyPair() == null) {
-            throw new IllegalArgumentException("The argument has to have a Participant "
-                    + "with a KeyPair that contains at least the public key.");
+        if (plaintext.getParticipant() == null) {
+            throw new IllegalArgumentException("The argument has to have a Participant.");
         }
 
         this.plaintext = plaintext;
@@ -104,14 +103,14 @@ public class CryptoPacker {
     }
 
     private void encryptContentField() {
-        encryptedPacketContent = eccCipher.encrypt(packedContent, participant.getKeyPair().getPublic());
+        encryptedPacketContent = eccCipher.encrypt(packedContent, participant.getPublicKey());
     }
 
     private void packAllPartsToCiphertext() {
         Map<String, byte[]> map = new HashMap<>();
 
         map.put(MessageField.VRS.toString(), plaintext.getVersion().getBytes());
-        map.put(MessageField.PRT.toString(), plaintext.getParticipant().getKeyPair().getPublic().getEncoded());
+        map.put(MessageField.PRT.toString(), plaintext.getParticipant().getPublicKeyAsBytes());
         map.put(MessageField.CNT.toString(), encryptedPacketContent);
 
         ciphertext = serializeMap(map);
@@ -167,7 +166,7 @@ public class CryptoPacker {
     }
 
     private void decyptContent() {
-        packedContent = eccCipher.decrypt(encryptedPacketContent, participant.getKeyPair().getPrivate());
+        packedContent = eccCipher.decrypt(encryptedPacketContent, participant.getPrivateKey());
     }
 
     private void unpackContent() {
