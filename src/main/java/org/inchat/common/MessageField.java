@@ -25,8 +25,8 @@ public enum MessageField {
      */
     VRS("VRS"),
     /**
-     * Stands for "Participant" and is the id of the target {@link Participant}
-     * of this message.
+     * Stands for "Participant" and is the pubilc key (X.509 encoded) of the
+     * target {@link Participant} of this message.
      */
     PRT("PRT"),
     /**
