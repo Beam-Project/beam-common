@@ -19,6 +19,7 @@
 package org.inchat.common;
 
 import java.security.KeyPair;
+import javax.xml.bind.DatatypeConverter;
 import org.inchat.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -47,9 +48,34 @@ public class ParticipantTest {
     }
 
     @Test
-    public void testGetKeyPair() {
+    public void testGetPublicKey() {
         participant.keyPair = keyPair;
-        assertSame(keyPair, participant.getKeyPair());
+        assertSame(keyPair.getPublic(), participant.getPublicKey());
+    }
+
+    @Test
+    public void testGetPublicKeyAsBytes() {
+        participant.keyPair = keyPair;
+        assertArrayEquals(keyPair.getPublic().getEncoded(), participant.getPublicKeyAsBytes());
+    }
+
+    @Test
+    public void testGetPublicKeyAsHex() {
+        participant.keyPair = keyPair;
+        String expected = DatatypeConverter.printHexBinary(keyPair.getPublic().getEncoded());
+        assertEquals(expected, participant.getPublicKeyAsHex());
+    }
+
+    @Test
+    public void testGetPrivateKey() {
+        participant.keyPair = keyPair;
+        assertSame(keyPair.getPrivate(), participant.getPrivateKey());
+    }
+
+    @Test
+    public void testGetPrivateKeyAsBytes() {
+        participant.keyPair = keyPair;
+        assertArrayEquals(keyPair.getPrivate().getEncoded(), participant.getPrivateKeyAsBytes());
     }
 
 }

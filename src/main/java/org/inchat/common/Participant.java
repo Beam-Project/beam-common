@@ -19,6 +19,9 @@
 package org.inchat.common;
 
 import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import javax.xml.bind.DatatypeConverter;
 import org.inchat.common.util.Exceptions;
 
 /**
@@ -43,7 +46,24 @@ public class Participant {
         this.keyPair = keyPair;
     }
 
-    public KeyPair getKeyPair() {
-        return keyPair;
+    public PublicKey getPublicKey() {
+        return keyPair.getPublic();
     }
+
+    public byte[] getPublicKeyAsBytes() {
+        return getPublicKey().getEncoded();
+    }
+
+    public String getPublicKeyAsHex() {
+        return DatatypeConverter.printHexBinary(getPublicKeyAsBytes());
+    }
+
+    public PrivateKey getPrivateKey() {
+        return keyPair.getPrivate();
+    }
+
+    public byte[] getPrivateKeyAsBytes() {
+        return getPrivateKey().getEncoded();
+    }
+
 }
