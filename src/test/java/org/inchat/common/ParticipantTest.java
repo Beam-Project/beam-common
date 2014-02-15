@@ -19,7 +19,6 @@
 package org.inchat.common;
 
 import java.security.KeyPair;
-import org.inchat.common.crypto.Digest;
 import org.inchat.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -45,12 +44,6 @@ public class ParticipantTest {
     public void testNullConstructorOnAssignment() {
         participant = new Participant(keyPair);
         assertSame(keyPair, participant.keyPair);
-    }
-
-    @Test
-    public void testGetId() {
-        byte[] expectedId = Digest.digestWithSha256(keyPair.getPublic().getEncoded());
-        assertArrayEquals(expectedId, participant.getId());
     }
 
     @Test

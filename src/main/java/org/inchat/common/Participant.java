@@ -19,7 +19,6 @@
 package org.inchat.common;
 
 import java.security.KeyPair;
-import org.inchat.common.crypto.Digest;
 import org.inchat.common.util.Exceptions;
 
 /**
@@ -31,7 +30,7 @@ public class Participant {
     KeyPair keyPair;
 
     /**
-     * Creates a new {@link Participant}, initialized with its id.
+     * Creates a new {@link Participant}, initialized with its key pair.
      *
      * @param keyPair The key pair of this {@link Participant}. If both private
      * and public key are known, initialize both. Otherwise (if its a remote
@@ -42,16 +41,6 @@ public class Participant {
         Exceptions.verifyArgumentNotNull(keyPair);
 
         this.keyPair = keyPair;
-    }
-
-    /**
-     * Returns the id of this {@link Participant}. Actually, it's only the
-     * SHA-256 digest of the public key.
-     *
-     * @return The id of this {@link Participant}.
-     */
-    public byte[] getId() {
-        return Digest.digestWithSha256(keyPair.getPublic().getEncoded());
     }
 
     public KeyPair getKeyPair() {
