@@ -18,7 +18,6 @@
  */
 package org.inchat.common.transfer;
 
-import javax.xml.bind.DatatypeConverter;
 import org.inchat.common.Participant;
 import org.inchat.common.util.Exceptions;
 
@@ -35,7 +34,7 @@ public class UrlAssembler {
     }
 
     /**
-     * Assembles an inchat URL form a server and a client.
+     * Assembles an inchat URL of a client with its server.
      *
      * @param server The server, may not be null.
      * @param client The client, may not be null.
@@ -46,10 +45,20 @@ public class UrlAssembler {
     public static String toUrlByServerAndClient(Participant server, Participant client) {
         Exceptions.verifyArgumentsNotNull(server, client);
 
-        String serverIdAsHex = DatatypeConverter.printHexBinary(server.getKeyPair().getPublic().getEncoded()).toLowerCase();
-        String clientIdAsHex = DatatypeConverter.printHexBinary(client.getKeyPair().getPublic().getEncoded()).toLowerCase();
+        return SCHEME_PART + server.getPublicKeyAsHex() + SEPERATOR + client.getPublicKeyAsHex();
+    }
 
-        return SCHEME_PART + serverIdAsHex + SEPERATOR + clientIdAsHex;
+    /**
+     * Assembles an inchat URL of a server.
+     *
+     * @param server The server, may not be null.
+     * @return The link.
+     * @throws IllegalArgumentException If the argument is null.
+     */
+    public static String toUrlByServer(Participant server) {
+        Exceptions.verifyArgumentNotNull(server);
+
+        return SCHEME_PART + server.getPublicKeyAsHex();
     }
 
 }
