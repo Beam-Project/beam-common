@@ -51,9 +51,9 @@ public class UrlAssemblerTest {
         client = new Participant(EccKeyPairGenerator.generate());
         output = UrlAssembler.toUrlByServerAndClient(server, client);
 
-        String serverPart = DatatypeConverter.printHexBinary(server.getId());
-        String clientPart = DatatypeConverter.printHexBinary(client.getId());
-        String expectedUrl = "inchat://" + serverPart + "/" + clientPart;
+        String serverPart = DatatypeConverter.printHexBinary(server.getKeyPair().getPublic().getEncoded());
+        String clientPart = DatatypeConverter.printHexBinary(client.getKeyPair().getPublic().getEncoded());
+        String expectedUrl = "inchat:" + serverPart + "." + clientPart;
         expectedUrl = expectedUrl.toLowerCase();
 
         assertEquals(expectedUrl, output);

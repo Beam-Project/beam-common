@@ -27,8 +27,8 @@ import org.inchat.common.util.Exceptions;
  */
 public class UrlAssembler {
 
-    public final static String SCHEME_PART = "inchat://";
-    public final static String SEPERATOR = "/";
+    public final static String SCHEME_PART = "inchat:";
+    public final static String SEPERATOR = ".";
 
     private UrlAssembler() {
         // Only static access.
@@ -46,8 +46,8 @@ public class UrlAssembler {
     public static String toUrlByServerAndClient(Participant server, Participant client) {
         Exceptions.verifyArgumentsNotNull(server, client);
 
-        String serverIdAsHex = DatatypeConverter.printHexBinary(server.getId()).toLowerCase();
-        String clientIdAsHex = DatatypeConverter.printHexBinary(client.getId()).toLowerCase();
+        String serverIdAsHex = DatatypeConverter.printHexBinary(server.getKeyPair().getPublic().getEncoded()).toLowerCase();
+        String clientIdAsHex = DatatypeConverter.printHexBinary(client.getKeyPair().getPublic().getEncoded()).toLowerCase();
 
         return SCHEME_PART + serverIdAsHex + SEPERATOR + clientIdAsHex;
     }
