@@ -55,7 +55,7 @@ public class Participant {
     }
 
     public String getPublicKeyAsHex() {
-        return DatatypeConverter.printHexBinary(getPublicKeyAsBytes());
+        return DatatypeConverter.printHexBinary(getPublicKeyAsBytes()).toLowerCase();
     }
 
     public PrivateKey getPrivateKey() {

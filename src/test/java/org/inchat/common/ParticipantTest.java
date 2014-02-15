@@ -62,7 +62,7 @@ public class ParticipantTest {
     @Test
     public void testGetPublicKeyAsHex() {
         participant.keyPair = keyPair;
-        String expected = DatatypeConverter.printHexBinary(keyPair.getPublic().getEncoded());
+        String expected = DatatypeConverter.printHexBinary(keyPair.getPublic().getEncoded()).toLowerCase();
         assertEquals(expected, participant.getPublicKeyAsHex());
     }
 
