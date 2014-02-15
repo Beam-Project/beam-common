@@ -111,7 +111,7 @@ public class CryptoPacker {
         Map<String, byte[]> map = new HashMap<>();
 
         map.put(MessageField.VRS.toString(), plaintext.getVersion().getBytes());
-        map.put(MessageField.PRT.toString(), plaintext.getParticipant().getId());
+        map.put(MessageField.PRT.toString(), plaintext.getParticipant().getKeyPair().getPublic().getEncoded());
         map.put(MessageField.CNT.toString(), encryptedPacketContent);
 
         ciphertext = serializeMap(map);

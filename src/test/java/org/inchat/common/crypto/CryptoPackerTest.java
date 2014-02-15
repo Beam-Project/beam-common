@@ -82,7 +82,7 @@ public class CryptoPackerTest {
 
     @Test
     public void testPackAndEncryptAndAlsoDecryptAndUnpack() {
-        int expectedCiphertextLength = 216;
+        int expectedCiphertextLength = 304;
 
         ciphertext = localPacker.packAndEncrypt(plaintext, reomteParticipant);
         assertEquals(expectedCiphertextLength, ciphertext.length);
