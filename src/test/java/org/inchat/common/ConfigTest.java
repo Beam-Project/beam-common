@@ -33,8 +33,8 @@ public class ConfigTest {
 
     private final static String DEFAULT_TEST_FILE = "./test-default-config.conf";
     private final static String TEST_FILE = "src/test/resources/org/inchat/common/test-config-file.conf";
-    private final static String TEST_KEY = "keyword";
-    private final static String TEST_VALUE = "please";
+    private final static Config.Key TEST_KEY = Config.Key.keyPairFilename;
+    private final static String TEST_VALUE = "helloWorld";
     private final static String TEST_CONFIG_DEFAULTS = "src/test/resources/org/inchat/common/test-write-defaults.conf";
     private final static String TEST_CONFIG_DEFAULTS_IN_NEW_DIRECTORY = "src/test/resources/org/inchat/common/NEW_DIRECTORY/test-write-defaults.conf";
     private Participant participant;
@@ -133,7 +133,7 @@ public class ConfigTest {
         Config.loadConfigFile(new File(TEST_FILE));
         assertNotNull(Config.getInstance().configFile);
 
-        String actualValue = Config.getInstance().configFile.getProperty(TEST_KEY);
+        String actualValue = Config.getProperty(TEST_KEY);
         assertEquals(TEST_VALUE, actualValue);
 
         assertTrue(Config.isLoaded());
@@ -151,11 +151,6 @@ public class ConfigTest {
     @Test(expected = IllegalArgumentException.class)
     public void testGetPropertyOnNull() {
         Config.getProperty(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetPropertyOnEmptyString() {
-        Config.getProperty("");
     }
 
     @Test(expected = IllegalStateException.class)
@@ -235,26 +230,23 @@ public class ConfigTest {
     }
 
     private void createAndStoreKeyPair() {
-        KeyPairStore store = new KeyPairStore(Config.getProperty(Config.Keys.keyPairPassword.toString()),
-                Config.getProperty(Config.Keys.keyPairFilename.toString()));
+        KeyPairStore store = new KeyPairStore(Config.getProperty(Config.Key.keyPairPassword),
+                Config.getProperty(Config.Key.keyPairFilename));
         store.storeKeys(participant.getKeyPair());
     }
 
     private File getPrivateKey() {
-        return new File(Config.getProperty(
-                Config.Keys.keyPairFilename.toString())
+        return new File(Config.getProperty(Config.Key.keyPairFilename)
                 + KeyPairStore.PRIVATE_KEY_FILE_EXTENSION);
     }
 
     private File getPublicKey() {
-        return new File(Config.getProperty(
-                Config.Keys.keyPairFilename.toString())
+        return new File(Config.getProperty(Config.Key.keyPairFilename)
                 + KeyPairStore.PUBILC_KEY_FILE_EXTENSION);
     }
 
     private File getSalt() {
-        return new File(Config.getProperty(
-                Config.Keys.keyPairFilename.toString())
+        return new File(Config.getProperty(Config.Key.keyPairFilename)
                 + KeyPairStore.SALT_FILE_EXTENSION);
     }
 

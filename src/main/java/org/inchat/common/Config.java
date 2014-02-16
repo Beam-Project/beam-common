@@ -15,6 +15,23 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *//*
+ * Copyright (C) 2013, 2014 inchat.org
+ *
+ * This file is part of inchat-common.
+ *
+ * inchat-common is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inchat-common is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.inchat.common;
 
@@ -42,7 +59,7 @@ public class Config {
      * This is a collection of all default keys (of the key/value pairs) of the
      * inchat config files.
      */
-    public static enum Keys {
+    public static enum Key {
 
         keyPairFilename,
         keyPairPassword
@@ -151,14 +168,14 @@ public class Config {
      * @throws IllegalArgumentException If the key cannot be found or the
      * argument was null or empty.
      */
-    public static String getProperty(String key) {
-        Exceptions.verifyArgumentNotEmpty(key);
+    public static String getProperty(Key key) {
+        Exceptions.verifyArgumentNotNull(key);
 
         if (getInstance().configFile == null) {
             throw new IllegalStateException("You have load the config file first.");
         }
 
-        return getInstance().configFile.getProperty(key);
+        return getInstance().configFile.getProperty(key.toString());
     }
 
     /**
@@ -184,7 +201,7 @@ public class Config {
     }
 
     private static boolean isKeyPairExisting() {
-        String keyPairFilename = getProperty(Keys.keyPairFilename.toString());
+        String keyPairFilename = getProperty(Key.keyPairFilename);
 
         File privateKeyFile = new File(keyPairFilename + KeyPairStore.PRIVATE_KEY_FILE_EXTENSION);
         File publicKeyFile = new File(keyPairFilename + KeyPairStore.PUBILC_KEY_FILE_EXTENSION);
@@ -202,23 +219,21 @@ public class Config {
     }
 
     private static void loadParticipant() {
-        String keyPairFilename = getProperty(Keys.keyPairFilename.toString());
-        String keyPairPassword = getProperty(Keys.keyPairPassword.toString());
+        String keyPairFilename = getProperty(Key.keyPairFilename);
+        String keyPairPassword = getProperty(Key.keyPairPassword);
 
         KeyPairStore store = new KeyPairStore(keyPairPassword, keyPairFilename);
-        Participant participant = new Participant(store.readKeys());
-        getInstance().participant = participant;
+        getInstance().participant = new Participant(store.readKeys());
     }
 
     private static void createAndStoreNewParticipant() {
-        String keyPairFilename = getProperty(Keys.keyPairFilename.toString());
-        String keyPairPassword = getProperty(Keys.keyPairPassword.toString());
+        String keyPairFilename = getProperty(Key.keyPairFilename);
+        String keyPairPassword = getProperty(Key.keyPairPassword);
 
-        Participant participant = new Participant(EccKeyPairGenerator.generate());
-        getInstance().participant = participant;
+        getInstance().participant = new Participant(EccKeyPairGenerator.generate());
 
         KeyPairStore store = new KeyPairStore(keyPairPassword, keyPairFilename);
-        store.storeKeys(participant.getKeyPair());
+        store.storeKeys(getInstance().participant.getKeyPair());
     }
 
     /**
