@@ -28,6 +28,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.Properties;
+import org.inchat.common.crypto.EccKeyPairGenerator;
+import org.inchat.common.crypto.KeyPairStore;
 import org.inchat.common.util.Exceptions;
 
 /**
@@ -45,13 +47,17 @@ public class Config {
         keyPairFilename,
         keyPairPassword
     }
-    public final static String DEFAULT_CONFIG_CLASSPATH = "/org/inchat/common/defaults.conf";
+    private final static String DEFAULT_CONFIG_CLASSPATH = "/org/inchat/common/defaults.conf";
     Properties configFile;
     Participant participant;
+    boolean isLoaded = false;
 
-    private Config() {
-        // Only static access.
+    Config() {
+        // Only static access and from the test package.
+    }
 
+    public static boolean isLoaded() {
+        return getInstance().isLoaded;
     }
 
     /**
@@ -70,6 +76,7 @@ public class Config {
         try (FileInputStream fileStream = new FileInputStream(file)) {
             getInstance().configFile.load(fileStream);
             fileStream.close();
+            getInstance().isLoaded = true;
         } catch (IOException ex) {
             String message = "The file cannot be found.";
             String currentPath;
@@ -79,6 +86,7 @@ public class Config {
             } catch (IOException ex1) {
                 throw new IllegalArgumentException(message);
             }
+
             throw new IllegalArgumentException(message + " Enter the path relative to '" + currentPath + "'.");
         }
     }
@@ -154,16 +162,63 @@ public class Config {
     }
 
     /**
-     * Keeps a reference to the given {@link Participant}. This is just to keep
-     * the important things at one place with easy access.
+     * Loads the {@link Participant} with the keys, configured in the config
+     * file. When no {@link Participant} is existing, a new one will be created.
      *
-     * @param participant The participant to set. This may not be null.
-     * @throws IllegalArgumentException If the argument is null.
+     * @return The participant.
+     * @throws IllegalStateException If the {@link Config} is not loaded at the
+     * time of invocation.
      */
-    public static void setParticipant(Participant participant) {
-        Exceptions.verifyArgumentNotNull(participant);
+    public static Participant loadOrCreateParticipant() {
+        if (!isLoaded()) {
+            throw new IllegalStateException("The config file has to be loaded first.");
+        }
 
+        if (isKeyPairExisting()) {
+            loadParticipant();
+        } else {
+            createAndStoreNewParticipant();
+        }
+
+        return null;
+    }
+
+    private static boolean isKeyPairExisting() {
+        String keyPairFilename = getProperty(Keys.keyPairFilename.toString());
+
+        File privateKeyFile = new File(keyPairFilename + KeyPairStore.PRIVATE_KEY_FILE_EXTENSION);
+        File publicKeyFile = new File(keyPairFilename + KeyPairStore.PUBILC_KEY_FILE_EXTENSION);
+        File saltFile = new File(keyPairFilename + KeyPairStore.SALT_FILE_EXTENSION);
+
+        if (!privateKeyFile.exists()) {
+            return false;
+        }
+
+        if (!publicKeyFile.exists()) {
+            return false;
+        }
+
+        return saltFile.exists();
+    }
+
+    private static void loadParticipant() {
+        String keyPairFilename = getProperty(Keys.keyPairFilename.toString());
+        String keyPairPassword = getProperty(Keys.keyPairPassword.toString());
+
+        KeyPairStore store = new KeyPairStore(keyPairPassword, keyPairFilename);
+        Participant participant = new Participant(store.readKeys());
         getInstance().participant = participant;
+    }
+
+    private static void createAndStoreNewParticipant() {
+        String keyPairFilename = getProperty(Keys.keyPairFilename.toString());
+        String keyPairPassword = getProperty(Keys.keyPairPassword.toString());
+
+        Participant participant = new Participant(EccKeyPairGenerator.generate());
+        getInstance().participant = participant;
+
+        KeyPairStore store = new KeyPairStore(keyPairPassword, keyPairFilename);
+        store.storeKeys(participant.getKeyPair());
     }
 
     /**
