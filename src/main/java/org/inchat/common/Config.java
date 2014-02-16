@@ -87,7 +87,7 @@ public class Config {
      * Writes the inchat default configs to the given file.
      *
      * @param target The file, where the new config file should be. This may not
-     * be null and the path has to be writable. The file must not exists before
+     * be null and the path has to be writable. The file must not exist before
      * the invocation of this method.
      * @throws IllegalArgumentException If the argument is null or the file
      * cannot be created.
@@ -126,7 +126,7 @@ public class Config {
 
         char[] buffer = new char[1024];
         int length;
-        
+
         while ((length = reader.read(buffer)) != -1) {
             writer.write(buffer, 0, length);
         }
