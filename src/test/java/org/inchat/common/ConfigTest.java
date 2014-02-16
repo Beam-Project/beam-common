@@ -57,7 +57,7 @@ public class ConfigTest {
         if (privateKey.exists()) {
             privateKey.delete();
         }
-        
+
         if (publicKey.exists()) {
             publicKey.delete();
         }
@@ -153,14 +153,17 @@ public class ConfigTest {
     }
 
     @Test
-    public void testLoadConfigFile() {
+    public void testLoadConfig() throws IOException {
         Config.createDefaultConfig(DEFAULT_TEST_FILE);
         Config.loadConfig(DEFAULT_TEST_FILE);
-        assertNotNull(Config.getInstance().configFile);
+        assertNotNull(Config.getInstance().config);
 
         String actualValue = Config.getProperty(TEST_KEY);
         assertEquals(KEY_PAIR_FILENAME, actualValue);
 
+        File configFile = new File(DEFAULT_TEST_FILE).getAbsoluteFile();
+        assertEquals(configFile.getParentFile().getAbsolutePath(),
+                Config.getInstance().configDirectory.getAbsolutePath());
         assertTrue(Config.isLoaded());
     }
 
@@ -180,7 +183,7 @@ public class ConfigTest {
 
     @Test(expected = IllegalStateException.class)
     public void testGetPropertyOnMissingConfigFile() {
-        Config.getInstance().configFile = null;
+        Config.getInstance().config = null;
         Config.getProperty(TEST_KEY);
     }
 

@@ -39,8 +39,8 @@ import org.inchat.common.util.Exceptions;
 public class Config {
 
     /**
-     * This is a collection of all keys (of the key/value pairs) of the
-     * inchat config files.
+     * This is a collection of all keys (of the key/value pairs) of the inchat
+     * config files.
      */
     public static enum Key {
 
@@ -48,7 +48,8 @@ public class Config {
         keyPairPassword
     }
     private final static String DEFAULT_CONFIG_CLASSPATH = "/org/inchat/common/defaults.conf";
-    Properties configFile;
+    File configDirectory;
+    Properties config;
     Participant participant;
     boolean isLoaded = false;
 
@@ -71,11 +72,14 @@ public class Config {
     public static void loadConfig(String path) {
         Exceptions.verifyArgumentNotEmpty(path);
 
-        getInstance().configFile = new java.util.Properties();
+        getInstance().config = new Properties();
 
-        try (FileInputStream fileStream = new FileInputStream(new File(path))) {
-            getInstance().configFile.load(fileStream);
+        File configFile = new File(path).getAbsoluteFile();
+
+        try (FileInputStream fileStream = new FileInputStream(configFile)) {
+            getInstance().config.load(fileStream);
             fileStream.close();
+            getInstance().configDirectory = configFile.getParentFile();
             getInstance().isLoaded = true;
         } catch (IOException ex) {
             String message = "The file cannot be found.";
@@ -156,11 +160,11 @@ public class Config {
     public static String getProperty(Key key) {
         Exceptions.verifyArgumentNotNull(key);
 
-        if (getInstance().configFile == null) {
+        if (getInstance().config == null) {
             throw new IllegalStateException("You have load the config file first.");
         }
 
-        return getInstance().configFile.getProperty(key.toString());
+        return getInstance().config.getProperty(key.toString());
     }
 
     /**
