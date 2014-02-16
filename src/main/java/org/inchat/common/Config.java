@@ -22,6 +22,7 @@ import java.awt.geom.IllegalPathStateException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,9 +46,11 @@ public class Config {
     public static enum Key {
 
         keyPairFilename,
-        keyPairPassword
+        keyPairPassword,
+        participantName
     }
     private final static String DEFAULT_CONFIG_CLASSPATH = "/org/inchat/common/defaults.conf";
+    File configFile;
     File configDirectory;
     Properties config;
     Participant participant;
@@ -73,12 +76,12 @@ public class Config {
         Exceptions.verifyArgumentNotEmpty(path);
 
         getInstance().config = new Properties();
-
         File configFile = new File(path).getAbsoluteFile();
 
         try (FileInputStream fileStream = new FileInputStream(configFile)) {
             getInstance().config.load(fileStream);
             fileStream.close();
+            getInstance().configFile = configFile;
             getInstance().configDirectory = configFile.getParentFile();
             getInstance().isLoaded = true;
         } catch (IOException ex) {
@@ -168,6 +171,29 @@ public class Config {
     }
 
     /**
+     * This method writes/adds/updates a property key/value pair to the config
+     * file.
+     *
+     * @param key The key that has to be set.
+     * @param value The value for the key.
+     * @throws IllegalArgumentException If at lest one of the arguments is null.
+     * @throws IllegalStateException If the config file was not loaded before or
+     * if it could not be stored correctly.
+     */
+    public static void setProperty(Key key, String value) {
+        Exceptions.verifyArgumentsNotNull(key, value);
+
+        getInstance().config.setProperty(key.toString(), value);
+
+        try {
+            FileOutputStream output = new FileOutputStream(getInstance().configFile);
+            getInstance().config.store(output, null);
+        } catch (IOException ex) {
+            throw new IllegalStateException("The file could not be stored correctly.");
+        }
+    }
+
+    /**
      * Loads the {@link Participant} with the keys, configured in the config
      * file. When no {@link Participant} is existing, a new one will be created.
      *
@@ -190,11 +216,12 @@ public class Config {
     }
 
     private static boolean isKeyPairExisting() {
+        String directory = getInstance().configDirectory.getAbsolutePath() + File.separator;
         String keyPairFilename = getProperty(Key.keyPairFilename);
 
-        File privateKeyFile = new File(keyPairFilename + KeyPairStore.PRIVATE_KEY_FILE_EXTENSION);
-        File publicKeyFile = new File(keyPairFilename + KeyPairStore.PUBILC_KEY_FILE_EXTENSION);
-        File saltFile = new File(keyPairFilename + KeyPairStore.SALT_FILE_EXTENSION);
+        File privateKeyFile = new File(directory + keyPairFilename + KeyPairStore.PRIVATE_KEY_FILE_EXTENSION);
+        File publicKeyFile = new File(directory + keyPairFilename + KeyPairStore.PUBILC_KEY_FILE_EXTENSION);
+        File saltFile = new File(directory + keyPairFilename + KeyPairStore.SALT_FILE_EXTENSION);
 
         if (!privateKeyFile.exists()) {
             return false;
@@ -208,20 +235,22 @@ public class Config {
     }
 
     private static void loadParticipant() {
+        String directory = getInstance().configDirectory.getAbsolutePath() + File.separator;
         String keyPairFilename = getProperty(Key.keyPairFilename);
         String keyPairPassword = getProperty(Key.keyPairPassword);
 
-        KeyPairStore store = new KeyPairStore(keyPairPassword, keyPairFilename);
+        KeyPairStore store = new KeyPairStore(keyPairPassword, directory + keyPairFilename);
         getInstance().participant = new Participant(store.readKeys());
     }
 
     private static void createAndStoreNewParticipant() {
+        String directory = getInstance().configDirectory.getAbsolutePath() + File.separator;
         String keyPairFilename = getProperty(Key.keyPairFilename);
         String keyPairPassword = getProperty(Key.keyPairPassword);
 
         getInstance().participant = new Participant(EccKeyPairGenerator.generate());
 
-        KeyPairStore store = new KeyPairStore(keyPairPassword, keyPairFilename);
+        KeyPairStore store = new KeyPairStore(keyPairPassword, directory + keyPairFilename);
         store.storeKeys(getInstance().participant.getKeyPair());
     }
 

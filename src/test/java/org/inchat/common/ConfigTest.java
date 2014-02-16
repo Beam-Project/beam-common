@@ -162,6 +162,8 @@ public class ConfigTest {
         assertEquals(KEY_PAIR_FILENAME, actualValue);
 
         File configFile = new File(DEFAULT_TEST_FILE).getAbsoluteFile();
+        assertEquals(configFile.getAbsolutePath(),
+                Config.getInstance().configFile.getAbsolutePath());
         assertEquals(configFile.getParentFile().getAbsolutePath(),
                 Config.getInstance().configDirectory.getAbsolutePath());
         assertTrue(Config.isLoaded());
@@ -192,6 +194,38 @@ public class ConfigTest {
         Config.createDefaultConfig(DEFAULT_TEST_FILE);
         Config.loadConfig(DEFAULT_TEST_FILE);
         assertEquals(KEY_PAIR_FILENAME, Config.getProperty(TEST_KEY));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetPropertyOnNulls() {
+        Config.createDefaultConfig(DEFAULT_TEST_FILE);
+        Config.loadConfig(DEFAULT_TEST_FILE);
+        Config.setProperty(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetPropertyOnNullKey() {
+        Config.createDefaultConfig(DEFAULT_TEST_FILE);
+        Config.loadConfig(DEFAULT_TEST_FILE);
+        Config.setProperty(null, "value");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetPropertyOnNullValue() {
+        Config.createDefaultConfig(DEFAULT_TEST_FILE);
+        Config.loadConfig(DEFAULT_TEST_FILE);
+        Config.setProperty(Config.Key.keyPairPassword, null);
+    }
+
+    @Test
+    public void testSetProperty() {
+        Config.createDefaultConfig(DEFAULT_TEST_FILE);
+        Config.loadConfig(DEFAULT_TEST_FILE);
+        Config.setProperty(Config.Key.participantName, "anonymous");
+        
+        
+        Config.loadConfig(DEFAULT_TEST_FILE);
+        assertEquals("anonymous", Config.getProperty(Config.Key.participantName));
     }
 
     @Test(expected = IllegalStateException.class)
