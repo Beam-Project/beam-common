@@ -15,23 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *//*
- * Copyright (C) 2013, 2014 inchat.org
- *
- * This file is part of inchat-common.
- *
- * inchat-common is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * inchat-common is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.inchat.common;
 
@@ -56,7 +39,7 @@ import org.inchat.common.util.Exceptions;
 public class Config {
 
     /**
-     * This is a collection of all default keys (of the key/value pairs) of the
+     * This is a collection of all keys (of the key/value pairs) of the
      * inchat config files.
      */
     public static enum Key {
@@ -81,16 +64,16 @@ public class Config {
      * Loads the config file. It has to be a key/value pair file like the Java
      * properties files.
      *
-     * @param file The file to read.
+     * @param path The file to read.
      * @throws IllegalArgumentException If the argument is null or the file
      * cannot be found.
      */
-    public static void loadConfigFile(File file) {
-        Exceptions.verifyArgumentNotNull(file);
+    public static void loadConfig(String path) {
+        Exceptions.verifyArgumentNotEmpty(path);
 
         getInstance().configFile = new java.util.Properties();
 
-        try (FileInputStream fileStream = new FileInputStream(file)) {
+        try (FileInputStream fileStream = new FileInputStream(new File(path))) {
             getInstance().configFile.load(fileStream);
             fileStream.close();
             getInstance().isLoaded = true;
@@ -104,14 +87,14 @@ public class Config {
                 throw new IllegalArgumentException(message);
             }
 
-            throw new IllegalArgumentException(message + " Enter the path relative to '" + currentPath + "'.");
+            throw new IllegalArgumentException(message + " Enter the path relative to '" + currentPath + "'. The path of your file was '" + path + "'.");
         }
     }
 
     /**
      * Writes the inchat default configs to the given file.
      *
-     * @param target The file, where the new config file should be. This may not
+     * @param path The file, where the new config file should be. This may not
      * be null and the path has to be writable. The file must not exist before
      * the invocation of this method.
      * @throws IllegalArgumentException If the argument is null or the file
@@ -119,20 +102,22 @@ public class Config {
      * @throws IllegalPathStateException If the file already exists or it could
      * not be written.
      */
-    public static void createDefaultConfig(File target) {
-        Exceptions.verifyArgumentNotNull(target);
+    public static void createDefaultConfig(String path) {
+        Exceptions.verifyArgumentNotEmpty(path);
 
-        if (target.exists()) {
+        File file = new File(path);
+
+        if (file.exists()) {
             throw new IllegalPathStateException("The config could not be written since the path already exists.");
         }
 
-        if (target.getParentFile() != null && !target.getParentFile().exists()) {
-            target.getParentFile().mkdirs();
+        if (file.getParentFile() != null && !file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
         }
 
         try {
-            target.createNewFile();
-            writeDefaultsToFile(target);
+            file.createNewFile();
+            writeDefaultsToFile(file);
         } catch (IOException ex) {
             throw new IllegalPathStateException("The config could not be written: " + ex.getMessage());
         }

@@ -31,19 +31,13 @@ import org.junit.Before;
 
 public class ConfigTest {
 
-    private final static String DEFAULT_TEST_FILE = "./test-default-config.conf";
-    private final static String TEST_FILE = "src/test/resources/org/inchat/common/test-config-file.conf";
+    private final static String DEFAULT_TEST_FILE = "test-default-config.conf";
     private final static Config.Key TEST_KEY = Config.Key.keyPairFilename;
-    private final static String TEST_VALUE = "helloWorld";
-    private final static String TEST_CONFIG_DEFAULTS = "src/test/resources/org/inchat/common/test-write-defaults.conf";
-    private final static String TEST_CONFIG_DEFAULTS_IN_NEW_DIRECTORY = "src/test/resources/org/inchat/common/NEW_DIRECTORY/test-write-defaults.conf";
+    private final static String KEY_PAIR_FILENAME = "keypair";
+    private final static String TEST_CONFIG_DEFAULTS_IN_NEW_DIRECTORY = "NEW_DIRECTORY/test-write-defaults.conf";
     private Participant participant;
 
     @Before
-    public void setUp() {
-        participant = new Participant(EccKeyPairGenerator.generate());
-    }
-
     @After
     public void cleanUp() {
         File defaultTestFile = new File(DEFAULT_TEST_FILE);
@@ -51,16 +45,41 @@ public class ConfigTest {
         if (defaultTestFile.exists()) {
             defaultTestFile.delete();
         }
+
+        deleteKeyPairFiles();
+    }
+
+    private void deleteKeyPairFiles() {
+        File privateKey = getPrivateKey();
+        File publicKey = getPublicKey();
+        File salt = getSalt();
+
+        if (privateKey.exists()) {
+            privateKey.delete();
+        }
+        
+        if (publicKey.exists()) {
+            publicKey.delete();
+        }
+
+        if (salt.exists()) {
+            salt.delete();
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testLoadConfigFileOnNull() {
-        Config.loadConfigFile(null);
+        Config.loadConfig(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLoadConfigFileOnEmptyString() {
+        Config.loadConfig("");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testLoadConfigFileOnNotExistingFile() {
-        Config.loadConfigFile(new File("oops -- file not found"));
+        Config.loadConfig("oops -- file not found");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -68,18 +87,23 @@ public class ConfigTest {
         Config.createDefaultConfig(null);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testWriteDefaultConfigOnEmptyString() {
+        Config.createDefaultConfig("");
+    }
+
     @Test(expected = IllegalPathStateException.class)
     public void testWriteDefaultConfigOnExistingDirectory() {
-        Config.createDefaultConfig(new File(""));
+        Config.createDefaultConfig("./");
     }
 
     @Test
     public void testWriteDefaultConfigWithExistingDirectory() throws IOException {
         deleteTestDefaultsFile();
 
-        Config.createDefaultConfig(new File(TEST_CONFIG_DEFAULTS));
+        Config.createDefaultConfig(DEFAULT_TEST_FILE);
 
-        File configFile = new File(TEST_CONFIG_DEFAULTS);
+        File configFile = new File(DEFAULT_TEST_FILE);
         assertTrue(configFile.exists());
 
         String writtenConfig = readFile(configFile);
@@ -93,7 +117,7 @@ public class ConfigTest {
     public void testWriteDefaultConfigWithNewDirectory() throws IOException {
         deleteTestDefaultsFileWithNewDirectory();
 
-        Config.createDefaultConfig(new File(TEST_CONFIG_DEFAULTS_IN_NEW_DIRECTORY));
+        Config.createDefaultConfig(TEST_CONFIG_DEFAULTS_IN_NEW_DIRECTORY);
 
         File configFile = new File(TEST_CONFIG_DEFAULTS_IN_NEW_DIRECTORY);
         assertTrue(configFile.exists());
@@ -106,7 +130,7 @@ public class ConfigTest {
     }
 
     private void deleteTestDefaultsFile() {
-        File target = new File(TEST_CONFIG_DEFAULTS);
+        File target = new File(DEFAULT_TEST_FILE);
         if (target.exists()) {
             target.delete();
         }
@@ -130,11 +154,12 @@ public class ConfigTest {
 
     @Test
     public void testLoadConfigFile() {
-        Config.loadConfigFile(new File(TEST_FILE));
+        Config.createDefaultConfig(DEFAULT_TEST_FILE);
+        Config.loadConfig(DEFAULT_TEST_FILE);
         assertNotNull(Config.getInstance().configFile);
 
         String actualValue = Config.getProperty(TEST_KEY);
-        assertEquals(TEST_VALUE, actualValue);
+        assertEquals(KEY_PAIR_FILENAME, actualValue);
 
         assertTrue(Config.isLoaded());
     }
@@ -161,8 +186,9 @@ public class ConfigTest {
 
     @Test
     public void testGetProperty() {
-        Config.loadConfigFile(new File(TEST_FILE));
-        assertEquals(TEST_VALUE, Config.getProperty(TEST_KEY));
+        Config.createDefaultConfig(DEFAULT_TEST_FILE);
+        Config.loadConfig(DEFAULT_TEST_FILE);
+        assertEquals(KEY_PAIR_FILENAME, Config.getProperty(TEST_KEY));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -173,8 +199,8 @@ public class ConfigTest {
 
     @Test
     public void testLoadOrCreateParticipantOnCreatingKey() {
-        Config.createDefaultConfig(new File(DEFAULT_TEST_FILE));
-        Config.loadConfigFile(new File(DEFAULT_TEST_FILE));
+        Config.createDefaultConfig(DEFAULT_TEST_FILE);
+        Config.loadConfig(DEFAULT_TEST_FILE);
         deleteKeyPairFiles();
         Config.loadOrCreateParticipant();
 
@@ -196,10 +222,10 @@ public class ConfigTest {
     }
 
     @Test
-    public void testContextInitOnReadingKey() {
+    public void testContextInitOnLoadingKeyPair() {
         deleteKeyPairFiles();
-        Config.createDefaultConfig(new File(DEFAULT_TEST_FILE));
-        Config.loadConfigFile(new File(DEFAULT_TEST_FILE));
+        Config.createDefaultConfig(DEFAULT_TEST_FILE);
+        Config.loadConfig(DEFAULT_TEST_FILE);
 
         createAndStoreKeyPair();
         Config.loadOrCreateParticipant();
@@ -211,43 +237,23 @@ public class ConfigTest {
                 Config.getParticipant().getPrivateKeyAsBytes());
     }
 
-    private void deleteKeyPairFiles() {
-        File publicKey = getPublicKey();
-        File privateKey = getPrivateKey();
-        File salt = getSalt();
-
-        if (publicKey.exists()) {
-            publicKey.delete();
-        }
-
-        if (privateKey.exists()) {
-            privateKey.delete();
-        }
-
-        if (salt.exists()) {
-            salt.delete();
-        }
-    }
-
     private void createAndStoreKeyPair() {
+        participant = new Participant(EccKeyPairGenerator.generate());
         KeyPairStore store = new KeyPairStore(Config.getProperty(Config.Key.keyPairPassword),
                 Config.getProperty(Config.Key.keyPairFilename));
         store.storeKeys(participant.getKeyPair());
     }
 
-    private File getPrivateKey() {
-        return new File(Config.getProperty(Config.Key.keyPairFilename)
-                + KeyPairStore.PRIVATE_KEY_FILE_EXTENSION);
+    private File getPublicKey() {
+        return new File(KEY_PAIR_FILENAME + KeyPairStore.PUBILC_KEY_FILE_EXTENSION);
     }
 
-    private File getPublicKey() {
-        return new File(Config.getProperty(Config.Key.keyPairFilename)
-                + KeyPairStore.PUBILC_KEY_FILE_EXTENSION);
+    private File getPrivateKey() {
+        return new File(KEY_PAIR_FILENAME + KeyPairStore.PRIVATE_KEY_FILE_EXTENSION);
     }
 
     private File getSalt() {
-        return new File(Config.getProperty(Config.Key.keyPairFilename)
-                + KeyPairStore.SALT_FILE_EXTENSION);
+        return new File(KEY_PAIR_FILENAME + KeyPairStore.SALT_FILE_EXTENSION);
     }
 
     @Test
