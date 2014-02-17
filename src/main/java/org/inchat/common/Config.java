@@ -47,7 +47,9 @@ public class Config {
 
         keyPairFilename,
         keyPairPassword,
-        participantName
+        participantName,
+        windowPositionX,
+        windowPositionY
     }
     private final static String DEFAULT_CONFIG_CLASSPATH = "/org/inchat/common/defaults.conf";
     File configFile;
