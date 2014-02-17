@@ -18,60 +18,147 @@
  */
 package org.inchat.common.transfer;
 
+import java.security.Security;
+import org.inchat.common.Contact;
 import org.inchat.common.Participant;
+import org.inchat.common.crypto.BouncyCastleIntegrator;
 import org.inchat.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class UrlAssemblerTest {
-
+    
     private Participant server;
     private Participant client;
-    private String output;
-
+    private String url;
+    private Contact contact;
+    
     @Test(expected = IllegalArgumentException.class)
     public void testToUrlByServerAndClientOnNulls() {
-        output = UrlAssembler.toUrlByServerAndClient(null, null);
+        url = UrlAssembler.toUrlByServerAndClient(null, null);
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void testToUrlByServerAndClientOnNullServer() {
-        output = UrlAssembler.toUrlByServerAndClient(null, client);
+        url = UrlAssembler.toUrlByServerAndClient(null, client);
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void testToUrlByServerAndClientOnNullParticipant() {
-        output = UrlAssembler.toUrlByServerAndClient(server, null);
+        url = UrlAssembler.toUrlByServerAndClient(server, null);
     }
-
+    
     @Test
     public void testToUrlByServerAndClient() {
         server = new Participant(EccKeyPairGenerator.generate());
         client = new Participant(EccKeyPairGenerator.generate());
-        output = UrlAssembler.toUrlByServerAndClient(server, client);
-
+        url = UrlAssembler.toUrlByServerAndClient(server, client);
+        
         String serverPart = server.getPublicKeyAsHex();
         String clientPart = client.getPublicKeyAsHex();
         String expectedUrl = "inchat:" + serverPart + "." + clientPart;
         expectedUrl = expectedUrl.toLowerCase();
-
-        assertEquals(expectedUrl, output);
+        
+        assertEquals(expectedUrl, url);
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void testToUrlByServerOnNull() {
-        output = UrlAssembler.toUrlByServer(null);
+        url = UrlAssembler.toUrlByServer(null);
     }
-
+    
     @Test
     public void testToUrlByServer() {
         server = new Participant(EccKeyPairGenerator.generate());
-        output = UrlAssembler.toUrlByServer(server);
-
+        url = UrlAssembler.toUrlByServer(server);
+        
         String serverPart = server.getPublicKeyAsHex();
         String expectedUrl = "inchat:" + serverPart;
         expectedUrl = expectedUrl.toLowerCase();
-
-        assertEquals(expectedUrl, output);
+        
+        assertEquals(expectedUrl, url);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testToContactByServerAndClientUrlOnNull() {
+        contact = UrlAssembler.toContactByServerAndClientUrl(null);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testToContactByServerAndClientUrlOnEmptyString() {
+        contact = UrlAssembler.toContactByServerAndClientUrl("");
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testToContactByServerAndClientUrlOnShortUrl() {
+        contact = UrlAssembler.toContactByServerAndClientUrl("lasjfalsfjasd;");
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testToContactByServerAndClientUrlOnMissingProtocol() {
+        url = UrlAssembler.toUrlByServerAndClient(server, client);
+        url = url.replace("inchat", "");
+        contact = UrlAssembler.toContactByServerAndClientUrl(url);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testToContactByServerAndClientUrlOnWrongProtocol() {
+        url = UrlAssembler.toUrlByServerAndClient(server, client);
+        url = url.replace("inchat", "inhcat");
+        contact = UrlAssembler.toContactByServerAndClientUrl(url);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testToContactByServerAndClientUrlOnWrongCharacters() {
+        url = UrlAssembler.toUrlByServerAndClient(server, client);
+        url = url.replaceFirst("1", "z");
+        contact = UrlAssembler.toContactByServerAndClientUrl(url);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testToContactByServerAndClientUrlOnMissingSchemaSpeperator() {
+        url = UrlAssembler.toUrlByServerAndClient(server, client);
+        url = url.replaceFirst(":", "");
+        contact = UrlAssembler.toContactByServerAndClientUrl(url);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testToContactByServerAndClientUrlOnMissingSpeperator() {
+        url = UrlAssembler.toUrlByServerAndClient(server, client);
+        url = url.replaceFirst(".", "");
+        contact = UrlAssembler.toContactByServerAndClientUrl(url);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testToContactByServerAndClientUrlOnTooShortClient() {
+        url = UrlAssembler.toUrlByServerAndClient(server, client);
+        url = url.substring(0, url.length() - 2);
+        contact = UrlAssembler.toContactByServerAndClientUrl(url);
+    }
+    
+    @Test
+    public void testToContactByServerAndClientUrlOnBouncyCastleProvider() {
+        server = new Participant(EccKeyPairGenerator.generate());
+        client = new Participant(EccKeyPairGenerator.generate());
+        
+        Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
+        
+        url = UrlAssembler.toUrlByServerAndClient(server, client);
+        contact = UrlAssembler.toContactByServerAndClientUrl(url);
+        
+        assertArrayEquals(server.getPublicKeyAsBytes(), contact.getServer().getPublicKeyAsBytes());
+        assertArrayEquals(client.getPublicKeyAsBytes(), contact.getClient().getPublicKeyAsBytes());
+    }
+    
+    @Test
+    public void testToContactByServerAndClientUrlOnCorrectUrl() {
+        server = new Participant(EccKeyPairGenerator.generate());
+        client = new Participant(EccKeyPairGenerator.generate());
+        
+        url = UrlAssembler.toUrlByServerAndClient(server, client);
+        contact = UrlAssembler.toContactByServerAndClientUrl(url);
+        
+        assertArrayEquals(server.getPublicKeyAsBytes(), contact.getServer().getPublicKeyAsBytes());
+        assertArrayEquals(client.getPublicKeyAsBytes(), contact.getClient().getPublicKeyAsBytes());
     }
 }

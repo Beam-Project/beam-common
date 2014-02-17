@@ -18,7 +18,17 @@
  */
 package org.inchat.common.transfer;
 
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
+import javax.xml.bind.DatatypeConverter;
+import org.inchat.common.Contact;
 import org.inchat.common.Participant;
+import org.inchat.common.crypto.BouncyCastleIntegrator;
 import org.inchat.common.util.Exceptions;
 
 /**
@@ -28,6 +38,12 @@ public class UrlAssembler {
 
     public final static String SCHEME_PART = "inchat:";
     public final static String SEPERATOR = ".";
+    public final static int PUBLIC_KEY_HEX_LENGTH = 240;
+    public final static String SERVER_CLIENT_SCHEME_REGEX = "inchat:[0-9a-fA-F]"
+            + "{" + PUBLIC_KEY_HEX_LENGTH + "}"
+            + "\\" + SEPERATOR + "[0-9a-fA-F]"
+            + "{" + PUBLIC_KEY_HEX_LENGTH + "}";
+    public final static String KEY_ALGORITHM_NAME = "EC";
 
     private UrlAssembler() {
         // Only static access.
@@ -59,6 +75,59 @@ public class UrlAssembler {
         Exceptions.verifyArgumentNotNull(server);
 
         return SCHEME_PART + server.getPublicKeyAsHex();
+    }
+
+    /**
+     * Converts a given {@code url} to a {@link Contact} instance. Only the
+     * public key values will be set.
+     *
+     * @param url This has to be a valid inchat url and may not be null.
+     * @return The {@link Contact}, initialized with two {@link Participant}s, a
+     * server and a client. Both do only contain a {@link PublicKey}.
+     * @throws IllegalArgumentException If the argument is not a valid inchat
+     * url.
+     * @throws IllegalStateException If the internally used {@link KeyFactory}
+     * could not be set up.
+     */
+    public static Contact toContactByServerAndClientUrl(String url) {
+        Exceptions.verifyArgumentNotEmpty(url);
+
+        if (!url.matches(SERVER_CLIENT_SCHEME_REGEX)) {
+            throw new IllegalArgumentException("The given url is not a valid inchat url.");
+        }
+
+        int serverPartStart = SCHEME_PART.length();
+        int serverPartEnd = serverPartStart + PUBLIC_KEY_HEX_LENGTH;
+        int clientPartStart = serverPartEnd + SEPERATOR.length();
+        int clientPartEnd = clientPartStart + PUBLIC_KEY_HEX_LENGTH;
+
+        String serverPart = url.substring(serverPartStart, serverPartEnd);
+        String clientPart = url.substring(clientPartStart, clientPartEnd);
+
+        PublicKey serverKey = toPublicKey(serverPart);
+        PublicKey clientKey = toPublicKey(clientPart);
+
+        KeyPair serverKeyPair = new KeyPair(serverKey, null);
+        KeyPair clientKeyPair = new KeyPair(clientKey, null);
+
+        Participant server = new Participant(serverKeyPair);
+        Participant client = new Participant(clientKeyPair);
+        return new Contact(server, client);
+    }
+
+    private static PublicKey toPublicKey(String pubicKeyAsHex) {
+        BouncyCastleIntegrator.initBouncyCastleProvider();
+
+        try {
+            byte[] asBytes = DatatypeConverter.parseHexBinary(pubicKeyAsHex);
+
+            KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
+            return keyFactory.generatePublic(new X509EncodedKeySpec(asBytes));
+        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+            throw new IllegalArgumentException("The given hex string cannot be converted to a public key: " + ex.getMessage());
+        } catch (InvalidKeySpecException ex) {
+            throw new IllegalStateException("Could not load Bouncy Castle: " + ex.getMessage());
+        }
     }
 
 }
