@@ -37,12 +37,17 @@ import org.inchat.common.util.Exceptions;
 public class UrlAssembler {
 
     public final static String SCHEME_PART = "inchat:";
-    public final static String SEPERATOR = ".";
+    public final static String SERVER_SEPERATOR = ".";
+    public final static String PARAMETER_PART = "?";
+    public final static String PARAMETER_SEPERATOR = "&";
+    public final static String PARAMETER_KEY_VALUE_ASSINGER = "=";
+    public final static String NAME_PARAMETER_KEY = "name";
     public final static int PUBLIC_KEY_HEX_LENGTH = 240;
     public final static String SERVER_CLIENT_SCHEME_REGEX = "inchat:[0-9a-fA-F]"
             + "{" + PUBLIC_KEY_HEX_LENGTH + "}"
-            + "\\" + SEPERATOR + "[0-9a-fA-F]"
-            + "{" + PUBLIC_KEY_HEX_LENGTH + "}";
+            + "\\" + SERVER_SEPERATOR + "[0-9a-fA-F]"
+            + "{" + PUBLIC_KEY_HEX_LENGTH + "}"
+            + "(\\?[a-zA-Z0-9]+=[-_a-zA-Z0-9]+(&[a-zA-Z0-9]+=[-_a-zA-Z0-9]+)*)?";
     public final static String KEY_ALGORITHM_NAME = "EC";
 
     private UrlAssembler() {
@@ -54,14 +59,18 @@ public class UrlAssembler {
      *
      * @param server The server, may not be null.
      * @param client The client, may not be null.
+     * @param name The name of the client (the person).
      * @return The link.
      * @throws IllegalArgumentException If at least one of the arguments is
      * null.
      */
-    public static String toUrlByServerAndClient(Participant server, Participant client) {
-        Exceptions.verifyArgumentsNotNull(server, client);
+    public static String toUrlByServerAndClient(Participant server, Participant client, String name) {
+        Exceptions.verifyArgumentsNotNull(server, client, name);
+        Exceptions.verifyArgumentNotEmpty(name);
 
-        return SCHEME_PART + server.getPublicKeyAsHex() + SEPERATOR + client.getPublicKeyAsHex();
+        return SCHEME_PART + server.getPublicKeyAsHex()
+                + SERVER_SEPERATOR + client.getPublicKeyAsHex()
+                + PARAMETER_PART + NAME_PARAMETER_KEY + PARAMETER_KEY_VALUE_ASSINGER + name;
     }
 
     /**
@@ -98,11 +107,14 @@ public class UrlAssembler {
 
         int serverPartStart = SCHEME_PART.length();
         int serverPartEnd = serverPartStart + PUBLIC_KEY_HEX_LENGTH;
-        int clientPartStart = serverPartEnd + SEPERATOR.length();
+        int clientPartStart = serverPartEnd + SERVER_SEPERATOR.length();
         int clientPartEnd = clientPartStart + PUBLIC_KEY_HEX_LENGTH;
+        int parameterPartStart = clientPartEnd + PARAMETER_PART.length();
+        int paraemterPartEnd = url.length();
 
         String serverPart = url.substring(serverPartStart, serverPartEnd);
         String clientPart = url.substring(clientPartStart, clientPartEnd);
+        String parameterPart = url.substring(parameterPartStart, paraemterPartEnd);
 
         PublicKey serverKey = toPublicKey(serverPart);
         PublicKey clientKey = toPublicKey(clientPart);
@@ -112,7 +124,22 @@ public class UrlAssembler {
 
         Participant server = new Participant(serverKeyPair);
         Participant client = new Participant(clientKeyPair);
-        return new Contact(server, client);
+
+        String[] parameterPairs = parameterPart.split(PARAMETER_SEPERATOR);
+        String name = getParameterValueByKey(parameterPairs, NAME_PARAMETER_KEY);
+
+        return new Contact(server, client, name);
+    }
+
+    private static String getParameterValueByKey(String[] parameterPairs, String key) {
+        for (String parameterPair : parameterPairs) {
+            String[] keyAndValue = parameterPair.split(PARAMETER_KEY_VALUE_ASSINGER);
+            if (keyAndValue[0].equals(key)) {
+                return keyAndValue[1];
+            }
+        }
+
+        throw new IllegalArgumentException("The parameter '" + key + "' could not be found.");
     }
 
     private static PublicKey toPublicKey(String pubicKeyAsHex) {
