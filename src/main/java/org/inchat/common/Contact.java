@@ -29,6 +29,7 @@ public class Contact {
 
     Participant server;
     Participant client;
+    String name;
 
     /**
      * Constructs a new {@link Contact} with server and client.
@@ -37,16 +38,18 @@ public class Contact {
      * in the inchat url. This may not be null.
      * @param client The client of this {@link Contact}. This is the second part
      * in the inchat url. This may not be null.
-     * @throws IllegalArgumentException If at least one of the arguments is
-     * null.
+     * @param name The name of this {@link Contact}. This may not be empty.
+     * @throws IllegalArgumentException If at least one of the arguments is null
+     * or the name is empty.
      */
-    public Contact(Participant server, Participant client) {
-        Exceptions.verifyArgumentsNotNull(server, client);
+    public Contact(Participant server, Participant client, String name) {
+        Exceptions.verifyArgumentsNotNull(server, client, name);
 
         this.server = server;
         this.client = client;
+        this.name = name;
     }
-
+ 
     public Participant getServer() {
         return server;
     }
@@ -55,4 +58,12 @@ public class Contact {
         return client;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

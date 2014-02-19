@@ -28,34 +28,41 @@ public class ContactTest {
     private Contact contact;
     private Participant server;
     private Participant client;
+    private final String name = "spock";
 
     @Before
     public void setUp() {
         server = new Participant(EccKeyPairGenerator.generate());
         client = new Participant(EccKeyPairGenerator.generate());
 
-        contact = new Contact(server, client);
+        contact = new Contact(server, client, name);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNulls() {
-        contact = new Contact(null, null);
+        contact = new Contact(null, null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNullServer() {
-        contact = new Contact(null, client);
+        contact = new Contact(null, client, name);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNullClient() {
-        contact = new Contact(server, null);
+        contact = new Contact(server, null, name);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructorOnNullName() {
+        contact = new Contact(server, client, null);
     }
 
     @Test
     public void testConstructorOnAssignment() {
         assertSame(server, contact.server);
         assertSame(client, contact.client);
+        assertSame(name, contact.name);
     }
 
     @Test
@@ -66,6 +73,17 @@ public class ContactTest {
     @Test
     public void testGetClient() {
         assertSame(client, contact.getClient());
+    }
+
+    @Test
+    public void testGetName() {
+        assertSame(name, contact.getName());
+    }
+
+    @Test
+    public void testToString() {
+        assertEquals(contact.name, contact.toString());
+        assertEquals(contact.name, "" + contact);
     }
 
 }
