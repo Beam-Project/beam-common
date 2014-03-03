@@ -18,6 +18,7 @@
  */
 package org.inchat.common;
 
+import java.io.Serializable;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -28,7 +29,8 @@ import org.inchat.common.util.Exceptions;
  * Represents a instance in the network that does something with messages. For
  * example, a {@link Participant} could be a user or a server.
  */
-public class Participant {
+public class Participant implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     KeyPair keyPair;
 
@@ -65,7 +67,7 @@ public class Participant {
     public byte[] getPrivateKeyAsBytes() {
         return getPrivateKey().getEncoded();
     }
-    
+
     public KeyPair getKeyPair() {
         return keyPair;
     }

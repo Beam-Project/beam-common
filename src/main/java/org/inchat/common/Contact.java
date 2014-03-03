@@ -18,6 +18,7 @@
  */
 package org.inchat.common;
 
+import java.io.Serializable;
 import org.inchat.common.util.Exceptions;
 
 /**
@@ -25,7 +26,8 @@ import org.inchat.common.util.Exceptions;
  * messenger. The main functionality is to store end user information such as
  * username, server, etc..
  */
-public class Contact {
+public class Contact implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     Participant server;
     Participant client;
