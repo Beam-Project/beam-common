@@ -20,6 +20,7 @@ package org.inchat.common.crypto;
 
 import java.io.File;
 import java.security.KeyPair;
+import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -35,6 +36,17 @@ public class KeyPairStoreTest {
     public void setUp() {
         store = new KeyPairStore(PASSWORD, FILENAME);
         keyPair = EccKeyPairGenerator.generate();
+    }
+
+    @After
+    public void cleanUp() {
+        File privateKey = new File(FILENAME + KeyPairStore.PRIVATE_KEY_FILE_EXTENSION);
+        File publicKey = new File(FILENAME + KeyPairStore.PUBILC_KEY_FILE_EXTENSION);
+        File salt = new File(FILENAME + KeyPairStore.SALT_FILE_EXTENSION);
+
+        privateKey.delete();
+        publicKey.delete();
+        salt.delete();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -84,8 +96,6 @@ public class KeyPairStoreTest {
 
     @Test
     public void testStoreKeys() {
-        cleanupExistingStores();
-
         store.storeKeys(keyPair);
 
         File privateKey = new File(FILENAME + KeyPairStore.PRIVATE_KEY_FILE_EXTENSION);
@@ -99,8 +109,6 @@ public class KeyPairStoreTest {
 
     @Test
     public void testStoreAndReadKeys() {
-        cleanupExistingStores();
-
         KeyPairStore store1 = new KeyPairStore(PASSWORD, FILENAME);
         store1.storeKeys(keyPair);
 
@@ -118,29 +126,9 @@ public class KeyPairStoreTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testReadKeysOnMissingFiles() {
-        cleanupExistingStores();
         store.storeKeys(keyPair);
-        
-        cleanupExistingStores();
+
+        cleanUp();
         keyPair = store.readKeys();
     }
-
-    private void cleanupExistingStores() {
-        File existingPrivateKey = new File(FILENAME + KeyPairStore.PRIVATE_KEY_FILE_EXTENSION);
-        File existingPublicKey = new File(FILENAME + KeyPairStore.PUBILC_KEY_FILE_EXTENSION);
-        File existingSalt = new File(FILENAME + KeyPairStore.SALT_FILE_EXTENSION);
-
-        if (existingPrivateKey.exists()) {
-            existingPrivateKey.delete();
-        }
-
-        if (existingPublicKey.exists()) {
-            existingPublicKey.delete();
-        }
-
-        if (existingSalt.exists()) {
-            existingSalt.delete();
-        }
-    }
-
 }
