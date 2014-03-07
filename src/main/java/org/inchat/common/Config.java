@@ -45,10 +45,35 @@ public class Config {
      */
     public static enum Key {
 
+        /**
+         * The filename of the key pair of this {@link Participant}.
+         */
+        /**
+         * The filename of the key pair of this {@link Participant}.
+         */
         keyPairFilename,
+        /**
+         * The password which is used to encrypt/decrypt the key pair file.
+         */
         keyPairPassword,
+        /**
+         * The name of this {@link Participant}.
+         */
         participantName,
+        /**
+         * Only relevant for the client. The url of the server, on which the
+         * client has its account. //TODO This should be refactored.
+         */
+        serverUrl,
+        /**
+         * Only relevant for the client. The X position of the desktop client
+         * window. //TODO This should be refactored.
+         */
         windowPositionX,
+        /**
+         * Only relevant for the client. The Y position of the desktop client
+         * window. //TODO This should be refactored.
+         */
         windowPositionY
     }
     private final static String DEFAULT_CONFIG_CLASSPATH = "/org/inchat/common/defaults.conf";
