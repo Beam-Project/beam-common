@@ -73,8 +73,8 @@ public class UrlAssemblerTest {
         client = new Participant(EccKeyPairGenerator.generate());
         url = UrlAssembler.toUrlByServerAndClient(server, client, name);
 
-        String serverPart = server.getPublicKeyAsHex().toLowerCase();
-        String clientPart = client.getPublicKeyAsHex().toLowerCase();
+        String serverPart = server.getPublicKeyAsBase58();
+        String clientPart = client.getPublicKeyAsBase58();
         String expectedUrl = "inchat:"
                 + serverPart
                 + "." + clientPart
@@ -93,9 +93,8 @@ public class UrlAssemblerTest {
         server = new Participant(EccKeyPairGenerator.generate());
         url = UrlAssembler.toUrlByServer(server);
 
-        String serverPart = server.getPublicKeyAsHex();
+        String serverPart = server.getPublicKeyAsBase58();
         String expectedUrl = "inchat:" + serverPart;
-        expectedUrl = expectedUrl.toLowerCase();
 
         assertEquals(expectedUrl, url);
     }
@@ -130,13 +129,6 @@ public class UrlAssemblerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testToContactByServerAndClientUrlOnWrongCharacters() {
-        url = UrlAssembler.toUrlByServerAndClient(server, client, name);
-        url = url.replaceFirst("1", "z");
-        contact = UrlAssembler.toContactByServerAndClientUrl(url);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void testToContactByServerAndClientUrlOnMissingSchemaSpeperator() {
         url = UrlAssembler.toUrlByServerAndClient(server, client, name);
         url = url.replaceFirst(":", "");
@@ -165,7 +157,6 @@ public class UrlAssemblerTest {
         Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
 
         url = UrlAssembler.toUrlByServerAndClient(server, client, name);
-        System.out.println("" + url);
         contact = UrlAssembler.toContactByServerAndClientUrl(url);
 
         assertArrayEquals(server.getPublicKeyAsBytes(), contact.getServer().getPublicKeyAsBytes());

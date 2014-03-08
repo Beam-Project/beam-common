@@ -25,10 +25,10 @@ import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
-import javax.xml.bind.DatatypeConverter;
 import org.inchat.common.Contact;
 import org.inchat.common.Participant;
 import org.inchat.common.crypto.BouncyCastleIntegrator;
+import org.inchat.common.util.Base58;
 import org.inchat.common.util.Exceptions;
 
 /**
@@ -42,11 +42,11 @@ public class UrlAssembler {
     public final static String PARAMETER_SEPERATOR = "&";
     public final static String PARAMETER_KEY_VALUE_ASSINGER = "=";
     public final static String NAME_PARAMETER_KEY = "name";
-    public final static int PUBLIC_KEY_HEX_LENGTH = 240;
-    public final static String SERVER_CLIENT_SCHEME_REGEX = "inchat:[0-9a-fA-F]"
-            + "{" + PUBLIC_KEY_HEX_LENGTH + "}"
-            + "\\" + SERVER_SEPERATOR + "[0-9a-fA-F]"
-            + "{" + PUBLIC_KEY_HEX_LENGTH + "}"
+    public final static int PUBLIC_KEY_BASE58_LENGTH = 164;
+    public final static String SERVER_CLIENT_SCHEME_REGEX = "inchat:[0-9a-zA-Z]"
+            + "{" + PUBLIC_KEY_BASE58_LENGTH + "}"
+            + "\\" + SERVER_SEPERATOR + "[0-9a-zA-Z]"
+            + "{" + PUBLIC_KEY_BASE58_LENGTH + "}"
             + "(\\?[a-zA-Z0-9]+=[-_a-zA-Z0-9]+(&[a-zA-Z0-9]+=[-_a-zA-Z0-9]+)*)?";
     public final static String KEY_ALGORITHM_NAME = "EC";
 
@@ -68,8 +68,8 @@ public class UrlAssembler {
         Exceptions.verifyArgumentsNotNull(server, client, name);
         Exceptions.verifyArgumentNotEmpty(name);
 
-        return SCHEME_PART + server.getPublicKeyAsHex()
-                + SERVER_SEPERATOR + client.getPublicKeyAsHex()
+        return SCHEME_PART + server.getPublicKeyAsBase58()
+                + SERVER_SEPERATOR + client.getPublicKeyAsBase58()
                 + PARAMETER_PART + NAME_PARAMETER_KEY + PARAMETER_KEY_VALUE_ASSINGER + name;
     }
 
@@ -83,7 +83,7 @@ public class UrlAssembler {
     public static String toUrlByServer(Participant server) {
         Exceptions.verifyArgumentNotNull(server);
 
-        return SCHEME_PART + server.getPublicKeyAsHex();
+        return SCHEME_PART + server.getPublicKeyAsBase58();
     }
 
     /**
@@ -106,9 +106,9 @@ public class UrlAssembler {
         }
 
         int serverPartStart = SCHEME_PART.length();
-        int serverPartEnd = serverPartStart + PUBLIC_KEY_HEX_LENGTH;
+        int serverPartEnd = serverPartStart + PUBLIC_KEY_BASE58_LENGTH;
         int clientPartStart = serverPartEnd + SERVER_SEPERATOR.length();
-        int clientPartEnd = clientPartStart + PUBLIC_KEY_HEX_LENGTH;
+        int clientPartEnd = clientPartStart + PUBLIC_KEY_BASE58_LENGTH;
         int parameterPartStart = clientPartEnd + PARAMETER_PART.length();
         int paraemterPartEnd = url.length();
 
@@ -142,16 +142,16 @@ public class UrlAssembler {
         throw new IllegalArgumentException("The parameter '" + key + "' could not be found.");
     }
 
-    private static PublicKey toPublicKey(String pubicKeyAsHex) {
+    private static PublicKey toPublicKey(String pubicKeyAsBase58) {
         BouncyCastleIntegrator.initBouncyCastleProvider();
 
         try {
-            byte[] asBytes = DatatypeConverter.parseHexBinary(pubicKeyAsHex);
+            byte[] asBytes = Base58.decode(pubicKeyAsBase58);
 
             KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
             return keyFactory.generatePublic(new X509EncodedKeySpec(asBytes));
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-            throw new IllegalArgumentException("The given hex string cannot be converted to a public key: " + ex.getMessage());
+            throw new IllegalArgumentException("The given Base58 string cannot be converted to a public key: " + ex.getMessage());
         } catch (InvalidKeySpecException ex) {
             throw new IllegalStateException("Could not load Bouncy Castle: " + ex.getMessage());
         }
