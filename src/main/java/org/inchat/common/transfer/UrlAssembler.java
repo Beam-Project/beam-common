@@ -70,7 +70,7 @@ public class UrlAssembler {
 
         return SCHEME_PART + server.getPublicKeyAsBase58()
                 + SERVER_SEPERATOR + client.getPublicKeyAsBase58()
-                + PARAMETER_PART + NAME_PARAMETER_KEY + PARAMETER_KEY_VALUE_ASSINGER + name;
+                + PARAMETER_PART + NAME_PARAMETER_KEY + PARAMETER_KEY_VALUE_ASSINGER + Base58.encode(name.getBytes());
     }
 
     /**
@@ -110,11 +110,11 @@ public class UrlAssembler {
         int clientPartStart = serverPartEnd + SERVER_SEPERATOR.length();
         int clientPartEnd = clientPartStart + PUBLIC_KEY_BASE58_LENGTH;
         int parameterPartStart = clientPartEnd + PARAMETER_PART.length();
-        int paraemterPartEnd = url.length();
+        int parameterPartEnd = url.length();
 
         String serverPart = url.substring(serverPartStart, serverPartEnd);
         String clientPart = url.substring(clientPartStart, clientPartEnd);
-        String parameterPart = url.substring(parameterPartStart, paraemterPartEnd);
+        String parameterPart = url.substring(parameterPartStart, parameterPartEnd);
 
         PublicKey serverKey = toPublicKey(serverPart);
         PublicKey clientKey = toPublicKey(clientPart);
@@ -126,7 +126,8 @@ public class UrlAssembler {
         Participant client = new Participant(clientKeyPair);
 
         String[] parameterPairs = parameterPart.split(PARAMETER_SEPERATOR);
-        String name = getParameterValueByKey(parameterPairs, NAME_PARAMETER_KEY);
+        String nameAsBase58 = getParameterValueByKey(parameterPairs, NAME_PARAMETER_KEY);
+        String name = new String(Base58.decode(nameAsBase58));
 
         return new Contact(server, client, name);
     }

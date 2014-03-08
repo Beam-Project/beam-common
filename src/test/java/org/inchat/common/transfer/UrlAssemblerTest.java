@@ -23,6 +23,7 @@ import org.inchat.common.Contact;
 import org.inchat.common.Participant;
 import org.inchat.common.crypto.BouncyCastleIntegrator;
 import org.inchat.common.crypto.EccKeyPairGenerator;
+import org.inchat.common.util.Base58;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -78,7 +79,7 @@ public class UrlAssemblerTest {
         String expectedUrl = "inchat:"
                 + serverPart
                 + "." + clientPart
-                + "?name=" + name;
+                + "?name=" + Base58.encode(name.getBytes());
 
         assertEquals(expectedUrl, url);
     }
