@@ -74,7 +74,17 @@ public class Config {
          * Only relevant for the client. The Y position of the desktop client
          * window. //TODO This should be refactored.
          */
-        windowPositionY
+        windowPositionY,
+        /**
+         * Only relevant for the client. The width desktop client window. 
+         * //TODO This should be refactored.
+         */
+        windowWidth,
+        /**
+         * Only relevant for the client. The height of the desktop client
+         * window. //TODO This should be refactored.
+         */
+        windowHeight
     }
     private final static String DEFAULT_CONFIG_CLASSPATH = "/org/inchat/common/defaults.conf";
     File configFile;
