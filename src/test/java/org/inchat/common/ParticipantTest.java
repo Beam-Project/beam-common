@@ -19,8 +19,8 @@
 package org.inchat.common;
 
 import java.security.KeyPair;
-import javax.xml.bind.DatatypeConverter;
 import org.inchat.common.crypto.EccKeyPairGenerator;
+import org.inchat.common.util.Base58;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -60,10 +60,10 @@ public class ParticipantTest {
     }
 
     @Test
-    public void testGetPublicKeyAsHex() {
+    public void testGetPublicKeyAsBase58() {
         participant.keyPair = keyPair;
-        String expected = DatatypeConverter.printHexBinary(keyPair.getPublic().getEncoded()).toLowerCase();
-        assertEquals(expected, participant.getPublicKeyAsHex());
+        String expected = Base58.encode(keyPair.getPublic().getEncoded());
+        assertEquals(expected, participant.getPublicKeyAsBase58());
     }
 
     @Test

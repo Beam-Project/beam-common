@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import javax.xml.bind.DatatypeConverter;
+import org.inchat.common.util.Base58;
 import org.inchat.common.util.Exceptions;
 
 /**
@@ -56,8 +56,8 @@ public class Participant implements Serializable {
         return getPublicKey().getEncoded();
     }
 
-    public String getPublicKeyAsHex() {
-        return DatatypeConverter.printHexBinary(getPublicKeyAsBytes()).toLowerCase();
+    public String getPublicKeyAsBase58() {
+        return Base58.encode(getPublicKeyAsBytes());
     }
 
     public PrivateKey getPrivateKey() {
