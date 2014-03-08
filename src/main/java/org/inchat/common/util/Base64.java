@@ -24,11 +24,7 @@ import javax.xml.bind.DatatypeConverter;
  * Encodes byte arrays to strings and decodes strings to byte arrays using
  * Base64.
  */
-public class Base64 {
-
-    private Base64() {
-        // Only static access.
-    }
+public abstract class Base64 {
 
     /**
      * Encodes the given argument to a Base64 string.
@@ -43,7 +39,7 @@ public class Base64 {
     }
 
     /**
-     * Decodes the given argument to a byte array.
+     * Decodes the given Base64 encoded argument to a byte array.
      *
      * @param encoded This may not be null.
      * @return The decoded byte array.
