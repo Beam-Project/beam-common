@@ -18,6 +18,8 @@
  */
 package org.inchat.common;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.inchat.common.util.Exceptions;
 
 /**
@@ -28,7 +30,7 @@ public class Message {
 
     String version;
     Participant participant;
-    byte[] content;
+    Map<String, byte[]> content = new HashMap<>();
 
     /**
      * Sets the version.
@@ -64,18 +66,20 @@ public class Message {
     }
 
     /**
-     * Sets the content as reference. The array is NOT copied.
+     * Appends the content as reference to the internally used {@link Map}. The
+     * array is NOT copied.
      *
-     * @param content
-     * @throws IllegalArgumentException If the argument is null.
+     * @param key The key of the field.
+     * @param content The content bytes.
+     * @throws IllegalArgumentException If at least one argument is null.
      */
-    public void setContent(byte[] content) {
-        Exceptions.verifyArgumentNotNull(content);
+    public void appendContent(MessageField key, byte[] content) {
+        Exceptions.verifyArgumentsNotNull(key, content);
 
-        this.content = content;
+        this.content.put(key.toString(), content);
     }
 
-    public byte[] getContent() {
+    public Map<String, byte[]> getContent() {
         return content;
     }
 }

@@ -18,6 +18,8 @@
  */
 package org.inchat.common;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.inchat.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -28,21 +30,28 @@ public class MessageTest {
     private Message message;
     private String version;
     private Participant participant;
-    private byte[] content;
+    private Map<String, byte[]> content;
 
     @Before
     public void setUp() {
         message = new Message();
         version = "1.2a";
         participant = new Participant(EccKeyPairGenerator.generate());
-        content = new byte[0];
+        content = new HashMap<>();
+    }
+
+    @Test
+    public void testConstructorOnCreatingMap() {
+        message = new Message();
+        assertNotNull(message.content);
+        assertTrue(message.content.isEmpty());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testSetVersionOnNull() {
         message.setVersion(null);
     }
-    
+
     @Test
     public void testSetVersion() {
         message.setVersion(version);
@@ -73,14 +82,27 @@ public class MessageTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSetContentOnNull() {
-        message.setContent(null);
+    public void testAppendContentOnNulls() {
+        message.appendContent(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAppendContentOnNullKey() {
+        message.appendContent(null, new byte[]{1, 2, 3});
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAppendContentOnNullContent() {
+        message.appendContent(MessageField.CNT, null);
     }
 
     @Test
-    public void testSetContent() {
-        message.setContent(content);
-        assertSame(content, message.content);
+    public void testAppendContent() {
+        byte[] value = "hello".getBytes();
+        message.appendContent(MessageField.CNT, value);
+
+        assertTrue(message.content.containsKey(MessageField.CNT.toString()));
+        assertArrayEquals(value, message.content.get(MessageField.CNT.toString()));
     }
 
     @Test
