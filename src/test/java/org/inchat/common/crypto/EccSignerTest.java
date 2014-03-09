@@ -117,6 +117,16 @@ public class EccSignerTest {
         assertFalse(isVerified);
     }
 
+    @Test
+    public void testSignAndVerifyOnWrongPublicKey() {
+        signature = signer.sign(data, keyPair.getPrivate());
+
+        KeyPair differentKeyPair = EccKeyPairGenerator.generate();
+
+        boolean isVerified = signer.verify(data, signature, differentKeyPair.getPublic());
+        assertFalse(isVerified);
+    }
+
     @Ignore // Only needed to measure performance.
     @Test
     public void testSignAndVerifyBenchmark() {
