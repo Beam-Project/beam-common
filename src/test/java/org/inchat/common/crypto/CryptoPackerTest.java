@@ -19,6 +19,7 @@
 package org.inchat.common.crypto;
 
 import org.inchat.common.Message;
+import org.inchat.common.MessageField;
 import org.inchat.common.Participant;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -41,7 +42,7 @@ public class CryptoPackerTest {
         plaintext = new Message();
         plaintext.setVersion("1.0");
         plaintext.setParticipant(localParticipant);
-        plaintext.setContent("hello world".getBytes());
+        plaintext.appendContent(MessageField.CNT_MSG, "hello world".getBytes());
 
         localPacker = new CryptoPacker();
         remotePacker = new CryptoPacker();
@@ -89,7 +90,7 @@ public class CryptoPackerTest {
 
         Message decryptedCiphertext = remotePacker.decryptAndUnpack(ciphertext, reomteParticipant);
         assertEquals(plaintext.getVersion(), decryptedCiphertext.getVersion());
-        assertArrayEquals(plaintext.getContent(), decryptedCiphertext.getContent());
+        assertArrayEquals(plaintext.getContent().get(MessageField.CNT_MSG.toString()), decryptedCiphertext.getContent().get(MessageField.CNT_MSG.toString()));
     }
 
     @Test(expected = IllegalArgumentException.class)

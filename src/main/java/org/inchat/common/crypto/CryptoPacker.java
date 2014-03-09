@@ -96,10 +96,7 @@ public class CryptoPacker {
     }
 
     private void packContentField() {
-        Map<String, byte[]> map = new HashMap<>();
-        map.put(MessageField.CNT_MSG.toString(), plaintext.getContent());
-
-        packedContent = serializeMap(map);
+        packedContent = serializeMap(plaintext.getContent());
     }
 
     private void encryptContentField() {
@@ -171,7 +168,12 @@ public class CryptoPacker {
 
     private void unpackContent() {
         Map<String, byte[]> map = buildMapFromBytes(packedContent);
-        plaintext.setContent(readByteArrayFromMap(map, MessageField.CNT_MSG));
+
+        for (MessageField field : MessageField.values()) {
+            if (map.containsKey(field.toString())) {
+                plaintext.appendContent(field, readByteArrayFromMap(map, field));
+            }
+        }
     }
 
     private Map<String, byte[]> buildMapFromBytes(byte[] bytes) {
