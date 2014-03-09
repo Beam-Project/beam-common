@@ -16,36 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.inchat.common.transfer;
+package org.inchat.common.network;
 
-import org.inchat.common.Message;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Before;
+/**
+ * This exception is thrown when an error occurs during networking operations.
+ */
+public class NetworkException extends RuntimeException {
 
-public class TransferGraphTest {
+    private static final long serialVersionUID = 1L;
 
-    private TransferGraph graph;
-    private Message plaintext;
-    private byte[] ciphertext;
-
-    @Before
-    public void setUp() {
-        plaintext = new Message();
-        ciphertext = new byte[0];
-
-        graph = new TransferGraph(plaintext);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnNull() {
-        graph = new TransferGraph(null);
-    }
-
-    @Test
-    public void testConstructorOnAssignment() {
-        graph = new TransferGraph(plaintext);
-        assertSame(plaintext, graph.root.plaintext);
+    public NetworkException(String message) {
+        super(message);
     }
 
 }

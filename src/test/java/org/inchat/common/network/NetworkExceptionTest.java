@@ -16,19 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.inchat.common.transfer;
+package org.inchat.common.network;
 
-import org.inchat.common.Message;
-import org.inchat.common.util.Exceptions;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TransferGraph {
+public class NetworkExceptionTest {
 
-    Vertex root;
+    @Test
+    public void testContructorAssignment() {
+        String message = "mymessage";
 
-    public TransferGraph(Message root) {
-        Exceptions.verifyArgumentNotNull(root);
-        
-        this.root = new Vertex(root);
+        try {
+            throw new NetworkException(message);
+        } catch (NetworkException ex) {
+            assertEquals(message, ex.getMessage());
+        }
     }
 
 }
