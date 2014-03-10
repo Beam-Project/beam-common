@@ -28,6 +28,7 @@ import org.inchat.common.util.Exceptions;
  */
 public class Message {
 
+    public final static String DEFAUTL_VERSION = "1.0";
     String version;
     Participant participant;
     Map<String, byte[]> content = new HashMap<>();
