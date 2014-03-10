@@ -25,17 +25,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.Key;
-import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -55,15 +50,14 @@ public class KeyPairStore {
     public final static String PUBILC_KEY_FILE_EXTENSION = ".public";
     public final static String PRIVATE_KEY_FILE_EXTENSION = ".private";
     public final static String SALT_FILE_EXTENSION = ".salt";
-    
-    public final static String PBKDF_ALGORITHM_NAME = "PBKDF2WithHmacSHA256";
+
+    public final static String PBKDF_ALGORITHM_NAME = "PBKDF2WithHmacSHA1";
     public final static int NUMBER_OF_ITERATIONS = 20000;
     public final static String SALT_RANDOM_ALGORITHM_NAME = "SHA1PRNG";
     public final static int SALT_LENGTH_IN_BYTES = 8;
     public final static String SYMMETRIC_ALGORITHM_NAME = "AES";
     public final static int KEY_LENGTH_IN_BITS = 256;
-    public final static String KEY_ALGORITHM_NAME = "EC";
-    
+
     String password;
     String filename;
     KeyPair keyPair;
@@ -126,11 +120,11 @@ public class KeyPairStore {
 
     private void strengthenPasswordToAesKey() {
         try {
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBKDF_ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
             KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, NUMBER_OF_ITERATIONS, KEY_LENGTH_IN_BITS);
             SecretKey secretKey = keyFactory.generateSecret(keySpec);
             aesKey = new SecretKeySpec(secretKey.getEncoded(), SYMMETRIC_ALGORITHM_NAME);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchProviderException ex) {
             throw new IllegalStateException("Could not strengthen the store password with PBKDF2: " + ex.getMessage());
         }
     }
@@ -185,15 +179,7 @@ public class KeyPairStore {
         byte[] decryptedPrivateKey = cipher.decrypt(encryptedPrivateKey);
         byte[] decryptedPublicKey = cipher.decrypt(encryptedPublicKey);
 
-        try {
-            KeyFactory fact = KeyFactory.getInstance(KEY_ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
-            PrivateKey privateKey = fact.generatePrivate(new PKCS8EncodedKeySpec(decryptedPrivateKey));
-            PublicKey publicKey = fact.generatePublic(new X509EncodedKeySpec(decryptedPublicKey));
-
-            keyPair = new KeyPair(publicKey, privateKey);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchProviderException ex) {
-            throw new IllegalStateException("Could not create KeyPair from the decrypted key material: " + ex.getMessage());
-        }
+        keyPair = EccKeyPairGenerator.restoreFromPublicAndPrivateKeyBytes(decryptedPublicKey, decryptedPrivateKey);
     }
 
     private byte[] readFile(String filename) {
