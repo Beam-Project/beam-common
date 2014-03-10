@@ -19,13 +19,20 @@
 package org.inchat.common.crypto;
 
 import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.inchat.common.util.Exceptions;
 
 /**
  * This Generator generates {@link KeyPair}s for ECIES encryption and
@@ -52,6 +59,54 @@ public class EccKeyPairGenerator {
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
             throw new IllegalStateException("Could not generate a KeyPair: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Restores a {@link KeyPair} with the given {@link PublicKey} bytes. The
+     * {@link PrivateKey} is not set.
+     *
+     * @param publicKeyBytes The public key bytes, X509 encoded.
+     * @return The key pair.
+     * @throws IllegalArgumentException If the argument is null.
+     * @throws IllegalStateException If the {@link PublicKey} could not be
+     * generated with the given bytes.
+     */
+    public static KeyPair restoreFromPublicKeyBytes(byte[] publicKeyBytes) {
+        Exceptions.verifyArgumentNotNull(publicKeyBytes);
+
+        try {
+            KeyFactory fact = KeyFactory.getInstance(ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
+            PublicKey publicKey = fact.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
+
+            return new KeyPair(publicKey, null);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchProviderException ex) {
+            throw new IllegalStateException("Could not create KeyPair from the decrypted key material: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Restores a {@link KeyPair} with the given {@link PublicKey} and
+     * {@link PrivateKey} bytes.
+     *
+     * @param publicKeyBytes The public key bytes, X509 encoded.
+     * @param privateKeyBytes The private key bytes, PKCS8 encoded.
+     * @return The key pair.
+     * @throws IllegalArgumentException If at least one argument is null.
+     * @throws IllegalStateException If one of the keys could not be generated
+     * with the given bytes.
+     */
+    public static KeyPair restoreFromPublicAndPrivateKeyBytes(byte[] publicKeyBytes, byte[] privateKeyBytes) {
+        Exceptions.verifyArgumentsNotNull(publicKeyBytes, privateKeyBytes);
+
+        try {
+            KeyFactory fact = KeyFactory.getInstance(ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
+            PublicKey publicKey = fact.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
+            PrivateKey privateKey = fact.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
+
+            return new KeyPair(publicKey, privateKey);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchProviderException ex) {
+            throw new IllegalStateException("Could not create KeyPair from the decrypted key material: " + ex.getMessage());
         }
     }
 
