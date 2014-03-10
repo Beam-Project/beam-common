@@ -18,6 +18,9 @@
  */
 package org.inchat.common.util;
 
+/**
+ * Provides several statically accessible methods to work with arrays.
+ */
 public class Arrays {
 
     /**
