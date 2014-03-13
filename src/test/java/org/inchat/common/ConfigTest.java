@@ -30,7 +30,7 @@ public class ConfigTest {
 
     private enum Keys implements ConfigKey {
 
-        testKey;
+        testKey, otherKey;
     }
 
     private final String DEFAULT_VALUE = "test value";
@@ -88,6 +88,18 @@ public class ConfigTest {
 
         config.delete();
         config.configDirectory.delete();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsKeyExistingOnNull() {
+        config.isKeyExisting(null);
+    }
+
+    @Test
+    public void testIsKeyExisting() {
+        assertFalse(config.isKeyExisting(Keys.otherKey));
+        config.setProperty(Keys.otherKey, DEFAULT_VALUE);
+        assertTrue(config.isKeyExisting(Keys.otherKey));
     }
 
     @Test
