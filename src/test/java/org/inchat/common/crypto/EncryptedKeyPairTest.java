@@ -18,6 +18,7 @@
  */
 package org.inchat.common.crypto;
 
+import org.inchat.common.util.Base64;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -55,6 +56,14 @@ public class EncryptedKeyPairTest {
         assertEquals(PUBLIC_KEY, pair.getEncryptedPublicKey());
         assertEquals(PRIVATE_KEY, pair.getEncryptedPrivateKey());
         assertEquals(SALT, pair.getSalt());
+
+        byte[] publicKeyAsBytes = Base64.decode(PUBLIC_KEY);
+        byte[] privateKeyAsBytes = Base64.decode(PRIVATE_KEY);
+        byte[] saltAsBytes = Base64.decode(SALT);
+
+        assertArrayEquals(publicKeyAsBytes, pair.getEncryptedPublicKeyAsBytes());
+        assertArrayEquals(privateKeyAsBytes, pair.getEncryptedPrivateKeyAsBytes());
+        assertArrayEquals(saltAsBytes, pair.getSaltAsBytes());
     }
 
 }

@@ -72,4 +72,28 @@ public class EncryptedKeyPair {
     public String getSalt() {
         return salt;
     }
+
+    /**
+     * @return The encrypted public key as byte array (the data is not
+     * {@link Base64} encoded anymore).
+     */
+    public byte[] getEncryptedPublicKeyAsBytes() {
+        return Base64.decode(encryptedPublicKey);
+    }
+
+    /**
+     * @return The encrypted private key as byte array (the data is not
+     * {@link Base64} encoded anymore).
+     */
+    public byte[] getEncryptedPrivateKeyAsBytes() {
+        return Base64.decode(encryptedPrivateKey);
+    }
+
+    /**
+     * @return The salt which was used to encrypt the keys, as byte array (the
+     * data is not {@link Base64} encoded anymore).
+     */
+    public byte[] getSaltAsBytes() {
+        return Base64.decode(salt);
+    }
 }
