@@ -20,15 +20,13 @@ package org.inchat.common.crypto;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Before;
 
 public class EncryptedKeyPairTest {
-    
+
     private final String PUBLIC_KEY = "publicKey";
     private final String PRIVATE_KEY = "privateKey";
     private final String SALT = "salt";
     private EncryptedKeyPair pair;
-
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNulls() {
@@ -49,13 +47,11 @@ public class EncryptedKeyPairTest {
     public void testConstructorOnNullSalt() {
         pair = new EncryptedKeyPair(PUBLIC_KEY, PRIVATE_KEY, null);
     }
-    
-    
 
     @Test
     public void testGetters() {
         pair = new EncryptedKeyPair(PUBLIC_KEY, PRIVATE_KEY, SALT);
-       
+
         assertEquals(PUBLIC_KEY, pair.getEncryptedPublicKey());
         assertEquals(PRIVATE_KEY, pair.getEncryptedPrivateKey());
         assertEquals(SALT, pair.getSalt());
