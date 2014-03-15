@@ -18,16 +18,10 @@
  */
 package org.inchat.common;
 
-import java.awt.geom.IllegalPathStateException;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.util.Properties;
 import org.inchat.common.util.Exceptions;
 
@@ -39,9 +33,7 @@ import org.inchat.common.util.Exceptions;
  * will not be synchronized between different {@link Config} instances.
  */
 public class Config {
-    
-    static String defaultConfigClasspath = "/org/inchat/common/defaults.conf";
-    String configFilePath;
+
     File configFile;
     File configDirectory;
     Properties config;
@@ -55,64 +47,24 @@ public class Config {
      */
     public Config(String configFilePath) {
         Exceptions.verifyArgumentNotEmpty(configFilePath);
-        
-        this.configFilePath = configFilePath;
-        loadOrCreateConfigFile();
-    }
-    
-    private void loadOrCreateConfigFile() {
+
         configFile = new File(configFilePath).getAbsoluteFile();
-        
-        if (!configFile.exists()) {
-            createDefaultConfig();
-        }
-        
-        loadConfig();
+        loadConfigOrStoreInitially();
     }
-    
-    private void loadConfig() {
+
+    private void loadConfigOrStoreInitially() {
         config = new Properties();
-        
-        try (FileInputStream fileStream = new FileInputStream(configFile)) {
-            config.load(fileStream);
-            configDirectory = configFile.getParentFile();
-        } catch (IOException ex) {
-            throw new IllegalArgumentException("The file cannot be found at " + configFile.getAbsolutePath() + ": " + ex.getMessage());
+
+        if (configFile.exists()) {
+            try (FileInputStream fileStream = new FileInputStream(configFile)) {
+                config.load(fileStream);
+                configDirectory = configFile.getParentFile();
+            } catch (IOException ex) {
+                throw new IllegalArgumentException("The file cannot be found at " + configFile.getAbsolutePath() + ": " + ex.getMessage());
+            }
+        } else {
+            storeConfigFile();
         }
-    }
-    
-    private void createDefaultConfig() {
-        if (configFile.getParentFile() != null && !configFile.getParentFile().exists()) {
-            configFile.getParentFile().mkdirs();
-        }
-        
-        try {
-            configFile.createNewFile();
-            writeDefaultsToFile(configFile);
-        } catch (IOException ex) {
-            throw new IllegalPathStateException("The config could not be written: " + ex.getMessage());
-        }
-    }
-    
-    private void writeDefaultsToFile(File target) throws IOException {
-        try (FileWriter writer = new FileWriter(target)) {
-            writer.write(getDefaultConfig());
-        }
-    }
-    
-    private String getDefaultConfig() throws IOException {
-        InputStream stream = Config.class.getResourceAsStream(defaultConfigClasspath);
-        StringWriter writer = new StringWriter();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
-        
-        char[] buffer = new char[1024];
-        int length;
-        
-        while ((length = reader.read(buffer)) != -1) {
-            writer.write(buffer, 0, length);
-        }
-        
-        return writer.toString();
     }
 
     /**
@@ -124,7 +76,7 @@ public class Config {
      */
     public boolean isKeyExisting(ConfigKey key) {
         Exceptions.verifyArgumentNotNull(key);
-        
+
         return config.containsKey(key.toString());
     }
 
@@ -138,11 +90,11 @@ public class Config {
      */
     public String getProperty(ConfigKey key) {
         Exceptions.verifyArgumentNotNull(key);
-        
+
         if (!config.containsKey(key.toString())) {
             throw new IllegalArgumentException("The given key '" + key.toString() + "' could not be found.");
         }
-        
+
         return config.getProperty(key.toString());
     }
 
@@ -156,22 +108,32 @@ public class Config {
      */
     public void setProperty(ConfigKey key, String value) {
         Exceptions.verifyArgumentsNotNull(key, value);
-        
+
         config.setProperty(key.toString(), value);
         storeConfigFile();
     }
-    
+
     private void storeConfigFile() {
-        try (FileOutputStream output = new FileOutputStream(configFile);) {
+        createPartentFolder();
+
+        try (FileOutputStream output = new FileOutputStream(configFile)) {
             config.store(output, null);
         } catch (IOException ex) {
             throw new IllegalStateException("The file could not be stored correctly.");
         }
     }
-    
+
+    private void createPartentFolder() {
+        configDirectory = configFile.getParentFile();
+        
+        if (configDirectory != null && !configDirectory.exists()) {
+            configDirectory.mkdirs();
+        }
+    }
+
     void delete() {
         configFile.delete();
         config = new Properties();
     }
-    
+
 }

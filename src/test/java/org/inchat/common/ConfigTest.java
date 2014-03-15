@@ -34,15 +34,13 @@ public class ConfigTest {
     }
 
     private final String DEFAULT_VALUE = "test value";
-    private final String DEFAULT_TEST_CLASSPATH = "/org/inchat/common/testDefaults.conf";
-    private final String CONFIG_PATH = "test-default-config.conf";
-    private final String CONFIG_IN_NEW_DIRECTORY = "NEW_DIRECTORY/test-write-defaults.conf";
+    private final String CONFIG_FILE_NAME = "test-default-config.conf";
+    private final String CONFIG_DIRECTORY = "config-test-directory/test-write-defaults.conf";
     private Config config;
 
     @Before
     public void setUp() {
-        Config.defaultConfigClasspath = DEFAULT_TEST_CLASSPATH;
-        config = new Config(CONFIG_PATH);
+        config = new Config(CONFIG_FILE_NAME);
     }
 
     @After
@@ -62,8 +60,8 @@ public class ConfigTest {
 
     @Test
     public void testConstructorOnAssertion() {
-        config = new Config(CONFIG_PATH);
-        assertEquals(CONFIG_PATH, config.configFilePath);
+        config = new Config(CONFIG_FILE_NAME);
+        assertEquals(CONFIG_FILE_NAME, config.configFile.getName());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -79,11 +77,11 @@ public class ConfigTest {
 
     @Test
     public void testConstructorOnCreatingDirectory() throws IOException {
-        config = new Config(CONFIG_IN_NEW_DIRECTORY);
+        config = new Config(CONFIG_DIRECTORY);
         assertTrue(config.configFile.exists());
         config.setProperty(Keys.testKey, "changed value");
 
-        Config reader = new Config(CONFIG_IN_NEW_DIRECTORY);
+        Config reader = new Config(CONFIG_DIRECTORY);
         assertEquals("changed value", reader.getProperty(Keys.testKey));
 
         config.delete();
@@ -104,7 +102,10 @@ public class ConfigTest {
 
     @Test
     public void testGetProperty() {
-        assertEquals(DEFAULT_VALUE, config.getProperty(Keys.testKey));
+        config.setProperty(Keys.testKey, DEFAULT_VALUE);
+        
+        Config reader = new Config(CONFIG_FILE_NAME);
+        assertEquals(DEFAULT_VALUE, reader.getProperty(Keys.testKey));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -126,7 +127,7 @@ public class ConfigTest {
     public void testSetProperty() {
         config.setProperty(Keys.testKey, "anonymous");
 
-        Config reader = new Config(CONFIG_PATH);
+        Config reader = new Config(CONFIG_FILE_NAME);
         assertEquals("anonymous", reader.getProperty(Keys.testKey));
     }
 
