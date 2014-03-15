@@ -84,16 +84,12 @@ public class Config {
      * Searches for the {@code key} and returns its value, if found.
      *
      * @param key The key of the key/value pair in the config file.
-     * @return The value of the key/value pair in the config file.
-     * @throws IllegalArgumentException If the key cannot be found or the
-     * argument was null or empty.
+     * @return The value of the key/value pair in the config file or null, if
+     * the key cannot be found.
+     * @throws IllegalArgumentException If the argument is null.
      */
     public String getProperty(ConfigKey key) {
         Exceptions.verifyArgumentNotNull(key);
-
-        if (!config.containsKey(key.toString())) {
-            throw new IllegalArgumentException("The given key '" + key.toString() + "' could not be found.");
-        }
 
         return config.getProperty(key.toString());
     }
@@ -125,7 +121,7 @@ public class Config {
 
     private void createPartentFolder() {
         configDirectory = configFile.getParentFile();
-        
+
         if (configDirectory != null && !configDirectory.exists()) {
             configDirectory.mkdirs();
         }

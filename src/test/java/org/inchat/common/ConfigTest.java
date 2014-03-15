@@ -69,10 +69,10 @@ public class ConfigTest {
         config.getProperty(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testGetPropertyOnMissingConfigEntry() {
         config.config = new Properties();
-        config.getProperty(Keys.testKey);
+        assertNull(config.getProperty(Keys.testKey));
     }
 
     @Test
