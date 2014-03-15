@@ -45,9 +45,9 @@ import org.inchat.common.util.Exceptions;
 public class KeyPairCryptor {
 
     public final static String PBKDF_ALGORITHM_NAME = "PBKDF2WithHmacSHA1";
-    public final static int NUMBER_OF_ITERATIONS = 20000;
+    public final static int NUMBER_OF_ITERATIONS = 50000;
     public final static String SALT_RANDOM_ALGORITHM_NAME = "SHA1PRNG";
-    public final static int SALT_LENGTH_IN_BYTES = 8;
+    public final static int SALT_LENGTH_IN_BYTES = 16;
     public final static String SYMMETRIC_ALGORITHM_NAME = "AES";
     public final static int KEY_LENGTH_IN_BITS = 256;
 

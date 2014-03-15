@@ -27,7 +27,6 @@ import org.junit.Before;
 public class KeyPairCryptorTest {
 
     private final String PASSWORD = "12345678";
-    private final String FILENAME = "keystore";
     private KeyPair keyPair;
     private EncryptedKeyPair encryptedKeyPair;
 
@@ -60,7 +59,7 @@ public class KeyPairCryptorTest {
         assertNotNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));
         assertEquals(172, encryptedKeyPair.getEncryptedPublicKey().length());
         assertEquals(280, encryptedKeyPair.getEncryptedPrivateKey().length());
-        assertEquals(12, encryptedKeyPair.getSalt().length());
+        assertEquals(24, encryptedKeyPair.getSalt().length());
 
         Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
 
