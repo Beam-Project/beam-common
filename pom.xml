@@ -2,13 +2,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.inchat</groupId>
-    <artifactId>inchat-common</artifactId>
+    <groupId>org.beamproject</groupId>
+    <artifactId>beam-common</artifactId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
 
-    <name>inchat-common</name>
-    <url>https://www.inchat.org/</url>
+    <name>beam-common</name>
+    <url>https://www.beamproject.org/</url>
     <build>
         <plugins>
             <plugin>

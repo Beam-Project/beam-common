@@ -1,4 +1,5 @@
-inchat-common
-=============
+beam-common
+===========
 
-The inchat common library. This is the reference implementation for the inchat protocol.
+The beam common library. This is the reference implementation for the beam 
+format and protocol.
