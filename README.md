@@ -1,4 +1,7 @@
-inchat-common
+beam-common
 =============
 
-The inchat common library. This is the reference implementation for the inchat protocol.
+The Beam common library. This is the reference implementation for the Beam protocol and format.
+Visit https://www.beamproject.org for further information.
+
+This project was initially known as inchat (https://www.inchat.org).
