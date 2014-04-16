@@ -32,14 +32,13 @@ public class EccCipherTest {
 
     @Before
     public void setUp() {
-        keyPair = EccKeyPairGenerator.generate();
         cipher = new EccCipher();
+        keyPair = EccKeyPairGenerator.generate();
     }
 
     @Test
     public void testConstructorOnCreatingCipher() {
         assertNotNull(cipher.engine);
-        
         assertNotNull(cipher.parameterSpec);
         assertEquals(EccCipher.MAC_KEY_SIZE_IN_BITS,cipher.parameterSpec.getMacKeySize());
         assertEquals(EccCipher.AES_KEY_SIZE_IN_BITS,cipher.parameterSpec.getCipherKeySize());
