@@ -37,7 +37,7 @@ import org.beamproject.common.util.Exceptions;
  */
 public class HttpConnector {
 
-    public final static String USER_AGENT = "beam";
+    public final static String USER_AGENT = "Beam";
     public final static String ENCODING = "UTF-8";
     private final String VALUE_PARAMETER_NAME = "value";
     private HttpURLConnection connection;
