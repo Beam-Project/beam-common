@@ -53,7 +53,6 @@ public class KeyPairCryptorTest {
     @Test
     public void testEncryptAndDecrypt() {
         Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
-
         encryptedKeyPair = KeyPairCryptor.encrypt(PASSWORD, keyPair);
 
         assertNotNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));
@@ -62,7 +61,6 @@ public class KeyPairCryptorTest {
         assertEquals(24, encryptedKeyPair.getSalt().length());
 
         Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
-
         KeyPair decryptedKeyPair = KeyPairCryptor.decrypt(PASSWORD, encryptedKeyPair);
 
         assertNotNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));
@@ -100,13 +98,11 @@ public class KeyPairCryptorTest {
     @Test
     public void testOverwritePassword() {
         char[] passwordToOverwrite = PASSWORD.toCharArray();
-
         KeyPairCryptor.overwritePassword(passwordToOverwrite);
 
         for (int i = 0; i < passwordToOverwrite.length; i++) {
             assertEquals((char) 0, passwordToOverwrite[i]);
         }
-
     }
 
 }
