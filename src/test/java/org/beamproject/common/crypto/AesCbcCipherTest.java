@@ -33,13 +33,12 @@ public class AesCbcCipherTest {
         (byte) 40, (byte) 72, (byte) -50, (byte) 52, (byte) -92, (byte) 25};
     private AesCbcCipher cipher;
     private AesCbcCipher initializedCipher;
-    private byte[] plaintext;
+    private final byte[] plaintext = "this is the plaintext".getBytes();
     private byte[] key;
     private byte[] output;
 
     @Before
     public void setUp() {
-        plaintext = "this is the plaintext".getBytes();
         key = fillByteArray(32);
         initializedCipher = new AesCbcCipher(key);
     }
@@ -82,7 +81,6 @@ public class AesCbcCipherTest {
     @Test
     public void testConstructorOnAssignments() {
         cipher = new AesCbcCipher(key);
-
         assertNotNull(cipher.parameters);
     }
 
@@ -111,9 +109,6 @@ public class AesCbcCipherTest {
     @Test
     public void testEncrypt() {
         output = initializedCipher.encrypt(plaintext);
-        for (byte b : output) {
-            System.out.print(", (byte) " + b);
-        }
         assertArrayEquals(CIPHERTEXT, output);
     }
 
