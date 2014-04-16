@@ -34,7 +34,6 @@ public class ContactTest {
     public void setUp() {
         server = new Participant(EccKeyPairGenerator.generate());
         client = new Participant(EccKeyPairGenerator.generate());
-
         contact = new Contact(server, client, name);
     }
 
