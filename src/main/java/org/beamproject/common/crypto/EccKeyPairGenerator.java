@@ -38,7 +38,7 @@ import org.beamproject.common.util.Exceptions;
  * This Generator generates {@link KeyPair}s for ECIES encryption and
  * decryption.
  */
-public class EccKeyPairGenerator {
+public abstract class EccKeyPairGenerator {
 
     public final static String ALGORITHM_NAME = "EC";
     public final static String SEC_CURVE_NAME = "secp384r1";
