@@ -30,9 +30,10 @@ import org.junit.Before;
 
 public class UrlAssemblerTest {
 
+    private final String PROTOCOL_NAME = "beam:";
+    private final String NAME = "Mr. Beam";
     private Participant server;
     private Participant client;
-    private String name;
     private String url;
     private Contact contact;
 
@@ -40,7 +41,6 @@ public class UrlAssemblerTest {
     public void setUp() {
         server = new Participant(EccKeyPairGenerator.generate());
         client = new Participant(EccKeyPairGenerator.generate());
-        name = "myName";
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -50,12 +50,12 @@ public class UrlAssemblerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testToUrlByServerAndClientOnNullServer() {
-        url = UrlAssembler.toUrlByServerAndClient(null, client, name);
+        url = UrlAssembler.toUrlByServerAndClient(null, client, NAME);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testToUrlByServerAndClientOnNullClient() {
-        url = UrlAssembler.toUrlByServerAndClient(server, null, name);
+        url = UrlAssembler.toUrlByServerAndClient(server, null, NAME);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -72,14 +72,14 @@ public class UrlAssemblerTest {
     public void testToUrlByServerAndClient() {
         server = new Participant(EccKeyPairGenerator.generate());
         client = new Participant(EccKeyPairGenerator.generate());
-        url = UrlAssembler.toUrlByServerAndClient(server, client, name);
+        url = UrlAssembler.toUrlByServerAndClient(server, client, NAME);
 
         String serverPart = server.getPublicKeyAsBase58();
         String clientPart = client.getPublicKeyAsBase58();
-        String expectedUrl = "beam:"
+        String expectedUrl = PROTOCOL_NAME
                 + serverPart
                 + "." + clientPart
-                + "?name=" + Base58.encode(name.getBytes());
+                + "?name=" + Base58.encode(NAME.getBytes());
 
         assertEquals(expectedUrl, url);
     }
@@ -95,7 +95,7 @@ public class UrlAssemblerTest {
         url = UrlAssembler.toUrlByServer(server);
 
         String serverPart = server.getPublicKeyAsBase58();
-        String expectedUrl = "beam:" + serverPart;
+        String expectedUrl = PROTOCOL_NAME + serverPart;
 
         assertEquals(expectedUrl, url);
     }
@@ -117,35 +117,35 @@ public class UrlAssemblerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testToContactByServerAndClientUrlOnMissingProtocol() {
-        url = UrlAssembler.toUrlByServerAndClient(server, client, name);
+        url = UrlAssembler.toUrlByServerAndClient(server, client, NAME);
         url = url.replace("beam", "");
         contact = UrlAssembler.toContactByServerAndClientUrl(url);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testToContactByServerAndClientUrlOnWrongProtocol() {
-        url = UrlAssembler.toUrlByServerAndClient(server, client, name);
+        url = UrlAssembler.toUrlByServerAndClient(server, client, NAME);
         url = url.replace("beam", "baem");
         contact = UrlAssembler.toContactByServerAndClientUrl(url);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testToContactByServerAndClientUrlOnMissingSchemaSpeperator() {
-        url = UrlAssembler.toUrlByServerAndClient(server, client, name);
+        url = UrlAssembler.toUrlByServerAndClient(server, client, NAME);
         url = url.replaceFirst(":", "");
         contact = UrlAssembler.toContactByServerAndClientUrl(url);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testToContactByServerAndClientUrlOnMissingSpeperator() {
-        url = UrlAssembler.toUrlByServerAndClient(server, client, name);
+        url = UrlAssembler.toUrlByServerAndClient(server, client, NAME);
         url = url.replaceFirst(".", "");
         contact = UrlAssembler.toContactByServerAndClientUrl(url);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testToContactByServerAndClientUrlOnTooShortClient() {
-        url = UrlAssembler.toUrlByServerAndClient(server, client, name);
+        url = UrlAssembler.toUrlByServerAndClient(server, client, NAME);
         url = url.substring(0, url.length() - 30);
         contact = UrlAssembler.toContactByServerAndClientUrl(url);
     }
@@ -157,7 +157,7 @@ public class UrlAssemblerTest {
 
         Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
 
-        url = UrlAssembler.toUrlByServerAndClient(server, client, name);
+        url = UrlAssembler.toUrlByServerAndClient(server, client, NAME);
         contact = UrlAssembler.toContactByServerAndClientUrl(url);
 
         assertArrayEquals(server.getPublicKeyAsBytes(), contact.getServer().getPublicKeyAsBytes());
@@ -169,11 +169,11 @@ public class UrlAssemblerTest {
         server = new Participant(EccKeyPairGenerator.generate());
         client = new Participant(EccKeyPairGenerator.generate());
 
-        url = UrlAssembler.toUrlByServerAndClient(server, client, name);
+        url = UrlAssembler.toUrlByServerAndClient(server, client, NAME);
         contact = UrlAssembler.toContactByServerAndClientUrl(url);
 
         assertArrayEquals(server.getPublicKeyAsBytes(), contact.getServer().getPublicKeyAsBytes());
         assertArrayEquals(client.getPublicKeyAsBytes(), contact.getClient().getPublicKeyAsBytes());
-        assertEquals(name, contact.getName());
+        assertEquals(NAME, contact.getName());
     }
 }
