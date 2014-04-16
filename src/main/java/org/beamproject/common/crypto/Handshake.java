@@ -31,6 +31,8 @@ import org.beamproject.common.util.Exceptions;
  * generated which can be used for later communication.
  * <p>
  * {@link EccSigner} is used for signing.
+ * @see HandshakeChallenge
+ * @see HandshakeResponse
  */
 public abstract class Handshake {
 
@@ -130,7 +132,6 @@ public abstract class Handshake {
         Exceptions.verifyArgumentsNotNull(localParticipant);
 
         this.localParticipant = localParticipant;
-
         signer = new EccSigner();
     }
 

@@ -45,7 +45,7 @@ public class HandshakeChallenge extends Handshake {
 
     public Message produceInitChallenge(Participant remoteParticipant) {
         Exceptions.verifyArgumentNotNull(remoteParticipant);
-
+        
         this.remoteParticipant = remoteParticipant;
 
         generateLocalNonce();
@@ -56,10 +56,8 @@ public class HandshakeChallenge extends Handshake {
 
     private void createInitChallenge() {
         initChallenge = new Message();
-
         initChallenge.setVersion(Message.DEFAUTL_VERSION);
         initChallenge.setParticipant(remoteParticipant);
-
         initChallenge.appendContent(MessageField.CNT_CRPHASE, Phase.INIT_CHALLENGE.getBytes());
         initChallenge.appendContent(MessageField.CNT_CRPUBKEY, localParticipant.getPublicKeyAsBytes());
         initChallenge.appendContent(MessageField.CNT_CRNONCE, localNonce);
@@ -82,7 +80,6 @@ public class HandshakeChallenge extends Handshake {
     public Message produceResponseDone() {
         calculateLocalSignature();
         createResponseDone();
-
         calculateSessionKey();
 
         return responseDone;
@@ -90,10 +87,8 @@ public class HandshakeChallenge extends Handshake {
 
     private void createResponseDone() {
         responseDone = new Message();
-
         responseDone.setVersion(Message.DEFAUTL_VERSION);
         responseDone.setParticipant(remoteParticipant);
-
         responseDone.appendContent(MessageField.CNT_CRPHASE, Phase.RESPONSE_DONE.getBytes());
         responseDone.appendContent(MessageField.CNT_CRSIG, localSignature);
     }

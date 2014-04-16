@@ -48,7 +48,6 @@ public class HandshakeResponse extends Handshake {
         Exceptions.verifyArgumentNotNull(challenge);
 
         KeyPair remoteKeyPair = EccKeyPairGenerator.restoreFromPublicKeyBytes(challenge.getContent(MessageField.CNT_CRPUBKEY));
-
         remoteParticipant = new Participant(remoteKeyPair);
         remoteNonce = challenge.getContent(MessageField.CNT_CRNONCE);
     }
@@ -74,7 +73,6 @@ public class HandshakeResponse extends Handshake {
         Exceptions.verifyArgumentNotNull(done);
 
         remoteSignature = done.getContent(MessageField.CNT_CRSIG);
-
         verifyRemoteSignature();
         calculateSessionKey();
     }
