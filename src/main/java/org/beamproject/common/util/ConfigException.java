@@ -16,11 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beamproject.common;
+package org.beamproject.common.util;
 
 /**
- * This is a wrapper interface for ConfigKeys, used to access {@link Config}.
+ * This exception is thrown when an a {@link ConfigBase} file could not be stored.
  */
-public interface ConfigKey {
+public class ConfigException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
+    public ConfigException(String message) {
+        super(message);
+    }
 }
