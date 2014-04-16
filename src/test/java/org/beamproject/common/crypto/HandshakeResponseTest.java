@@ -72,13 +72,13 @@ public class HandshakeResponseTest extends HandshakeTest {
         assertEquals(Message.DEFAUTL_VERSION, responseChallenge.getVersion());
 
         assertArrayEquals(Handshake.Phase.RESPONSE_CHALLENGE.getBytes(),
-                responseChallenge.getContent().get(MessageField.CNT_CRPHASE.toString()));
+                responseChallenge.getContent(MessageField.CNT_CRPHASE));
 
         assertArrayEquals(remoteParticipant.getPublicKeyAsBytes(),
                 responseChallenge.getParticipant().getPublicKeyAsBytes());
 
         byte[] localDigest = digest(localParticipant, response.localNonce, remoteNonce);
-        assertTrue(signer.verify(localDigest, responseChallenge.getContent().get(MessageField.CNT_CRSIG.toString()), localParticipant.getPublicKey()));
+        assertTrue(signer.verify(localDigest, responseChallenge.getContent(MessageField.CNT_CRSIG), localParticipant.getPublicKey()));
     }
 
     @Test(expected = IllegalArgumentException.class)

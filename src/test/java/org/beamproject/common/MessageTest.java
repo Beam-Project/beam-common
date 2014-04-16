@@ -26,12 +26,12 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 
 public class MessageTest {
-
+    
     private Message message;
     private String version;
     private Participant participant;
     private Map<String, byte[]> content;
-
+    
     @Before
     public void setUp() {
         message = new Message();
@@ -39,75 +39,102 @@ public class MessageTest {
         participant = new Participant(EccKeyPairGenerator.generate());
         content = new HashMap<>();
     }
-
+    
     @Test
     public void testConstructorOnCreatingMap() {
         message = new Message();
         assertNotNull(message.content);
         assertTrue(message.content.isEmpty());
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void testSetVersionOnNull() {
         message.setVersion(null);
     }
-
+    
     @Test
     public void testSetVersion() {
         message.setVersion(version);
         assertEquals(version, message.version);
     }
-
+    
     @Test
     public void testGetVersion() {
         message.version = version;
         assertEquals(version, message.getVersion());
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void testSetParticipantOnNull() {
         message.setParticipant(null);
     }
-
+    
     @Test
     public void testSetParticipant() {
         message.setParticipant(participant);
         assertSame(participant, message.participant);
     }
-
+    
     @Test
     public void testGetParticipant() {
         message.participant = participant;
         assertSame(participant, message.getParticipant());
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void testAppendContentOnNulls() {
         message.appendContent(null, null);
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void testAppendContentOnNullKey() {
         message.appendContent(null, new byte[]{1, 2, 3});
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void testAppendContentOnNullContent() {
         message.appendContent(MessageField.CNT, null);
     }
-
+    
     @Test
     public void testAppendContent() {
         byte[] value = "hello".getBytes();
         message.appendContent(MessageField.CNT, value);
-
+        
         assertTrue(message.content.containsKey(MessageField.CNT.toString()));
         assertArrayEquals(value, message.content.get(MessageField.CNT.toString()));
     }
-
+    
     @Test
     public void testGetContent() {
         message.content = content;
         assertSame(content, message.getContent());
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetContentToBytesOnNull() {
+        message.getContent(null);
+    }
+    
+    @Test
+    public void testGetContentToBytes() {
+        message.appendContent(MessageField.VRS, version.getBytes());
+        assertArrayEquals(version.getBytes(), message.getContent(MessageField.VRS));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testContainsContentOnNull() {
+        message.containsContent(null);
+    }
+
+    @Test
+    public void testContainsContent() {
+        assertFalse(message.containsContent(MessageField.VRS));
+        
+        message.appendContent(MessageField.VRS, version.getBytes());
+        assertTrue(message.containsContent(MessageField.VRS));
+        
+        message.content.remove(MessageField.VRS.toString());
+        assertFalse(message.containsContent(MessageField.VRS));
     }
 }

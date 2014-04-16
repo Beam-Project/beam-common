@@ -80,13 +80,39 @@ public class Message {
         this.content.put(key.toString(), content);
     }
 
+    /**
+     * Returns the {@link Map} that contains the content.
+     *
+     * @return The original map.
+     */
     public Map<String, byte[]> getContent() {
         return content;
     }
 
+    /**
+     * Reads the key from the content, if it was added.
+     *
+     * @param key The name of the content field.
+     * @return The content.
+     * @throws MessageContentException If the key could not be found.
+     * @throws IllegalArgumentException If the argument is null.
+     */
     public byte[] getContent(MessageField key) {
         Exceptions.verifyArgumentNotNull(key);
 
-        return getContent().get(key.toString());
+        return content.get(key.toString());
+    }
+
+    /**
+     * Tells if a given key is found in the content block.
+     *
+     * @param key The name of the content field.
+     * @return True, if the field exists, otherwise false.
+     * @throws IllegalArgumentException If the argument is null.
+     */
+    public boolean containsContent(MessageField key) {
+        Exceptions.verifyArgumentNotNull(key);
+
+        return content.containsKey(key.toString());
     }
 }

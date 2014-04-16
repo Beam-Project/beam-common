@@ -90,7 +90,7 @@ public class CryptoPackerTest {
 
         Message decryptedCiphertext = remotePacker.decryptAndUnpack(ciphertext, reomteParticipant);
         assertEquals(plaintext.getVersion(), decryptedCiphertext.getVersion());
-        assertArrayEquals(plaintext.getContent().get(MessageField.CNT_MSG.toString()), decryptedCiphertext.getContent().get(MessageField.CNT_MSG.toString()));
+        assertArrayEquals(plaintext.getContent(MessageField.CNT_MSG), decryptedCiphertext.getContent(MessageField.CNT_MSG));
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -19,7 +19,8 @@
 package org.beamproject.common.crypto;
 
 import java.security.KeyPair;
-import java.util.Map;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import org.beamproject.common.Message;
 import org.beamproject.common.MessageField;
 import org.beamproject.common.Participant;
@@ -43,14 +44,13 @@ public class HandshakeResponse extends Handshake {
         super(localParticipant);
     }
 
-    public void consumeInitChallenge(Message initChallenge) {
-        Exceptions.verifyArgumentNotNull(initChallenge);
+    public void consumeInitChallenge(Message challenge) {
+        Exceptions.verifyArgumentNotNull(challenge);
 
-        Map<String, byte[]> initChallengeContent = initChallenge.getContent();
-        KeyPair remoteKeyPair = EccKeyPairGenerator.restoreFromPublicKeyBytes(initChallengeContent.get(MessageField.CNT_CRPUBKEY.toString()));
+        KeyPair remoteKeyPair = EccKeyPairGenerator.restoreFromPublicKeyBytes(challenge.getContent(MessageField.CNT_CRPUBKEY));
 
         remoteParticipant = new Participant(remoteKeyPair);
-        remoteNonce = initChallengeContent.get(MessageField.CNT_CRNONCE.toString());
+        remoteNonce = challenge.getContent(MessageField.CNT_CRNONCE);
     }
 
     public Message produceResponseChallenge() {
@@ -70,11 +70,10 @@ public class HandshakeResponse extends Handshake {
         responseChallenge.appendContent(MessageField.CNT_CRSIG, localSignature);
     }
 
-    public void consumeResponseDone(Message responseDone) {
-        Exceptions.verifyArgumentNotNull(responseDone);
+    public void consumeResponseDone(Message done) {
+        Exceptions.verifyArgumentNotNull(done);
 
-        Map<String, byte[]> responseDoneContent = responseDone.getContent();
-        remoteSignature = responseDoneContent.get(MessageField.CNT_CRSIG.toString());
+        remoteSignature = done.getContent(MessageField.CNT_CRSIG);
 
         verifyRemoteSignature();
         calculateSessionKey();

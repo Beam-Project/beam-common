@@ -18,7 +18,8 @@
  */
 package org.beamproject.common.crypto;
 
-import java.util.Map;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import org.beamproject.common.Message;
 import org.beamproject.common.MessageField;
 import org.beamproject.common.Participant;
@@ -64,18 +65,16 @@ public class HandshakeChallenge extends Handshake {
         initChallenge.appendContent(MessageField.CNT_CRNONCE, localNonce);
     }
 
-    public void consumeResponseChallenge(Message responseChallenge) {
-        Exceptions.verifyArgumentNotNull(responseChallenge);
+    public void consumeResponseChallenge(Message challenge) {
+        Exceptions.verifyArgumentNotNull(challenge);
 
-        Map<String, byte[]> content = responseChallenge.getContent();
-
-        if (!content.containsKey(MessageField.CNT_CRNONCE.toString())
-                || !content.containsKey(MessageField.CNT_CRSIG.toString())) {
+        if (!challenge.containsContent(MessageField.CNT_CRNONCE)
+                || !challenge.containsContent(MessageField.CNT_CRSIG)) {
             throw new IllegalStateException("At this state, the response has to contain CRNONCE and CRSIG of the ohter side.");
         }
 
-        remoteNonce = content.get(MessageField.CNT_CRNONCE.toString());
-        remoteSignature = content.get(MessageField.CNT_CRSIG.toString());
+        remoteNonce = challenge.getContent(MessageField.CNT_CRNONCE);
+        remoteSignature = challenge.getContent(MessageField.CNT_CRSIG);
 
         verifyRemoteSignature();
     }

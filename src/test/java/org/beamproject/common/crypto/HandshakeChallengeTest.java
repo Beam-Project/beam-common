@@ -55,17 +55,17 @@ public class HandshakeChallengeTest extends HandshakeTest {
         assertEquals(Message.DEFAUTL_VERSION, initChallenge.getVersion());
 
         assertArrayEquals(Handshake.Phase.INIT_CHALLENGE.getBytes(),
-                initChallenge.getContent().get(MessageField.CNT_CRPHASE.toString()));
+                initChallenge.getContent(MessageField.CNT_CRPHASE));
 
         assertArrayEquals(remoteParticipant.getPublicKeyAsBytes(),
                 initChallenge.getParticipant().getPublicKeyAsBytes());
 
         assertArrayEquals(localParticipant.getPublicKeyAsBytes(),
-                initChallenge.getContent().get(MessageField.CNT_CRPUBKEY.toString()));
+                initChallenge.getContent(MessageField.CNT_CRPUBKEY));
 
         assertNotNull(challenge.localNonce);
         assertArrayEquals(challenge.localNonce,
-                initChallenge.getContent().get(MessageField.CNT_CRNONCE.toString()));
+                initChallenge.getContent(MessageField.CNT_CRNONCE));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -100,14 +100,14 @@ public class HandshakeChallengeTest extends HandshakeTest {
         assertEquals(Message.DEFAUTL_VERSION, responseDone.getVersion());
 
         assertArrayEquals(Handshake.Phase.RESPONSE_DONE.getBytes(),
-                responseDone.getContent().get(MessageField.CNT_CRPHASE.toString()));
+                responseDone.getContent(MessageField.CNT_CRPHASE));
 
         assertArrayEquals(remoteParticipant.getPublicKeyAsBytes(),
                 responseDone.getParticipant().getPublicKeyAsBytes());
 
         byte[] localDigest = digest(localParticipant, challenge.localNonce, remoteNonce);
-        assertTrue(signer.verify(localDigest, responseDone.getContent().get(MessageField.CNT_CRSIG.toString()), localParticipant.getPublicKey()));
-        
+        assertTrue(signer.verify(localDigest, responseDone.getContent(MessageField.CNT_CRSIG), localParticipant.getPublicKey()));
+
         byte[] sessionKey = calculateSessionKey(challenge.localNonce, remoteNonce);
         assertArrayEquals(sessionKey, challenge.getSessionKey());
     }
