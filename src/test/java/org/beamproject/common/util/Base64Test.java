@@ -23,12 +23,12 @@ import static org.junit.Assert.*;
 
 public class Base64Test {
 
-    String encoded;
-    byte[] decoded;
+    private String encoded;
+    private byte[] decoded;
 
     @Test(expected = IllegalArgumentException.class)
     public void testEncodeOnNull() {
-        Base64.encode(null);
+        encoded = Base64.encode(null);
     }
 
     @Test
