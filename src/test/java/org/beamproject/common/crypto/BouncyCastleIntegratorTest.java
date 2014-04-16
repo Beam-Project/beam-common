@@ -26,11 +26,6 @@ import static org.junit.Assert.*;
 public class BouncyCastleIntegratorTest {
 
     @Test
-    public void testInstatiation() {
-        BouncyCastleIntegrator integrator = new BouncyCastleIntegrator();
-    }
-
-    @Test
     public void testProviderName() {
         assertEquals(BouncyCastleProvider.PROVIDER_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
     }

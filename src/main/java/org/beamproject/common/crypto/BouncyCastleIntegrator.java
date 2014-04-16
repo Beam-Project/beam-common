@@ -25,7 +25,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  * A helper class to manage the Bouncy Castle integration into the Java
  * Cryptographic Architecture.
  */
-public class BouncyCastleIntegrator {
+public abstract class BouncyCastleIntegrator {
 
     public final static String PROVIDER_NAME = BouncyCastleProvider.PROVIDER_NAME;
 
