@@ -60,7 +60,7 @@ public class HandshakeResponseTest extends HandshakeTest {
 
         response.consumeInitChallenge(initChallenge);
 
-        assertArrayEquals(remoteParticipant.getPublicKeyAsBytes(), response.remoteParticipant.getPublicKeyAsBytes());
+        assertEquals(remoteParticipant, response.remoteParticipant);
         assertArrayEquals(remoteNonce, response.remoteNonce);
     }
 
@@ -70,12 +70,8 @@ public class HandshakeResponseTest extends HandshakeTest {
         Message responseChallenge = response.produceResponseChallenge();
 
         assertEquals(Message.DEFAUTL_VERSION, responseChallenge.getVersion());
-
-        assertArrayEquals(Handshake.Phase.RESPONSE_CHALLENGE.getBytes(),
-                responseChallenge.getContent(MessageField.CNT_CRPHASE));
-
-        assertArrayEquals(remoteParticipant.getPublicKeyAsBytes(),
-                responseChallenge.getParticipant().getPublicKeyAsBytes());
+        assertEquals(Handshake.Phase.RESPONSE_CHALLENGE.toString(), new String(responseChallenge.getContent(MessageField.CNT_CRPHASE)));
+        assertEquals(remoteParticipant, responseChallenge.getParticipant());
 
         byte[] localDigest = digest(localParticipant, response.localNonce, remoteNonce);
         assertTrue(signer.verify(localDigest, responseChallenge.getContent(MessageField.CNT_CRSIG), localParticipant.getPublicKey()));
@@ -89,7 +85,7 @@ public class HandshakeResponseTest extends HandshakeTest {
     @Test
     public void testConsumeResponseDone() {
         testProduceResponseChallenge(); // Set the response into correct state.
-        remoteSignature = sign(remoteParticipant, remoteNonce, response.localNonce);
+        remoteSignature = sign(fullRemoteParticipant, remoteNonce, response.localNonce);
         byte[] sessionKey = calculateSessionKey(remoteNonce, response.localNonce);
 
         Message responseDone = new Message();

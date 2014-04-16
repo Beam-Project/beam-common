@@ -53,19 +53,10 @@ public class HandshakeChallengeTest extends HandshakeTest {
         Message initChallenge = challenge.produceInitChallenge(remoteParticipant);
 
         assertEquals(Message.DEFAUTL_VERSION, initChallenge.getVersion());
-
-        assertArrayEquals(Handshake.Phase.INIT_CHALLENGE.getBytes(),
-                initChallenge.getContent(MessageField.CNT_CRPHASE));
-
-        assertArrayEquals(remoteParticipant.getPublicKeyAsBytes(),
-                initChallenge.getParticipant().getPublicKeyAsBytes());
-
-        assertArrayEquals(localParticipant.getPublicKeyAsBytes(),
-                initChallenge.getContent(MessageField.CNT_CRPUBKEY));
-
-        assertNotNull(challenge.localNonce);
-        assertArrayEquals(challenge.localNonce,
-                initChallenge.getContent(MessageField.CNT_CRNONCE));
+        assertEquals(Handshake.Phase.INIT_CHALLENGE.toString(), new String(initChallenge.getContent(MessageField.CNT_CRPHASE)));
+        assertEquals(remoteParticipant, initChallenge.getParticipant());
+        assertArrayEquals(localParticipant.getPublicKeyAsBytes(), initChallenge.getContent(MessageField.CNT_CRPUBKEY));
+        assertArrayEquals(challenge.localNonce, initChallenge.getContent(MessageField.CNT_CRNONCE));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -77,7 +68,7 @@ public class HandshakeChallengeTest extends HandshakeTest {
     public void testConsumeResponseChallenge() {
         testProduceInitChallenge(); // To generate localNonce in challenge.
         remoteNonce = generateNonce();
-        remoteSignature = sign(remoteParticipant, remoteNonce, challenge.localNonce);
+        remoteSignature = sign(fullRemoteParticipant, remoteNonce, challenge.localNonce);
 
         Message response = new Message();
         response.setVersion(Message.DEFAUTL_VERSION);
@@ -88,7 +79,7 @@ public class HandshakeChallengeTest extends HandshakeTest {
         challenge.consumeResponseChallenge(response);
 
         assertArrayEquals(remoteNonce, challenge.remoteNonce);
-        assertArrayEquals(remoteParticipant.getPublicKeyAsBytes(), challenge.remoteParticipant.getPublicKeyAsBytes());
+        assertEquals(remoteParticipant, challenge.remoteParticipant);
         assertArrayEquals(remoteSignature, challenge.remoteSignature);
     }
 
@@ -98,12 +89,8 @@ public class HandshakeChallengeTest extends HandshakeTest {
         Message responseDone = challenge.produceResponseDone();
 
         assertEquals(Message.DEFAUTL_VERSION, responseDone.getVersion());
-
-        assertArrayEquals(Handshake.Phase.RESPONSE_DONE.getBytes(),
-                responseDone.getContent(MessageField.CNT_CRPHASE));
-
-        assertArrayEquals(remoteParticipant.getPublicKeyAsBytes(),
-                responseDone.getParticipant().getPublicKeyAsBytes());
+        assertEquals(Handshake.Phase.RESPONSE_DONE.toString(), new String(responseDone.getContent(MessageField.CNT_CRPHASE)));
+        assertEquals(remoteParticipant, responseDone.getParticipant());
 
         byte[] localDigest = digest(localParticipant, challenge.localNonce, remoteNonce);
         assertTrue(signer.verify(localDigest, responseDone.getContent(MessageField.CNT_CRSIG), localParticipant.getPublicKey()));

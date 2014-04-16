@@ -28,6 +28,7 @@ public class HandshakeTest {
 
     protected Participant localParticipant;
     protected Participant remoteParticipant;
+    protected Participant fullRemoteParticipant;
     protected EccSigner signer;
     protected byte[] remoteNonce;
     protected byte[] remoteSignature;
@@ -35,7 +36,8 @@ public class HandshakeTest {
     @Before
     public void setUp() {
         localParticipant = new Participant(EccKeyPairGenerator.generate());
-        remoteParticipant = new Participant(EccKeyPairGenerator.generate());
+        fullRemoteParticipant = new Participant(EccKeyPairGenerator.generate());
+        remoteParticipant = new Participant(EccKeyPairGenerator.fromPublicKey(fullRemoteParticipant.getPublicKeyAsBytes()));
         signer = new EccSigner();
     }
 
