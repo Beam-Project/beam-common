@@ -46,8 +46,7 @@ public class DigestTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testDigestWithSha256OnNull() {
-        bytePayload = null;
-        output = Digest.digestWithSha256(bytePayload);
+        output = Digest.digestWithSha256(null);
     }
 
     @Test
@@ -67,16 +66,16 @@ public class DigestTest {
 
     @Test
     public void testDigestWithSha256() throws NoSuchAlgorithmException, NoSuchProviderException {
+        MessageDigest digest = MessageDigest.getInstance(Digest.SHA256_DIGEST_NAME, REFERENCE_DIGEST_PROVIDER);
         String textAddition = "This Is A Very Long Text To Compute...";
         String payloadText = "";
         int rounds = 100;
-        MessageDigest reference = MessageDigest.getInstance(Digest.SHA256_DIGEST_NAME, REFERENCE_DIGEST_PROVIDER);
 
         for (int i = 0; i < rounds; i++) {
             bytePayload = payloadText.getBytes();
 
             output = Digest.digestWithSha256(bytePayload);
-            assertArrayEquals(reference.digest(bytePayload), output);
+            assertArrayEquals(digest.digest(bytePayload), output);
 
             payloadText += textAddition;
         }
