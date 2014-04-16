@@ -84,4 +84,62 @@ public class ParticipantTest {
         assertSame(keyPair, participant.getKeyPair());
     }
 
+    @Test
+    public void testEquals() {
+        Participant other = null;
+        assertFalse(participant.equals(null));
+        assertFalse(participant.equals(other));
+
+        other = new Participant(EccKeyPairGenerator.generate());
+        assertFalse(participant.equals(other));
+
+        other.keyPair = EccKeyPairGenerator.restoreFromPublicKeyBytes(participant.getPublicKeyAsBytes());
+        assertFalse(participant.equals(other));
+
+        other.keyPair = EccKeyPairGenerator.restoreFromPublicAndPrivateKeyBytes(participant.getPublicKeyAsBytes(), participant.getPrivateKeyAsBytes());
+        assertTrue(participant.equals(other));
+
+        other.keyPair = participant.keyPair;
+        assertTrue(participant.equals(other));
+
+        other = new Participant(keyPair);
+        assertTrue(participant.equals(other));
+
+        participant.keyPair = EccKeyPairGenerator.restoreFromPublicKeyBytes(keyPair.getPublic().getEncoded());
+        other.keyPair = keyPair;
+        assertFalse(participant.equals(other));
+
+        other.keyPair = EccKeyPairGenerator.restoreFromPublicKeyBytes(keyPair.getPublic().getEncoded());
+        assertTrue(participant.equals(other));
+
+        assertTrue(participant.equals(participant));
+    }
+
+    /**
+     * These cases should actually never occur. However, they are also tested.
+     */
+    @Test
+    public void testEqualsOnNullKeyPairs() {
+        Participant other = new Participant(EccKeyPairGenerator.generate());
+        
+        participant.keyPair = null;
+        assertFalse(participant.equals(null));
+        assertFalse(participant.equals(other));
+
+        other.keyPair = null;
+        assertTrue(participant.equals(other));
+    }
+
+    @Test
+    public void testHashCode() {
+        int hashCode = participant.hashCode();
+        Participant other = new Participant(EccKeyPairGenerator.generate());
+
+        assertFalse(hashCode == other.hashCode());
+
+        other.keyPair = participant.keyPair;
+        assertTrue(hashCode == other.hashCode());
+        assertTrue(hashCode == participant.hashCode());
+    }
+
 }
