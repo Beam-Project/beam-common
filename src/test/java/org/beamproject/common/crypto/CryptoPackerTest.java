@@ -27,6 +27,8 @@ import org.junit.Before;
 
 public class CryptoPackerTest {
 
+    private final byte[] MESSAGE = "hello world".getBytes();
+    private final int EXPECTED_CPHERTEXT_LENGTH_IN_BYTES = 304;
     private CryptoPacker localPacker;
     private CryptoPacker remotePacker;
     private Participant localParticipant;
@@ -40,9 +42,9 @@ public class CryptoPackerTest {
         reomteParticipant = new Participant(EccKeyPairGenerator.generate());
 
         plaintext = new Message();
-        plaintext.setVersion("1.0");
+        plaintext.setVersion(Message.DEFAUTL_VERSION);
         plaintext.setParticipant(localParticipant);
-        plaintext.appendContent(MessageField.CNT_MSG, "hello world".getBytes());
+        plaintext.appendContent(MessageField.CNT_MSG, MESSAGE);
 
         localPacker = new CryptoPacker();
         remotePacker = new CryptoPacker();
@@ -83,10 +85,8 @@ public class CryptoPackerTest {
 
     @Test
     public void testPackAndEncryptAndAlsoDecryptAndUnpack() {
-        int expectedCiphertextLength = 304;
-
         ciphertext = localPacker.packAndEncrypt(plaintext, reomteParticipant);
-        assertEquals(expectedCiphertextLength, ciphertext.length);
+        assertEquals(EXPECTED_CPHERTEXT_LENGTH_IN_BYTES, ciphertext.length);
 
         Message decryptedCiphertext = remotePacker.decryptAndUnpack(ciphertext, reomteParticipant);
         assertEquals(plaintext.getVersion(), decryptedCiphertext.getVersion());
