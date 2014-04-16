@@ -83,4 +83,10 @@ public class Message {
     public Map<String, byte[]> getContent() {
         return content;
     }
+
+    public byte[] getContent(MessageField key) {
+        Exceptions.verifyArgumentNotNull(key);
+
+        return getContent().get(key.toString());
+    }
 }
