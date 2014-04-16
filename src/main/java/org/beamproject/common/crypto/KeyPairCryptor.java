@@ -136,7 +136,7 @@ public class KeyPairCryptor {
         byte[] decryptedPublicKey = cipher.decrypt(encryptedKeyPair.getEncryptedPublicKeyAsBytes());
         byte[] decryptedPrivateKey = cipher.decrypt(encryptedKeyPair.getEncryptedPrivateKeyAsBytes());
 
-        return EccKeyPairGenerator.restoreFromPublicAndPrivateKeyBytes(decryptedPublicKey, decryptedPrivateKey);
+        return EccKeyPairGenerator.fromBothKeys(decryptedPublicKey, decryptedPrivateKey);
     }
 
     static void overwritePassword(char[] password) {

@@ -93,10 +93,10 @@ public class ParticipantTest {
         other = new Participant(EccKeyPairGenerator.generate());
         assertFalse(participant.equals(other));
 
-        other.keyPair = EccKeyPairGenerator.restoreFromPublicKeyBytes(participant.getPublicKeyAsBytes());
+        other.keyPair = EccKeyPairGenerator.fromPublicKey(participant.getPublicKeyAsBytes());
         assertFalse(participant.equals(other));
 
-        other.keyPair = EccKeyPairGenerator.restoreFromPublicAndPrivateKeyBytes(participant.getPublicKeyAsBytes(), participant.getPrivateKeyAsBytes());
+        other.keyPair = EccKeyPairGenerator.fromBothKeys(participant.getPublicKeyAsBytes(), participant.getPrivateKeyAsBytes());
         assertTrue(participant.equals(other));
 
         other.keyPair = participant.keyPair;
@@ -105,11 +105,11 @@ public class ParticipantTest {
         other = new Participant(keyPair);
         assertTrue(participant.equals(other));
 
-        participant.keyPair = EccKeyPairGenerator.restoreFromPublicKeyBytes(keyPair.getPublic().getEncoded());
+        participant.keyPair = EccKeyPairGenerator.fromPublicKey(keyPair.getPublic().getEncoded());
         other.keyPair = keyPair;
         assertFalse(participant.equals(other));
 
-        other.keyPair = EccKeyPairGenerator.restoreFromPublicKeyBytes(keyPair.getPublic().getEncoded());
+        other.keyPair = EccKeyPairGenerator.fromPublicKey(keyPair.getPublic().getEncoded());
         assertTrue(participant.equals(other));
 
         assertTrue(participant.equals(participant));

@@ -47,7 +47,7 @@ public class HandshakeResponse extends Handshake {
     public void consumeInitChallenge(Message challenge) {
         Exceptions.verifyArgumentNotNull(challenge);
 
-        KeyPair remoteKeyPair = EccKeyPairGenerator.restoreFromPublicKeyBytes(challenge.getContent(MessageField.CNT_CRPUBKEY));
+        KeyPair remoteKeyPair = EccKeyPairGenerator.fromPublicKey(challenge.getContent(MessageField.CNT_CRPUBKEY));
         remoteParticipant = new Participant(remoteKeyPair);
         remoteNonce = challenge.getContent(MessageField.CNT_CRNONCE);
     }

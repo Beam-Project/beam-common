@@ -72,7 +72,7 @@ public class EccKeyPairGenerator {
      * @throws IllegalStateException If the {@link PublicKey} could not be
      * generated with the given bytes.
      */
-    public static KeyPair restoreFromPublicKeyBytes(byte[] publicKeyBytes) {
+    public static KeyPair fromPublicKey(byte[] publicKeyBytes) {
         Exceptions.verifyArgumentNotNull(publicKeyBytes);
 
         try {
@@ -96,7 +96,7 @@ public class EccKeyPairGenerator {
      * @throws IllegalStateException If one of the keys could not be generated
      * with the given bytes.
      */
-    public static KeyPair restoreFromPublicAndPrivateKeyBytes(byte[] publicKeyBytes, byte[] privateKeyBytes) {
+    public static KeyPair fromBothKeys(byte[] publicKeyBytes, byte[] privateKeyBytes) {
         Exceptions.verifyArgumentsNotNull(publicKeyBytes, privateKeyBytes);
 
         try {

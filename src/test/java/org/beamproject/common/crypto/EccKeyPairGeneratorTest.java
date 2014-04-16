@@ -19,110 +19,111 @@
 package org.beamproject.common.crypto;
 
 import java.security.KeyPair;
+import org.beamproject.common.Participant;
 import static org.junit.Assert.*;
+import org.junit.Before;
 import org.junit.Test;
 
 public class EccKeyPairGeneratorTest {
 
     private KeyPair keyPair;
+    private KeyPair restored;
+    private Participant originalFull;
+    private Participant originalPublicOnly;
+    private Participant restoredFull;
+    private Participant restoredPublicOnly;
+
+    @Before
+    public void setUp() {
+        keyPair = EccKeyPairGenerator.generate();
+        originalFull = new Participant(keyPair);
+        originalPublicOnly = new Participant(EccKeyPairGenerator.fromPublicKey(keyPair.getPublic().getEncoded()));
+    }
 
     @Test
     public void testInstantiation() {
         EccKeyPairGenerator generator = new EccKeyPairGenerator();
     }
 
-    @Test
-    public void testGenerate() {
-        keyPair = EccKeyPairGenerator.generate();
-        assertNotNull(keyPair);
-    }
-
     @Test(expected = IllegalArgumentException.class)
-    public void testRestoreFromPublicKeyBytesOnNull() {
-        EccKeyPairGenerator.restoreFromPublicKeyBytes(null);
+    public void testFromPublicKeyOnNull() {
+        EccKeyPairGenerator.fromPublicKey(null);
     }
 
     @Test
-    public void testRestoreFromPublicKeyBytes() {
-        keyPair = EccKeyPairGenerator.generate();
-        KeyPair restore = EccKeyPairGenerator.restoreFromPublicKeyBytes(keyPair.getPublic().getEncoded());
+    public void testFromPublicKey() {
+        restored = EccKeyPairGenerator.fromPublicKey(keyPair.getPublic().getEncoded());
+        restoredPublicOnly = new Participant(restored);
 
-        assertArrayEquals(keyPair.getPublic().getEncoded(), restore.getPublic().getEncoded());
-        assertNull(restore.getPrivate());
+        assertEquals(originalPublicOnly, restoredPublicOnly);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testRestoreFromPublicKeyBytesOnManipulatedPublicKey() {
-        keyPair = EccKeyPairGenerator.generate();
+    public void testFromPublicKeyOnManipulatedPublicKey() {
         byte[] publicKey = keyPair.getPublic().getEncoded();
         publicKey[20] = 123;
         publicKey[50] = 123;
-        KeyPair restore = EccKeyPairGenerator.restoreFromPublicKeyBytes(publicKey);
+        restored = EccKeyPairGenerator.fromPublicKey(publicKey);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testRestoreFromPublicKeyBytesOnWrongArgument() {
-        keyPair = EccKeyPairGenerator.generate();
+    public void testFromPublicKeyOnWrongArgument() {
         byte[] privateKey = keyPair.getPrivate().getEncoded();
-        KeyPair restore = EccKeyPairGenerator.restoreFromPublicKeyBytes(privateKey);
+        restored = EccKeyPairGenerator.fromPublicKey(privateKey);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testRestoreFromPublicAndPrivateKeyBytesOnNulls() {
-        EccKeyPairGenerator.restoreFromPublicAndPrivateKeyBytes(null, null);
+    public void testFromBothKeysOnNulls() {
+        EccKeyPairGenerator.fromBothKeys(null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testRestoreFromPublicAndPrivateKeyBytesOnNullPublicKey() {
-        EccKeyPairGenerator.restoreFromPublicAndPrivateKeyBytes(null, new byte[]{1, 2, 3});
+    public void testFromBothKeysOnNullPublicKey() {
+        EccKeyPairGenerator.fromBothKeys(null, new byte[]{1, 2, 3});
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testRestoreFromPublicAndPrivateKeyBytesOnNullPrivateKey() {
-        EccKeyPairGenerator.restoreFromPublicAndPrivateKeyBytes(new byte[]{1, 2, 3}, null);
+    public void testFromBothKeysOnNullPrivateKey() {
+        EccKeyPairGenerator.fromBothKeys(new byte[]{1, 2, 3}, null);
     }
 
     @Test
-    public void testRestoreFromPublicAndPrivateKeyBytes() {
-        keyPair = EccKeyPairGenerator.generate();
+    public void testFromBothKeys() {
         byte[] publicKey = keyPair.getPublic().getEncoded();
         byte[] privateKey = keyPair.getPrivate().getEncoded();
-        KeyPair restore = EccKeyPairGenerator.restoreFromPublicAndPrivateKeyBytes(publicKey, privateKey);
+        restored = EccKeyPairGenerator.fromBothKeys(publicKey, privateKey);
+        restoredFull = new Participant(restored);
 
-        assertArrayEquals(keyPair.getPublic().getEncoded(), restore.getPublic().getEncoded());
-        assertArrayEquals(keyPair.getPrivate().getEncoded(), restore.getPrivate().getEncoded());
+        assertEquals(originalFull, restoredFull);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testRestoreFromPublicAndPrivateKeyBytesOnManipulatedPublicKey() {
-        keyPair = EccKeyPairGenerator.generate();
+    public void testFromBothKeysOnManipulatedPublicKey() {
         byte[] publicKey = keyPair.getPublic().getEncoded();
         byte[] privateKey = keyPair.getPrivate().getEncoded();
 
         publicKey[10] = 123;
         publicKey[20] = 123;
 
-        KeyPair restore = EccKeyPairGenerator.restoreFromPublicAndPrivateKeyBytes(publicKey, privateKey);
+        restored = EccKeyPairGenerator.fromBothKeys(publicKey, privateKey);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testRestoreFromPublicAndPrivateKeyBytesOnManipulatedPrivateKey() {
-        keyPair = EccKeyPairGenerator.generate();
+    public void testFromBothKeysOnManipulatedPrivateKey() {
         byte[] publicKey = keyPair.getPublic().getEncoded();
         byte[] privateKey = keyPair.getPrivate().getEncoded();
 
         privateKey[10] = 123;
         privateKey[20] = 123;
 
-        KeyPair restore = EccKeyPairGenerator.restoreFromPublicAndPrivateKeyBytes(publicKey, privateKey);
+        restored = EccKeyPairGenerator.fromBothKeys(publicKey, privateKey);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testRestoreFromPublicAndPrivateKeyBytesOnWrongArguments() {
-        keyPair = EccKeyPairGenerator.generate();
+    public void testFromBothKeysOnWrongArguments() {
         byte[] publicKey = keyPair.getPublic().getEncoded();
         byte[] privateKey = keyPair.getPrivate().getEncoded();
 
-        KeyPair restore = EccKeyPairGenerator.restoreFromPublicAndPrivateKeyBytes(privateKey, publicKey);
+        restored = EccKeyPairGenerator.fromBothKeys(privateKey, publicKey);
     }
 }
