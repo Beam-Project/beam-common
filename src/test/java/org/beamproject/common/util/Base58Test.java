@@ -23,12 +23,12 @@ import static org.junit.Assert.*;
 
 public class Base58Test {
 
-    String encoded;
-    byte[] decoded;
+    private String encoded;
+    private byte[] decoded;
 
     @Test(expected = IllegalArgumentException.class)
     public void testEncodeOnNull() {
-        Base58.encode(null);
+        encoded = Base58.encode(null);
     }
 
     @Test
