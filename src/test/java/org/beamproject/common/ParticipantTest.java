@@ -121,7 +121,7 @@ public class ParticipantTest {
     @Test
     public void testEqualsOnNullKeyPairs() {
         Participant other = new Participant(EccKeyPairGenerator.generate());
-        
+
         participant.keyPair = null;
         assertFalse(participant.equals(null));
         assertFalse(participant.equals(other));
