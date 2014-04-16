@@ -94,9 +94,7 @@ public class EccSignerTest {
         signature = signer.sign(data, keyPair.getPrivate());
         assertNotNull(signature);
         assertTrue(signature.length >= minimalSignatureLengthInBytes);
-
-        boolean isVerified = signer.verify(data, signature, keyPair.getPublic());
-        assertTrue(isVerified);
+        assertTrue(signer.verify(data, signature, keyPair.getPublic()));
     }
 
     @Test
@@ -115,31 +113,22 @@ public class EccSignerTest {
     @Test
     public void testSignAndVerifyOnManipulatedSignature() {
         signature = signer.sign(data, keyPair.getPrivate());
-
         signature[50] = (byte) 123;
-
-        boolean isVerified = signer.verify(data, signature, keyPair.getPublic());
-        assertFalse(isVerified);
+        assertFalse(signer.verify(data, signature, keyPair.getPublic()));
     }
 
     @Test
     public void testSignAndVerifyOnManipulatedData() {
         signature = signer.sign(data, keyPair.getPrivate());
-
         data[10] = (byte) 123;
-
-        boolean isVerified = signer.verify(data, signature, keyPair.getPublic());
-        assertFalse(isVerified);
+        assertFalse(signer.verify(data, signature, keyPair.getPublic()));
     }
 
     @Test
     public void testSignAndVerifyOnWrongPublicKey() {
         signature = signer.sign(data, keyPair.getPrivate());
-
         KeyPair differentKeyPair = EccKeyPairGenerator.generate();
-
-        boolean isVerified = signer.verify(data, signature, differentKeyPair.getPublic());
-        assertFalse(isVerified);
+        assertFalse(signer.verify(data, signature, differentKeyPair.getPublic()));
     }
 
     @Ignore // Only needed to measure performance.
