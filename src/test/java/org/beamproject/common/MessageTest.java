@@ -27,15 +27,14 @@ import org.junit.Before;
 
 public class MessageTest {
     
+    private final String VERSION = "1.2a";
     private Message message;
-    private String version;
     private Participant participant;
     private Map<String, byte[]> content;
     
     @Before
     public void setUp() {
         message = new Message();
-        version = "1.2a";
         participant = new Participant(EccKeyPairGenerator.generate());
         content = new HashMap<>();
     }
@@ -54,14 +53,14 @@ public class MessageTest {
     
     @Test
     public void testSetVersion() {
-        message.setVersion(version);
-        assertEquals(version, message.version);
+        message.setVersion(VERSION);
+        assertEquals(VERSION, message.version);
     }
     
     @Test
     public void testGetVersion() {
-        message.version = version;
-        assertEquals(version, message.getVersion());
+        message.version = VERSION;
+        assertEquals(VERSION, message.getVersion());
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -118,8 +117,8 @@ public class MessageTest {
     
     @Test
     public void testGetContentToBytes() {
-        message.appendContent(MessageField.VRS, version.getBytes());
-        assertArrayEquals(version.getBytes(), message.getContent(MessageField.VRS));
+        message.appendContent(MessageField.VRS, VERSION.getBytes());
+        assertArrayEquals(VERSION.getBytes(), message.getContent(MessageField.VRS));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -131,7 +130,7 @@ public class MessageTest {
     public void testContainsContent() {
         assertFalse(message.containsContent(MessageField.VRS));
         
-        message.appendContent(MessageField.VRS, version.getBytes());
+        message.appendContent(MessageField.VRS, VERSION.getBytes());
         assertTrue(message.containsContent(MessageField.VRS));
         
         message.content.remove(MessageField.VRS.toString());
