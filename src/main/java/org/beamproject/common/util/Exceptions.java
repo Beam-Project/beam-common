@@ -21,53 +21,46 @@ package org.beamproject.common.util;
 /**
  * This class contains general purpose exception methods.
  */
-public class Exceptions {
+public abstract class Exceptions {
 
-    private Exceptions() {
-        // Only static access.
-    }
-
-    /**
-     * Tests if the {@code argument} is null. If so, an
-     * {@link IllegalArgumentException} is thrown.
-     *
-     * @param argument May not be null.
-     * @throws IllegalArgumentException If the argument is null.
-     */
-    public static void verifyArgumentNotNull(Object argument) {
-        if (argument == null) {
-            throw new IllegalArgumentException("The argument may not be null.");
-        }
-    }
+    private final static String ARGUMENTS_NOT_NULL_MESSAGE = "The argument may not be null.";
+    private final static String ARGUMENTS_NOT_EMPTY_MESSAGE = "The argument may not be empty.";
 
     /**
-     * Tests if {@code arguments} or at lest one of it's values is null. If so,
-     * an {@link IllegalArgumentException} is thrown.
+     * Verifies that the arguments are not null. If at least one argument is
+     * null, an {@link IllegalArgumentException} is thrown.
      *
      * @param arguments May not be null.
      * @throws IllegalArgumentException If the argument or at least one of it's
      * values is null.
      */
     public static void verifyArgumentsNotNull(Object... arguments) {
-        verifyArgumentNotNull(arguments);
+        if (arguments == null) {
+            throw new IllegalArgumentException(ARGUMENTS_NOT_NULL_MESSAGE);
+        }
 
         for (Object argument : arguments) {
-            verifyArgumentNotNull(argument);
+            if (argument == null) {
+                throw new IllegalArgumentException(ARGUMENTS_NOT_NULL_MESSAGE);
+            }
         }
     }
 
     /**
-     * Tests if the {@code argument} is empty (or null). If so, an
-     * {@link IllegalArgumentException} is thrown.
+     * Verifies that the arguments are not empty. If at least one argument is
+     * null or empty, an {@link IllegalArgumentException} is thrown.
      *
-     * @param argument May not be empty nor null.
-     * @throws IllegalArgumentException If the argument is empty or null.
+     * @param arguments May not be null, nor empty.
+     * @throws IllegalArgumentException If the argument or at least one of it's
+     * values is null or empty.
      */
-    public static void verifyArgumentNotEmpty(String argument) {
-        verifyArgumentNotNull(argument);
+    public static void verifyArgumentsNotEmpty(String... arguments) {
+        verifyArgumentsNotNull((Object[]) arguments);
 
-        if (argument.isEmpty()) {
-            throw new IllegalArgumentException("The argument may not be empty.");
+        for (String argument : arguments) {
+            if (argument.isEmpty()) {
+                throw new IllegalArgumentException(ARGUMENTS_NOT_EMPTY_MESSAGE);
+            }
         }
     }
 

@@ -80,7 +80,7 @@ public class CryptoPacker {
     }
 
     private void validatePlaintext(Message plaintext) {
-        Exceptions.verifyArgumentNotNull(plaintext);
+        Exceptions.verifyArgumentsNotNull(plaintext);
 
         if (plaintext.getParticipant() == null) {
             throw new IllegalArgumentException("The argument has to have a Participant.");
@@ -90,7 +90,7 @@ public class CryptoPacker {
     }
 
     private void validateParticipant(Participant participant) {
-        Exceptions.verifyArgumentNotNull(participant);
+        Exceptions.verifyArgumentsNotNull(participant);
 
         this.participant = participant;
     }
@@ -147,7 +147,7 @@ public class CryptoPacker {
     }
 
     private void validateCiphertext(byte[] ciphertext) {
-        Exceptions.verifyArgumentNotNull(ciphertext);
+        Exceptions.verifyArgumentsNotNull(ciphertext);
 
         this.ciphertext = ciphertext;
     }

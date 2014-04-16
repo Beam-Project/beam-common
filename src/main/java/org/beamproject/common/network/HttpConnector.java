@@ -53,7 +53,7 @@ public class HttpConnector {
      * valid {@link URL}.
      */
     public HttpConnector(String targetUrl) {
-        Exceptions.verifyArgumentNotEmpty(targetUrl);
+        Exceptions.verifyArgumentsNotEmpty(targetUrl);
 
         handleUrl(targetUrl);
     }

@@ -44,8 +44,8 @@ public class HandshakeChallenge extends Handshake {
     }
 
     public Message produceInitChallenge(Participant remoteParticipant) {
-        Exceptions.verifyArgumentNotNull(remoteParticipant);
-        
+        Exceptions.verifyArgumentsNotNull(remoteParticipant);
+
         this.remoteParticipant = remoteParticipant;
 
         generateLocalNonce();
@@ -64,7 +64,7 @@ public class HandshakeChallenge extends Handshake {
     }
 
     public void consumeResponseChallenge(Message challenge) {
-        Exceptions.verifyArgumentNotNull(challenge);
+        Exceptions.verifyArgumentsNotNull(challenge);
 
         if (!challenge.containsContent(MessageField.CNT_CRNONCE)
                 || !challenge.containsContent(MessageField.CNT_CRSIG)) {

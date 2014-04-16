@@ -10,10 +10,10 @@
  *
  * This file is part of beam-common.
  *
- * beam-common is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
+ * beam-common is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
  * beam-common is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -44,9 +44,6 @@
 package org.beamproject.common.util;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.util.Arrays;
-import org.beamproject.common.crypto.Digest;
 
 /**
  * <p>
@@ -99,7 +96,7 @@ public class Base58 {
      * @throws IllegalArgumentException If the argument is null.
      */
     public static String encode(byte[] input) {
-        Exceptions.verifyArgumentNotNull(input);
+        Exceptions.verifyArgumentsNotNull(input);
 
         if (input.length == 0) {
             return "";
@@ -154,7 +151,7 @@ public class Base58 {
      * @throws IllegalArgumentException If the argument is null.
      */
     public static byte[] decode(String input) {
-        Exceptions.verifyArgumentNotNull(input);
+        Exceptions.verifyArgumentsNotNull(input);
 
         if (input.length() == 0) {
             return new byte[0];

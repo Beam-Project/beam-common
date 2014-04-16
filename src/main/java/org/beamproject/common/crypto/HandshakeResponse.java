@@ -45,7 +45,7 @@ public class HandshakeResponse extends Handshake {
     }
 
     public void consumeInitChallenge(Message challenge) {
-        Exceptions.verifyArgumentNotNull(challenge);
+        Exceptions.verifyArgumentsNotNull(challenge);
 
         KeyPair remoteKeyPair = EccKeyPairGenerator.fromPublicKey(challenge.getContent(MessageField.CNT_CRPUBKEY));
         remoteParticipant = new Participant(remoteKeyPair);
@@ -70,7 +70,7 @@ public class HandshakeResponse extends Handshake {
     }
 
     public void consumeResponseDone(Message done) {
-        Exceptions.verifyArgumentNotNull(done);
+        Exceptions.verifyArgumentsNotNull(done);
 
         remoteSignature = done.getContent(MessageField.CNT_CRSIG);
         verifyRemoteSignature();

@@ -46,7 +46,7 @@ public class Config {
      * @throws IllegalArgumentException If the argument is null or empty.
      */
     public Config(String configFilePath) {
-        Exceptions.verifyArgumentNotEmpty(configFilePath);
+        Exceptions.verifyArgumentsNotEmpty(configFilePath);
 
         configFile = new File(configFilePath).getAbsoluteFile();
         loadConfigOrStoreInitially();
@@ -75,7 +75,7 @@ public class Config {
      * @throws IllegalArgumentException If the argument is null.
      */
     public boolean isKeyExisting(ConfigKey key) {
-        Exceptions.verifyArgumentNotNull(key);
+        Exceptions.verifyArgumentsNotNull(key);
 
         return config.containsKey(key.toString());
     }
@@ -89,7 +89,7 @@ public class Config {
      * @throws IllegalArgumentException If the argument is null.
      */
     public String getProperty(ConfigKey key) {
-        Exceptions.verifyArgumentNotNull(key);
+        Exceptions.verifyArgumentsNotNull(key);
 
         return config.getProperty(key.toString());
     }

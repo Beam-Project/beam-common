@@ -73,7 +73,7 @@ public class EccKeyPairGenerator {
      * generated with the given bytes.
      */
     public static KeyPair fromPublicKey(byte[] publicKeyBytes) {
-        Exceptions.verifyArgumentNotNull(publicKeyBytes);
+        Exceptions.verifyArgumentsNotNull(publicKeyBytes);
 
         try {
             KeyFactory fact = KeyFactory.getInstance(ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);

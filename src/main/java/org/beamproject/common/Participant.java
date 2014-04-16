@@ -46,7 +46,7 @@ public class Participant implements Serializable {
      * @throws IllegalArgumentException If the argument is null.
      */
     public Participant(KeyPair keyPair) {
-        Exceptions.verifyArgumentNotNull(keyPair);
+        Exceptions.verifyArgumentsNotNull(keyPair);
 
         this.keyPair = keyPair;
     }

@@ -23,16 +23,6 @@ import org.junit.Test;
 public class ExceptionsTest {
 
     @Test(expected = IllegalArgumentException.class)
-    public void testVerifyArgumentNotNullOnNull() {
-        Exceptions.verifyArgumentNotNull(null);
-    }
-
-    @Test
-    public void testVerifyArgumentNotNull() {
-        Exceptions.verifyArgumentNotNull("this is not null -- no exception must be thrown");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void testVerifyArgumentsNotNullOnNull() {
         Exceptions.verifyArgumentsNotNull(null);
     }
@@ -58,18 +48,18 @@ public class ExceptionsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testVerifyArgumentNotEmptyOnNull() {
-        Exceptions.verifyArgumentNotEmpty(null);
+    public void testVerifyArgumentsNotEmptyOnNull() {
+        Exceptions.verifyArgumentsNotEmpty(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testVerifyArgumentNotEmptyOnEmpty() {
-        Exceptions.verifyArgumentNotEmpty("");
+    public void testVerifyArgumentsNotEmptyOnEmpty() {
+        Exceptions.verifyArgumentsNotEmpty("");
     }
 
     @Test
-    public void testVerifyArgumentNotEmpty() {
-        Exceptions.verifyArgumentNotEmpty("hello");
+    public void testVerifyArgumentsNotEmpty() {
+        Exceptions.verifyArgumentsNotEmpty("hello");
     }
 
 }

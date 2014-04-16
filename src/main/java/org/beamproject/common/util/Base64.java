@@ -34,7 +34,7 @@ public abstract class Base64 {
      * @throws IllegalArgumentException If the argument is null.
      */
     public static String encode(byte[] decoded) {
-        Exceptions.verifyArgumentNotNull(decoded);
+        Exceptions.verifyArgumentsNotNull(decoded);
         return DatatypeConverter.printBase64Binary(decoded);
     }
 
@@ -46,7 +46,7 @@ public abstract class Base64 {
      * @throws IllegalArgumentException If the argument is null.
      */
     public static byte[] decode(String encoded) {
-        Exceptions.verifyArgumentNotNull(encoded);
+        Exceptions.verifyArgumentsNotNull(encoded);
         return DatatypeConverter.parseBase64Binary(encoded);
     }
 }

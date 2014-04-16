@@ -65,8 +65,8 @@ public class UrlAssembler {
      * null.
      */
     public static String toUrlByServerAndClient(Participant server, Participant client, String name) {
-        Exceptions.verifyArgumentsNotNull(server, client, name);
-        Exceptions.verifyArgumentNotEmpty(name);
+        Exceptions.verifyArgumentsNotNull(server, client);
+        Exceptions.verifyArgumentsNotEmpty(name);
 
         return SCHEME_PART + server.getPublicKeyAsBase58()
                 + SERVER_SEPERATOR + client.getPublicKeyAsBase58()
@@ -81,7 +81,7 @@ public class UrlAssembler {
      * @throws IllegalArgumentException If the argument is null.
      */
     public static String toUrlByServer(Participant server) {
-        Exceptions.verifyArgumentNotNull(server);
+        Exceptions.verifyArgumentsNotNull(server);
 
         return SCHEME_PART + server.getPublicKeyAsBase58();
     }
@@ -93,13 +93,12 @@ public class UrlAssembler {
      * @param url This has to be a valid beam url and may not be null.
      * @return The {@link Contact}, initialized with two {@link Participant}s, a
      * server and a client. Both do only contain a {@link PublicKey}.
-     * @throws IllegalArgumentException If the argument is not a valid beam
-     * url.
+     * @throws IllegalArgumentException If the argument is not a valid beam url.
      * @throws IllegalStateException If the internally used {@link KeyFactory}
      * could not be set up.
      */
     public static Contact toContactByServerAndClientUrl(String url) {
-        Exceptions.verifyArgumentNotEmpty(url);
+        Exceptions.verifyArgumentsNotEmpty(url);
 
         if (!url.matches(SERVER_CLIENT_SCHEME_REGEX)) {
             throw new IllegalArgumentException("The given url is not a valid beam url.");

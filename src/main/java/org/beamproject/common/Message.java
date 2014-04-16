@@ -40,7 +40,7 @@ public class Message {
      * @throws IllegalArgumentException If the argument is null.
      */
     public void setVersion(String version) {
-        Exceptions.verifyArgumentNotNull(version);
+        Exceptions.verifyArgumentsNotNull(version);
 
         this.version = version;
     }
@@ -57,7 +57,7 @@ public class Message {
      * @throws IllegalArgumentException If the argument is null.
      */
     public void setParticipant(Participant participant) {
-        Exceptions.verifyArgumentNotNull(participant);
+        Exceptions.verifyArgumentsNotNull(participant);
 
         this.participant = participant;
     }
@@ -98,7 +98,7 @@ public class Message {
      * @throws IllegalArgumentException If the argument is null.
      */
     public byte[] getContent(MessageField key) {
-        Exceptions.verifyArgumentNotNull(key);
+        Exceptions.verifyArgumentsNotNull(key);
 
         return content.get(key.toString());
     }
@@ -111,7 +111,7 @@ public class Message {
      * @throws IllegalArgumentException If the argument is null.
      */
     public boolean containsContent(MessageField key) {
-        Exceptions.verifyArgumentNotNull(key);
+        Exceptions.verifyArgumentsNotNull(key);
 
         return content.containsKey(key.toString());
     }

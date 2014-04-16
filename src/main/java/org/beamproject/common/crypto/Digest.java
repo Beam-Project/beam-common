@@ -40,7 +40,7 @@ public class Digest {
      * @throws IllegalStateException If the digest could not be set up.
      */
     public static byte[] digestWithSha256(byte[] payload) {
-        Exceptions.verifyArgumentNotNull(payload);
+        Exceptions.verifyArgumentsNotNull(payload);
         
         BouncyCastleIntegrator.initBouncyCastleProvider();
 
