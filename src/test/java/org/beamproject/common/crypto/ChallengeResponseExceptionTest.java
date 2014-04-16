@@ -23,10 +23,10 @@ import static org.junit.Assert.*;
 
 public class ChallengeResponseExceptionTest {
 
-
     @Test
     public void testConstructorOnAssignment() {
         String message = "hello world";
+        
         try {
             throw new ChallengeResponseException(message);
         } catch (ChallengeResponseException e) {
