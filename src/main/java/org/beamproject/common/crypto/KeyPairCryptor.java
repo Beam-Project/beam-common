@@ -57,7 +57,9 @@ public class KeyPairCryptor {
      *
      * @param password The password to use for the encryption.
      * @param keyPair The key pair to encrypt. Both, {@link PublicKey} and
-     * {@link PrivateKey} have to be set.
+     * {@link PrivateKey} will be encrypted if they are set. If one is not set,
+     * the resulting {@link EncryptedKeyPair} will contain <b>an empty
+     * string</b> instead the (missing) encrypted key.
      * @return The encrypted keys.
      * @throws IllegalArgumentException If at least one argument is null.
      * @throws IllegalStateException If the salt cannot be generated or PBKDF2
@@ -99,24 +101,33 @@ public class KeyPairCryptor {
 
     private static EncryptedKeyPair encryptKeys(Key aesKey, KeyPair keyPair, byte[] salt) {
         AesCbcCipher cipher = new AesCbcCipher(aesKey.getEncoded());
-
-        byte[] encryptedPublicKey = cipher.encrypt(keyPair.getPublic().getEncoded());
-        byte[] encryptedPrivateKey = cipher.encrypt(keyPair.getPrivate().getEncoded());
-
-        String publicKeyAsBase64 = Base64.encode(encryptedPublicKey);
-        String privateKeyAsBase64 = Base64.encode(encryptedPrivateKey);
+        String publicKeyAsBase64 = "";
+        String privateKeyAsBase64 = "";
         String saltAsBase64 = Base64.encode(salt);
+
+        if (keyPair.getPublic() != null) {
+            byte[] encryptedPublicKey = cipher.encrypt(keyPair.getPublic().getEncoded());
+            publicKeyAsBase64 = Base64.encode(encryptedPublicKey);
+        }
+
+        if (keyPair.getPrivate() != null) {
+            byte[] encryptedPrivateKey = cipher.encrypt(keyPair.getPrivate().getEncoded());
+            privateKeyAsBase64 = Base64.encode(encryptedPrivateKey);
+        }
 
         return new EncryptedKeyPair(publicKeyAsBase64, privateKeyAsBase64, saltAsBase64);
     }
 
     /**
-     * Decrypts the given {@link EncryptedKeyPair} with the password.
+     * Decrypts the given {@link EncryptedKeyPair} with the password. At least
+     * the {@link PublicKey} has to be set.
      *
      * @param password The password to use for the decryption.
      * @param encryptedKeyPair The key pair to decrypt.
      * @return The decrypted keys.
      * @throws IllegalArgumentException If at least one argument is null.
+     * @throws IllegalArgumentException If neither the PublicKey nor the
+     * PrivateKey is set in the given KeyPair.
      * @throws IllegalStateException If PBKDF2 cannot be used to strengthen the
      * password.
      */
@@ -133,10 +144,28 @@ public class KeyPairCryptor {
 
     private static KeyPair decryptKeys(Key aesKey, EncryptedKeyPair encryptedKeyPair) {
         AesCbcCipher cipher = new AesCbcCipher(aesKey.getEncoded());
-        byte[] decryptedPublicKey = cipher.decrypt(encryptedKeyPair.getEncryptedPublicKeyAsBytes());
-        byte[] decryptedPrivateKey = cipher.decrypt(encryptedKeyPair.getEncryptedPrivateKeyAsBytes());
+        byte[] decryptedPublicKey = null;
+        byte[] decryptedPrivateKey = null;
 
-        return EccKeyPairGenerator.fromBothKeys(decryptedPublicKey, decryptedPrivateKey);
+        if (encryptedKeyPair.getEncryptedPublicKey() != null
+                && !encryptedKeyPair.getEncryptedPublicKey().isEmpty()) {
+            decryptedPublicKey = cipher.decrypt(encryptedKeyPair.getEncryptedPublicKeyAsBytes());
+        }
+
+        if (encryptedKeyPair.getEncryptedPrivateKey() != null
+                && !encryptedKeyPair.getEncryptedPrivateKey().isEmpty()) {
+            decryptedPrivateKey = cipher.decrypt(encryptedKeyPair.getEncryptedPrivateKeyAsBytes());
+        }
+
+        if (decryptedPublicKey != null && decryptedPrivateKey != null) {
+            return EccKeyPairGenerator.fromBothKeys(decryptedPublicKey, decryptedPrivateKey);
+        }
+
+        if (decryptedPublicKey != null) {
+            return EccKeyPairGenerator.fromPublicKey(decryptedPublicKey);
+        }
+
+        throw new IllegalArgumentException("Could not find non-null keys in the given KeyPair. At least the PublicKey has to be.");
     }
 
     static void overwritePassword(char[] password) {

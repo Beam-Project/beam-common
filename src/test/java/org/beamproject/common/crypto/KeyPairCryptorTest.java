@@ -28,7 +28,7 @@ public class KeyPairCryptorTest {
 
     private final String PASSWORD = "12345678";
     private KeyPair keyPair;
-    private EncryptedKeyPair encryptedKeyPair;
+    private EncryptedKeyPair encryptedPublicKey;
 
     @Before
     public void setUp() {
@@ -37,31 +37,45 @@ public class KeyPairCryptorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testEncryptOnNulls() {
-        encryptedKeyPair = KeyPairCryptor.encrypt(null, null);
+        encryptedPublicKey = KeyPairCryptor.encrypt(null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEncryptOnNullPassword() {
-        encryptedKeyPair = KeyPairCryptor.encrypt(null, keyPair);
+        encryptedPublicKey = KeyPairCryptor.encrypt(null, keyPair);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEncryptOnNullKeyPair() {
-        encryptedKeyPair = KeyPairCryptor.encrypt(PASSWORD, null);
+        encryptedPublicKey = KeyPairCryptor.encrypt(PASSWORD, null);
+    }
+
+    @Test
+    public void testEncryptAndDecryptWithEmptyPrivateKey() {
+        KeyPair publicKeyOnly = EccKeyPairGenerator.fromPublicKey(keyPair.getPublic().getEncoded());
+        encryptedPublicKey = KeyPairCryptor.encrypt(PASSWORD, publicKeyOnly);
+
+        assertFalse(encryptedPublicKey.getEncryptedPublicKey().isEmpty());
+        assertTrue(encryptedPublicKey.getEncryptedPrivateKey().isEmpty());
+
+        KeyPair decryptedPublicKey = KeyPairCryptor.decrypt(PASSWORD, encryptedPublicKey);
+
+        assertArrayEquals(keyPair.getPublic().getEncoded(), decryptedPublicKey.getPublic().getEncoded());
+        assertNull(decryptedPublicKey.getPrivate());
     }
 
     @Test
     public void testEncryptAndDecrypt() {
         Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
-        encryptedKeyPair = KeyPairCryptor.encrypt(PASSWORD, keyPair);
+        encryptedPublicKey = KeyPairCryptor.encrypt(PASSWORD, keyPair);
 
         assertNotNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));
-        assertEquals(172, encryptedKeyPair.getEncryptedPublicKey().length());
-        assertEquals(280, encryptedKeyPair.getEncryptedPrivateKey().length());
-        assertEquals(24, encryptedKeyPair.getSalt().length());
+        assertEquals(172, encryptedPublicKey.getEncryptedPublicKey().length());
+        assertEquals(280, encryptedPublicKey.getEncryptedPrivateKey().length());
+        assertEquals(24, encryptedPublicKey.getSalt().length());
 
         Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
-        KeyPair decryptedKeyPair = KeyPairCryptor.decrypt(PASSWORD, encryptedKeyPair);
+        KeyPair decryptedKeyPair = KeyPairCryptor.decrypt(PASSWORD, encryptedPublicKey);
 
         assertNotNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));
         assertArrayEquals(keyPair.getPublic().getEncoded(), decryptedKeyPair.getPublic().getEncoded());
@@ -70,29 +84,29 @@ public class KeyPairCryptorTest {
 
     @Test(expected = CryptoException.class)
     public void testEncryptAndDecryptOnManipulatedPublicKey() {
-        encryptedKeyPair = KeyPairCryptor.encrypt(PASSWORD, keyPair);
-        encryptedKeyPair.encryptedPublicKey = "not really encrypted public key";
-        KeyPairCryptor.decrypt(PASSWORD, encryptedKeyPair);
+        encryptedPublicKey = KeyPairCryptor.encrypt(PASSWORD, keyPair);
+        encryptedPublicKey.encryptedPublicKey = "not really encrypted public key";
+        KeyPairCryptor.decrypt(PASSWORD, encryptedPublicKey);
     }
 
     @Test(expected = CryptoException.class)
     public void testEncryptAndDecryptOnManipulatedPrivateKey() {
-        encryptedKeyPair = KeyPairCryptor.encrypt(PASSWORD, keyPair);
-        encryptedKeyPair.encryptedPrivateKey = "not really encrypted private key";
-        KeyPairCryptor.decrypt(PASSWORD, encryptedKeyPair);
+        encryptedPublicKey = KeyPairCryptor.encrypt(PASSWORD, keyPair);
+        encryptedPublicKey.encryptedPrivateKey = "not really encrypted private key";
+        KeyPairCryptor.decrypt(PASSWORD, encryptedPublicKey);
     }
 
     @Test(expected = CryptoException.class)
     public void testEncryptAndDecryptOnManipulatedSalt() {
-        encryptedKeyPair = KeyPairCryptor.encrypt(PASSWORD, keyPair);
-        encryptedKeyPair.salt = "not really the salt";
-        KeyPairCryptor.decrypt(PASSWORD, encryptedKeyPair);
+        encryptedPublicKey = KeyPairCryptor.encrypt(PASSWORD, keyPair);
+        encryptedPublicKey.salt = "not really the salt";
+        KeyPairCryptor.decrypt(PASSWORD, encryptedPublicKey);
     }
 
     @Test(expected = CryptoException.class)
     public void testEncryptAndDecryptOnWrongPassword() {
-        encryptedKeyPair = KeyPairCryptor.encrypt(PASSWORD, keyPair);
-        KeyPairCryptor.decrypt("wrong password", encryptedKeyPair);
+        encryptedPublicKey = KeyPairCryptor.encrypt(PASSWORD, keyPair);
+        KeyPairCryptor.decrypt("wrong password", encryptedPublicKey);
     }
 
     @Test
