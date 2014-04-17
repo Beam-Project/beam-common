@@ -44,6 +44,11 @@ public class ConfigsTest {
         configFolder.delete();
     }
 
+    @Test
+    public void testInstantiation() {
+        Configs configs = new Configs();
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testStoreConfigOnNulls() {
         Configs.storeConfig(null, null, null);

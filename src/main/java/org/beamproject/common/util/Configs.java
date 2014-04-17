@@ -25,7 +25,7 @@ import java.io.IOException;
 /**
  * This class allows to store {@link ConfigBase}s to files via static methods.
  */
-public abstract class Configs {
+public class Configs {
 
     /**
      * Stores the given {@link ConfigBase}. If the folder or the file is not
