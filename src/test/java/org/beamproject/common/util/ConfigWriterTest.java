@@ -28,9 +28,9 @@ import org.junit.Before;
 public class ConfigWriterTest {
 
     private final String FOLDER = "./config-folder/";
-    private final String FILE = FOLDER + "test.conf";
+    private final String FILE = "test.conf";
     private final File configFolder = new File(FOLDER);
-    private final File configFile = new File(FILE);
+    private final File configFile = new File(FOLDER + FILE);
     private ConfigWriter writer;
     private ConfigBase config;
 

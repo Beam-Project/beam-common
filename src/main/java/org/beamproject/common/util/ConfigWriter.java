@@ -44,7 +44,7 @@ public class ConfigWriter {
         Exceptions.verifyArgumentsNotEmpty(folderPath, filename);
 
         File folder = new File(folderPath);
-        File file = new File(filename);
+        File file = new File(folderPath + filename);
 
         if (!folder.exists()) {
             folder.mkdirs();
