@@ -161,7 +161,7 @@ public class UrlAssemblerTest {
         contact = UrlAssembler.toContactByServerAndClientUrl(url);
 
         assertArrayEquals(server.getPublicKeyAsBytes(), contact.getServer().getPublicKeyAsBytes());
-        assertArrayEquals(client.getPublicKeyAsBytes(), contact.getClient().getPublicKeyAsBytes());
+        assertArrayEquals(client.getPublicKeyAsBytes(), contact.getUser().getPublicKeyAsBytes());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class UrlAssemblerTest {
         contact = UrlAssembler.toContactByServerAndClientUrl(url);
 
         assertArrayEquals(server.getPublicKeyAsBytes(), contact.getServer().getPublicKeyAsBytes());
-        assertArrayEquals(client.getPublicKeyAsBytes(), contact.getClient().getPublicKeyAsBytes());
+        assertArrayEquals(client.getPublicKeyAsBytes(), contact.getUser().getPublicKeyAsBytes());
         assertEquals(NAME, contact.getName());
     }
 }

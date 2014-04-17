@@ -22,42 +22,43 @@ import java.io.Serializable;
 import org.beamproject.common.util.Exceptions;
 
 /**
- * This class represents a classic contact, as known form many other chat
- * messenger. The main functionality is to store end user information such as
- * username, server, etc..
+ * This class represents contact, consisting of a server and a user. The main
+ * functionality is to store end user information such as username, server,
+ * etc..
  */
 public class Contact implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     Participant server;
-    Participant client;
+    Participant user;
     String name;
 
     /**
-     * Constructs a new {@link Contact} with server and client.
+     * Constructs a new {@link Contact} with server and user.
      *
      * @param server The server of this {@link Contact}. This is the first part
      * in the beam url. This may not be null.
-     * @param client The client of this {@link Contact}. This is the second part
+     * @param user The user of this {@link Contact}. This is the second part
      * in the beam url. This may not be null.
      * @param name The name of this {@link Contact}. This may not be empty.
      * @throws IllegalArgumentException If at least one of the arguments is null
      * or the name is empty.
      */
-    public Contact(Participant server, Participant client, String name) {
-        Exceptions.verifyArgumentsNotNull(server, client, name);
+    public Contact(Participant server, Participant user, String name) {
+        Exceptions.verifyArgumentsNotNull(server, user, name);
 
         this.server = server;
-        this.client = client;
+        this.user = user;
         this.name = name;
     }
- 
+
     public Participant getServer() {
         return server;
     }
 
-    public Participant getClient() {
-        return client;
+    public Participant getUser() {
+        return user;
     }
 
     public String getName() {

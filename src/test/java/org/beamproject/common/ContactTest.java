@@ -27,14 +27,14 @@ public class ContactTest {
 
     private Contact contact;
     private Participant server;
-    private Participant client;
+    private Participant user;
     private final String name = "spock";
 
     @Before
     public void setUp() {
         server = new Participant(EccKeyPairGenerator.generate());
-        client = new Participant(EccKeyPairGenerator.generate());
-        contact = new Contact(server, client, name);
+        user = new Participant(EccKeyPairGenerator.generate());
+        contact = new Contact(server, user, name);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -44,23 +44,23 @@ public class ContactTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNullServer() {
-        contact = new Contact(null, client, name);
+        contact = new Contact(null, user, name);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnNullClient() {
+    public void testConstructorOnNullUser() {
         contact = new Contact(server, null, name);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNullName() {
-        contact = new Contact(server, client, null);
+        contact = new Contact(server, user, null);
     }
 
     @Test
     public void testConstructorOnAssignment() {
         assertSame(server, contact.server);
-        assertSame(client, contact.client);
+        assertSame(user, contact.user);
         assertSame(name, contact.name);
     }
 
@@ -70,8 +70,8 @@ public class ContactTest {
     }
 
     @Test
-    public void testGetClient() {
-        assertSame(client, contact.getClient());
+    public void testGetUser() {
+        assertSame(user, contact.getUser());
     }
 
     @Test

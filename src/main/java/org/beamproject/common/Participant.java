@@ -34,7 +34,6 @@ import org.beamproject.common.util.Exceptions;
 public class Participant implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     KeyPair keyPair;
 
     /**
