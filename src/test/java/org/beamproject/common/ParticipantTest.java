@@ -19,6 +19,7 @@
 package org.beamproject.common;
 
 import java.security.KeyPair;
+import java.util.LinkedList;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.util.Base58;
 import org.junit.Test;
@@ -82,6 +83,25 @@ public class ParticipantTest {
     public void testGetKeyPair() {
         participant.keyPair = keyPair;
         assertSame(keyPair, participant.getKeyPair());
+    }
+
+    @Test
+    public void testGenerate() {
+        LinkedList<Participant> uniques = new LinkedList<>();
+
+        for (int i = 0; i < 10; i++) {
+            participant = Participant.generate();
+
+            if (participant == null || participant.getPrivateKey() == null || participant.getPublicKey() == null) {
+                fail("This participant is not completely initialized.");
+            }
+
+            if (uniques.contains(participant)) {
+                fail("The generated participants must be unique.");
+            }
+
+            uniques.add(participant);
+        }
     }
 
     @Test

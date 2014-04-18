@@ -24,6 +24,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.Objects;
+import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.util.Base58;
 import org.beamproject.common.util.Exceptions;
 
@@ -72,6 +73,16 @@ public class Participant implements Serializable {
 
     public KeyPair getKeyPair() {
         return keyPair;
+    }
+
+    /**
+     * Generates a new {@link Participant}, initialized with a new
+     * {@link KeyPair}.
+     *
+     * @return The new {@link Participant}.
+     */
+    public static Participant generate() {
+        return new Participant(EccKeyPairGenerator.generate());
     }
 
     /**
