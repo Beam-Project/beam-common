@@ -22,7 +22,6 @@ import java.security.Security;
 import org.beamproject.common.Contact;
 import org.beamproject.common.Participant;
 import org.beamproject.common.crypto.BouncyCastleIntegrator;
-import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.util.Base58;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -39,8 +38,8 @@ public class UrlAssemblerTest {
 
     @Before
     public void setUp() {
-        server = new Participant(EccKeyPairGenerator.generate());
-        user = new Participant(EccKeyPairGenerator.generate());
+        server = Participant.generate();
+        user = Participant.generate();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -70,8 +69,8 @@ public class UrlAssemblerTest {
 
     @Test
     public void testToUrlByServerAndUser() {
-        server = new Participant(EccKeyPairGenerator.generate());
-        user = new Participant(EccKeyPairGenerator.generate());
+        server = Participant.generate();
+        user = Participant.generate();
         url = UrlAssembler.toUrlByServerAndUser(server, user, NAME);
 
         String serverPart = server.getPublicKeyAsBase58();
@@ -91,7 +90,7 @@ public class UrlAssemblerTest {
 
     @Test
     public void testToUrlByServer() {
-        server = new Participant(EccKeyPairGenerator.generate());
+        server = Participant.generate();
         url = UrlAssembler.toUrlByServer(server);
 
         String serverPart = server.getPublicKeyAsBase58();
@@ -152,8 +151,8 @@ public class UrlAssemblerTest {
 
     @Test
     public void testToContactByServerAndUserUrlOnBouncyCastleProvider() {
-        server = new Participant(EccKeyPairGenerator.generate());
-        user = new Participant(EccKeyPairGenerator.generate());
+        server = Participant.generate();
+        user = Participant.generate();
 
         Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
 
@@ -166,8 +165,8 @@ public class UrlAssemblerTest {
 
     @Test
     public void testToContactByServerAndUserUrlOnCorrectUrl() {
-        server = new Participant(EccKeyPairGenerator.generate());
-        user = new Participant(EccKeyPairGenerator.generate());
+        server = Participant.generate();
+        user = Participant.generate();
 
         url = UrlAssembler.toUrlByServerAndUser(server, user, NAME);
         contact = UrlAssembler.toContactByServerAndUserUrl(url);

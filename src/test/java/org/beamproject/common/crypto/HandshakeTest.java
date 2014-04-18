@@ -35,8 +35,8 @@ public class HandshakeTest {
 
     @Before
     public void setUp() {
-        localParticipant = new Participant(EccKeyPairGenerator.generate());
-        fullRemoteParticipant = new Participant(EccKeyPairGenerator.generate());
+        localParticipant = Participant.generate();
+        fullRemoteParticipant = Participant.generate();
         remoteParticipant = new Participant(EccKeyPairGenerator.fromPublicKey(fullRemoteParticipant.getPublicKeyAsBytes()));
         signer = new EccSigner();
     }

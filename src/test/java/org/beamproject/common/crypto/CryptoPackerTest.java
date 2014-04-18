@@ -38,8 +38,8 @@ public class CryptoPackerTest {
 
     @Before
     public void setUp() {
-        localParticipant = new Participant(EccKeyPairGenerator.generate());
-        reomteParticipant = new Participant(EccKeyPairGenerator.generate());
+        localParticipant = Participant.generate();
+        reomteParticipant = Participant.generate();
 
         plaintext = new Message();
         plaintext.setVersion(Message.DEFAUTL_VERSION);

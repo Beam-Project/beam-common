@@ -110,7 +110,7 @@ public class ParticipantTest {
         assertFalse(participant.equals(null));
         assertFalse(participant.equals(other));
 
-        other = new Participant(EccKeyPairGenerator.generate());
+        other = Participant.generate();
         assertFalse(participant.equals(other));
 
         other.keyPair = EccKeyPairGenerator.fromPublicKey(participant.getPublicKeyAsBytes());
@@ -140,7 +140,7 @@ public class ParticipantTest {
      */
     @Test
     public void testEqualsOnNullKeyPairs() {
-        Participant other = new Participant(EccKeyPairGenerator.generate());
+        Participant other = Participant.generate();
 
         participant.keyPair = null;
         assertFalse(participant.equals(null));
@@ -153,7 +153,7 @@ public class ParticipantTest {
     @Test
     public void testHashCode() {
         int hashCode = participant.hashCode();
-        Participant other = new Participant(EccKeyPairGenerator.generate());
+        Participant other = Participant.generate();
 
         assertFalse(hashCode == other.hashCode());
 

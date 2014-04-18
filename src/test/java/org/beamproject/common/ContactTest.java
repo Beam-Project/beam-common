@@ -18,7 +18,6 @@
  */
 package org.beamproject.common;
 
-import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -32,8 +31,8 @@ public class ContactTest {
 
     @Before
     public void setUp() {
-        server = new Participant(EccKeyPairGenerator.generate());
-        user = new Participant(EccKeyPairGenerator.generate());
+        server = Participant.generate();
+        user = Participant.generate();
         contact = new Contact(server, user, name);
     }
 

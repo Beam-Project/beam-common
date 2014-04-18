@@ -20,7 +20,6 @@ package org.beamproject.common;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -35,7 +34,7 @@ public class MessageTest {
     @Before
     public void setUp() {
         message = new Message();
-        participant = new Participant(EccKeyPairGenerator.generate());
+        participant = Participant.generate();
         content = new HashMap<>();
     }
     
