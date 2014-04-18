@@ -135,7 +135,6 @@ public abstract class Handshake {
     byte[] localSignature;
     byte[] remoteSignature;
     EccSigner signer;
-    Message responseDone;
     byte[] sessionKey;
 
     protected Handshake(Participant localParticipant) {

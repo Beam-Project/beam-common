@@ -29,6 +29,7 @@ import org.beamproject.common.util.Exceptions;
 public class HandshakeChallenge extends Handshake {
 
     Message challenge;
+    Message success;
 
     /**
      * Allows to negotiate authentication between the given
@@ -82,15 +83,15 @@ public class HandshakeChallenge extends Handshake {
         createSuccess();
         calculateSessionKey();
 
-        return responseDone;
+        return success;
     }
 
     private void createSuccess() {
-        responseDone = new Message();
-        responseDone.setVersion(Message.DEFAUTL_VERSION);
-        responseDone.setParticipant(remoteParticipant);
-        responseDone.appendContent(MessageField.CNT_CRPHASE, Phase.SUCCESS.getBytes());
-        responseDone.appendContent(MessageField.CNT_CRSIG, localSignature);
+        success = new Message();
+        success.setVersion(Message.DEFAUTL_VERSION);
+        success.setParticipant(remoteParticipant);
+        success.appendContent(MessageField.CNT_CRPHASE, Phase.SUCCESS.getBytes());
+        success.appendContent(MessageField.CNT_CRSIG, localSignature);
     }
 
     @Override
