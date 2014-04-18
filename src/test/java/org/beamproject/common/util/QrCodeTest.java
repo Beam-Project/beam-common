@@ -31,6 +31,11 @@ public class QrCodeTest {
         QrCode.encode(null, DIMENSION_IN_PX);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testEncodeOnEmptyString() {
+        QrCode.encode("", DIMENSION_IN_PX);
+    }
+
     @Test
     public void testEncodeOnNegativeOrZeroDimension() {
         for (int i = -100; i < 0; i++) {
