@@ -21,7 +21,7 @@ package org.beamproject.common.crypto;
 import java.security.KeyPair;
 import java.security.Security;
 import java.util.HashSet;
-import org.beamproject.common.util.Base64;
+import org.beamproject.common.util.Base58;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -104,9 +104,9 @@ public class EccSignerTest {
 
         for (int i = 0; i < numberOfTries; i++) {
             signature = signer.sign(data, keyPair.getPrivate());
-            String asBase64 = Base64.encode(signature);
-            assertFalse(signatures.contains(asBase64));
-            signatures.add(asBase64);
+            String asBase58 = Base58.encode(signature);
+            assertFalse(signatures.contains(asBase58));
+            signatures.add(asBase58);
         }
     }
 
