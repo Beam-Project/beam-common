@@ -19,7 +19,9 @@
 package org.beamproject.common.crypto;
 
 import org.beamproject.common.Message;
-import org.beamproject.common.MessageField;
+import static org.beamproject.common.Message.DEFAUTL_VERSION;
+import static org.beamproject.common.MessageField.*;
+import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -52,10 +54,10 @@ public class HandshakeResponseTest extends HandshakeTest {
     public void testConsumeChallenge() {
         remoteNonce = generateNonce();
         Message challenge = new Message();
-        challenge.setVersion(Message.DEFAUTL_VERSION);
+        challenge.setVersion(DEFAUTL_VERSION);
         challenge.setParticipant(localParticipant);
-        challenge.appendContent(MessageField.CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
-        challenge.appendContent(MessageField.CNT_CRNONCE, remoteNonce);
+        challenge.appendContent(CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
+        challenge.appendContent(CNT_CRNONCE, remoteNonce);
 
         responder.consumeChallenge(challenge);
 
@@ -68,12 +70,12 @@ public class HandshakeResponseTest extends HandshakeTest {
         testConsumeChallenge(); // To set the response into the correct state.
         Message response = responder.produceResponse();
 
-        assertEquals(Message.DEFAUTL_VERSION, response.getVersion());
-        assertEquals(Handshake.Phase.RESPONSE.toString(), new String(response.getContent(MessageField.CNT_CRPHASE)));
+        assertEquals(DEFAUTL_VERSION, response.getVersion());
+        assertEquals(RESPONSE.toString(), new String(response.getContent(CNT_CRPHASE)));
         assertEquals(remoteParticipant, response.getParticipant());
 
         byte[] localDigest = digest(localParticipant, responder.localNonce, remoteNonce);
-        assertTrue(signer.verify(localDigest, response.getContent(MessageField.CNT_CRSIG), localParticipant.getPublicKey()));
+        assertTrue(signer.verify(localDigest, response.getContent(CNT_CRSIG), localParticipant.getPublicKey()));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -88,9 +90,9 @@ public class HandshakeResponseTest extends HandshakeTest {
         byte[] sessionKey = calculateSessionKey(remoteNonce, responder.localNonce);
 
         Message responseDone = new Message();
-        responseDone.setVersion(Message.DEFAUTL_VERSION);
+        responseDone.setVersion(DEFAUTL_VERSION);
         responseDone.setParticipant(localParticipant);
-        responseDone.appendContent(MessageField.CNT_CRSIG, remoteSignature);
+        responseDone.appendContent(CNT_CRSIG, remoteSignature);
         responder.consumeSuccess(responseDone);
 
         assertArrayEquals(sessionKey, responder.getSessionKey());

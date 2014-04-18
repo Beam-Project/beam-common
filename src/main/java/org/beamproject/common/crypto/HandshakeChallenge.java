@@ -21,7 +21,9 @@ package org.beamproject.common.crypto;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import org.beamproject.common.Message;
-import org.beamproject.common.MessageField;
+import static org.beamproject.common.Message.DEFAUTL_VERSION;
+import static org.beamproject.common.MessageField.*;
+import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.beamproject.common.Participant;
 import org.beamproject.common.util.Arrays;
 import org.beamproject.common.util.Exceptions;
@@ -50,48 +52,48 @@ public class HandshakeChallenge extends Handshake {
         this.remoteParticipant = remoteParticipant;
 
         generateLocalNonce();
-        createChallenge();
+        assembleChallengeMessage();
 
         return challenge;
     }
 
-    private void createChallenge() {
+    private void assembleChallengeMessage() {
         challenge = new Message();
-        challenge.setVersion(Message.DEFAUTL_VERSION);
+        challenge.setVersion(DEFAUTL_VERSION);
         challenge.setParticipant(remoteParticipant);
-        challenge.appendContent(MessageField.CNT_CRPHASE, Phase.CHALLENGE.getBytes());
-        challenge.appendContent(MessageField.CNT_CRPUBKEY, localParticipant.getPublicKeyAsBytes());
-        challenge.appendContent(MessageField.CNT_CRNONCE, localNonce);
+        challenge.appendContent(CNT_CRPHASE, CHALLENGE.getBytes());
+        challenge.appendContent(CNT_CRPUBKEY, localParticipant.getPublicKeyAsBytes());
+        challenge.appendContent(CNT_CRNONCE, localNonce);
     }
 
     public void consumeResponse(Message challenge) {
         Exceptions.verifyArgumentsNotNull(challenge);
 
-        if (!challenge.containsContent(MessageField.CNT_CRNONCE)
-                || !challenge.containsContent(MessageField.CNT_CRSIG)) {
+        if (!challenge.containsContent(CNT_CRNONCE)
+                || !challenge.containsContent(CNT_CRSIG)) {
             throw new IllegalStateException("At this state, the response has to contain CRNONCE and CRSIG of the ohter side.");
         }
 
-        remoteNonce = challenge.getContent(MessageField.CNT_CRNONCE);
-        remoteSignature = challenge.getContent(MessageField.CNT_CRSIG);
+        remoteNonce = challenge.getContent(CNT_CRNONCE);
+        remoteSignature = challenge.getContent(CNT_CRSIG);
 
         verifyRemoteSignature();
     }
 
     public Message produceSuccess() {
         calculateLocalSignature();
-        createSuccess();
+        assembleSuccessMessage();
         calculateSessionKey();
 
         return success;
     }
 
-    private void createSuccess() {
+    private void assembleSuccessMessage() {
         success = new Message();
-        success.setVersion(Message.DEFAUTL_VERSION);
+        success.setVersion(DEFAUTL_VERSION);
         success.setParticipant(remoteParticipant);
-        success.appendContent(MessageField.CNT_CRPHASE, Phase.SUCCESS.getBytes());
-        success.appendContent(MessageField.CNT_CRSIG, localSignature);
+        success.appendContent(CNT_CRPHASE, SUCCESS.getBytes());
+        success.appendContent(CNT_CRSIG, localSignature);
     }
 
     @Override

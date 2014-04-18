@@ -19,7 +19,9 @@
 package org.beamproject.common.crypto;
 
 import org.beamproject.common.Message;
-import org.beamproject.common.MessageField;
+import static org.beamproject.common.Message.DEFAUTL_VERSION;
+import static org.beamproject.common.MessageField.*;
+import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -52,11 +54,11 @@ public class HandshakeChallengeTest extends HandshakeTest {
     public void testProduceChallenge() {
         Message challenge = challenger.produceChallenge(remoteParticipant);
 
-        assertEquals(Message.DEFAUTL_VERSION, challenge.getVersion());
-        assertEquals(Handshake.Phase.CHALLENGE.toString(), new String(challenge.getContent(MessageField.CNT_CRPHASE)));
+        assertEquals(DEFAUTL_VERSION, challenge.getVersion());
+        assertEquals(CHALLENGE.toString(), new String(challenge.getContent(CNT_CRPHASE)));
         assertEquals(remoteParticipant, challenge.getParticipant());
-        assertArrayEquals(localParticipant.getPublicKeyAsBytes(), challenge.getContent(MessageField.CNT_CRPUBKEY));
-        assertArrayEquals(challenger.localNonce, challenge.getContent(MessageField.CNT_CRNONCE));
+        assertArrayEquals(localParticipant.getPublicKeyAsBytes(), challenge.getContent(CNT_CRPUBKEY));
+        assertArrayEquals(challenger.localNonce, challenge.getContent(CNT_CRNONCE));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -71,10 +73,10 @@ public class HandshakeChallengeTest extends HandshakeTest {
         remoteSignature = sign(fullRemoteParticipant, remoteNonce, challenger.localNonce);
 
         Message response = new Message();
-        response.setVersion(Message.DEFAUTL_VERSION);
+        response.setVersion(DEFAUTL_VERSION);
         response.setParticipant(localParticipant);
-        response.appendContent(MessageField.CNT_CRNONCE, remoteNonce);
-        response.appendContent(MessageField.CNT_CRSIG, remoteSignature);
+        response.appendContent(CNT_CRNONCE, remoteNonce);
+        response.appendContent(CNT_CRSIG, remoteSignature);
 
         challenger.consumeResponse(response);
 
@@ -88,12 +90,12 @@ public class HandshakeChallengeTest extends HandshakeTest {
         testConsumeResponse(); // To set the challenge into the correct state.
         Message success = challenger.produceSuccess();
 
-        assertEquals(Message.DEFAUTL_VERSION, success.getVersion());
-        assertEquals(Handshake.Phase.SUCCESS.toString(), new String(success.getContent(MessageField.CNT_CRPHASE)));
+        assertEquals(DEFAUTL_VERSION, success.getVersion());
+        assertEquals(SUCCESS.toString(), new String(success.getContent(CNT_CRPHASE)));
         assertEquals(remoteParticipant, success.getParticipant());
 
         byte[] localDigest = digest(localParticipant, challenger.localNonce, remoteNonce);
-        assertTrue(signer.verify(localDigest, success.getContent(MessageField.CNT_CRSIG), localParticipant.getPublicKey()));
+        assertTrue(signer.verify(localDigest, success.getContent(CNT_CRSIG), localParticipant.getPublicKey()));
 
         byte[] sessionKey = calculateSessionKey(challenger.localNonce, remoteNonce);
         assertArrayEquals(sessionKey, challenger.getSessionKey());

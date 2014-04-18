@@ -22,7 +22,9 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import org.beamproject.common.Message;
-import org.beamproject.common.MessageField;
+import static org.beamproject.common.Message.DEFAUTL_VERSION;
+import static org.beamproject.common.MessageField.*;
+import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.beamproject.common.Participant;
 import org.beamproject.common.util.Arrays;
 import org.beamproject.common.util.Exceptions;
@@ -47,32 +49,32 @@ public class HandshakeResponse extends Handshake {
     public void consumeChallenge(Message challenge) {
         Exceptions.verifyArgumentsNotNull(challenge);
 
-        KeyPair remoteKeyPair = EccKeyPairGenerator.fromPublicKey(challenge.getContent(MessageField.CNT_CRPUBKEY));
+        KeyPair remoteKeyPair = EccKeyPairGenerator.fromPublicKey(challenge.getContent(CNT_CRPUBKEY));
         remoteParticipant = new Participant(remoteKeyPair);
-        remoteNonce = challenge.getContent(MessageField.CNT_CRNONCE);
+        remoteNonce = challenge.getContent(CNT_CRNONCE);
     }
 
     public Message produceResponse() {
         generateLocalNonce();
         calculateLocalSignature();
-        createResponse();
+        assembleResponseMessage();
 
         return response;
     }
 
-    private void createResponse() {
+    private void assembleResponseMessage() {
         response = new Message();
-        response.setVersion(Message.DEFAUTL_VERSION);
+        response.setVersion(DEFAUTL_VERSION);
         response.setParticipant(remoteParticipant);
-        response.appendContent(MessageField.CNT_CRPHASE, Handshake.Phase.RESPONSE.getBytes());
-        response.appendContent(MessageField.CNT_CRNONCE, localNonce);
-        response.appendContent(MessageField.CNT_CRSIG, localSignature);
+        response.appendContent(CNT_CRPHASE, RESPONSE.getBytes());
+        response.appendContent(CNT_CRNONCE, localNonce);
+        response.appendContent(CNT_CRSIG, localSignature);
     }
 
     public void consumeSuccess(Message done) {
         Exceptions.verifyArgumentsNotNull(done);
 
-        remoteSignature = done.getContent(MessageField.CNT_CRSIG);
+        remoteSignature = done.getContent(CNT_CRSIG);
         verifyRemoteSignature();
         calculateSessionKey();
     }
