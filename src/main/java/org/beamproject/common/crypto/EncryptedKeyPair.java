@@ -18,82 +18,73 @@
  */
 package org.beamproject.common.crypto;
 
-import org.beamproject.common.util.Base64;
-import org.beamproject.common.util.Exceptions;
+import org.beamproject.common.util.Base58;
 
 /**
  * This class is a simple holder for the output of the {@link KeyPairCryptor}.
  */
 public class EncryptedKeyPair {
 
-    String encryptedPublicKey;
-    String encryptedPrivateKey;
-    String salt;
+    byte[] encryptedPublicKey;
+    byte[] encryptedPrivateKey;
+    byte[] salt;
 
     /**
      * Initializes the new instance of {@link EncryptedKeyPair} with the needed
-     * data: encrypted public and private key and the salt. All strings have to
-     * be {@link Base64} encoded!
+     * data: encrypted public and private key and the salt.
+     * <p>
+     * If an argument is null, it is replaced by an empty array.
      *
-     * @param encryptedPublicKey The encrypted public key, encoded as
-     * {@link Base64}.
-     * @param encryptedPrivateKey The encrypted private key, encoded as
-     * {@link Base64}.
-     * @param salt The salt used for the encryption, encoded as {@link Base64}.
-     * @throws IllegalArgumentException If at least one of the arguments is
-     * null.
+     * @param encryptedPublicKey The encrypted public key.
+     * @param encryptedPrivateKey The encrypted private key.
+     * @param salt The salt used for the encryption.
      */
-    public EncryptedKeyPair(String encryptedPublicKey, String encryptedPrivateKey, String salt) {
-        Exceptions.verifyArgumentsNotNull(encryptedPublicKey, encryptedPrivateKey, salt);
-
-        this.encryptedPublicKey = encryptedPublicKey;
-        this.encryptedPrivateKey = encryptedPrivateKey;
-        this.salt = salt;
+    public EncryptedKeyPair(byte[] encryptedPublicKey, byte[] encryptedPrivateKey, byte[] salt) {
+        this.encryptedPublicKey = encryptedPublicKey == null ? new byte[0] : encryptedPublicKey;
+        this.encryptedPrivateKey = encryptedPrivateKey == null ? new byte[0] : encryptedPrivateKey;
+        this.salt = salt == null ? new byte[0] : salt;
     }
 
     /**
-     * @return The encrypted public key as String, {@link Base64} encoded.
+     * @return The encrypted public key as String, {@link Base58} encoded.
      */
     public String getEncryptedPublicKey() {
+        return Base58.encode(encryptedPublicKey);
+    }
+
+    /**
+     * @return The encrypted private key as String, {@link Base58} encoded.
+     */
+    public String getEncryptedPrivateKey() {
+        return Base58.encode(encryptedPrivateKey);
+    }
+
+    /**
+     * @return The salt which was used to encrypt the keys, {@link Base58}
+     * encoded.
+     */
+    public String getSalt() {
+        return Base58.encode(salt);
+    }
+
+    /**
+     * @return The encrypted public key as byte array.
+     */
+    public byte[] getEncryptedPublicKeyAsBytes() {
         return encryptedPublicKey;
     }
 
     /**
-     * @return The encrypted private key as String, {@link Base64} encoded.
+     * @return The encrypted private key as byte array.
      */
-    public String getEncryptedPrivateKey() {
+    public byte[] getEncryptedPrivateKeyAsBytes() {
         return encryptedPrivateKey;
     }
 
     /**
-     * @return The salt which was used to encrypt the keys, {@link Base64}
-     * encoded.
-     */
-    public String getSalt() {
-        return salt;
-    }
-
-    /**
-     * @return The encrypted public key as byte array (the data is not
-     * {@link Base64} encoded anymore).
-     */
-    public byte[] getEncryptedPublicKeyAsBytes() {
-        return Base64.decode(encryptedPublicKey);
-    }
-
-    /**
-     * @return The encrypted private key as byte array (the data is not
-     * {@link Base64} encoded anymore).
-     */
-    public byte[] getEncryptedPrivateKeyAsBytes() {
-        return Base64.decode(encryptedPrivateKey);
-    }
-
-    /**
-     * @return The salt which was used to encrypt the keys, as byte array (the
-     * data is not {@link Base64} encoded anymore).
+     * @return The salt which was used to encrypt the keys, as byte array.
      */
     public byte[] getSaltAsBytes() {
-        return Base64.decode(salt);
+        return salt;
     }
 }

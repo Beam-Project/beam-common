@@ -18,52 +18,55 @@
  */
 package org.beamproject.common.crypto;
 
-import org.beamproject.common.util.Base64;
+import org.beamproject.common.util.Base58;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class EncryptedKeyPairTest {
 
-    private final String PUBLIC_KEY = "publicKey";
-    private final String PRIVATE_KEY = "privateKey";
-    private final String SALT = "salt";
+    private final byte[] PUBLIC_KEY = "publicKey".getBytes();
+    private final byte[] PRIVATE_KEY = "privateKey".getBytes();
+    private final byte[] SALT = "salt".getBytes();
     private EncryptedKeyPair pair;
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testConstructorOnNulls() {
-        pair = new EncryptedKeyPair(null, null, null);
-    }
+        pair = new EncryptedKeyPair(PUBLIC_KEY, PRIVATE_KEY, SALT);
+        assertArrayEquals(PUBLIC_KEY, pair.encryptedPublicKey);
+        assertArrayEquals(PRIVATE_KEY, pair.encryptedPrivateKey);
+        assertArrayEquals(SALT, pair.salt);
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnNullPublicKey() {
         pair = new EncryptedKeyPair(null, PRIVATE_KEY, SALT);
-    }
+        assertArrayEquals(new byte[0], pair.encryptedPublicKey);
+        assertArrayEquals(PRIVATE_KEY, pair.encryptedPrivateKey);
+        assertArrayEquals(SALT, pair.salt);
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnNullPrivateKey() {
         pair = new EncryptedKeyPair(PUBLIC_KEY, null, SALT);
-    }
+        assertArrayEquals(PUBLIC_KEY, pair.encryptedPublicKey);
+        assertArrayEquals(new byte[0], pair.encryptedPrivateKey);
+        assertArrayEquals(SALT, pair.salt);
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnNullSalt() {
-        pair = new EncryptedKeyPair(PUBLIC_KEY, PRIVATE_KEY, null);
+        pair = new EncryptedKeyPair(PRIVATE_KEY, PUBLIC_KEY, null);
+        assertArrayEquals(PRIVATE_KEY, pair.encryptedPublicKey);
+        assertArrayEquals(PUBLIC_KEY, pair.encryptedPrivateKey);
+        assertArrayEquals(new byte[0], pair.salt);
     }
 
     @Test
     public void testGetters() {
         pair = new EncryptedKeyPair(PUBLIC_KEY, PRIVATE_KEY, SALT);
 
-        assertEquals(PUBLIC_KEY, pair.getEncryptedPublicKey());
-        assertEquals(PRIVATE_KEY, pair.getEncryptedPrivateKey());
-        assertEquals(SALT, pair.getSalt());
+        assertArrayEquals(PUBLIC_KEY, pair.getEncryptedPublicKeyAsBytes());
+        assertArrayEquals(PRIVATE_KEY, pair.getEncryptedPrivateKeyAsBytes());
+        assertArrayEquals(SALT, pair.getSaltAsBytes());
 
-        byte[] publicKeyAsBytes = Base64.decode(PUBLIC_KEY);
-        byte[] privateKeyAsBytes = Base64.decode(PRIVATE_KEY);
-        byte[] saltAsBytes = Base64.decode(SALT);
+        String publicKeyAsBase58 = Base58.encode(PUBLIC_KEY);
+        String privateKeyAsBase58 = Base58.encode(PRIVATE_KEY);
+        String saltAsBase58 = Base58.encode(SALT);
 
-        assertArrayEquals(publicKeyAsBytes, pair.getEncryptedPublicKeyAsBytes());
-        assertArrayEquals(privateKeyAsBytes, pair.getEncryptedPrivateKeyAsBytes());
-        assertArrayEquals(saltAsBytes, pair.getSaltAsBytes());
+        assertEquals(publicKeyAsBase58, pair.getEncryptedPublicKey());
+        assertEquals(privateKeyAsBase58, pair.getEncryptedPrivateKey());
+        assertEquals(saltAsBase58, pair.getSalt());
     }
 
 }
