@@ -53,7 +53,7 @@ public class HandshakeChallengeTest extends HandshakeTest {
         Message initChallenge = challenge.produceInitChallenge(remoteParticipant);
 
         assertEquals(Message.DEFAUTL_VERSION, initChallenge.getVersion());
-        assertEquals(Handshake.Phase.INIT_CHALLENGE.toString(), new String(initChallenge.getContent(MessageField.CNT_CRPHASE)));
+        assertEquals(Handshake.Phase.CHALLENGE.toString(), new String(initChallenge.getContent(MessageField.CNT_CRPHASE)));
         assertEquals(remoteParticipant, initChallenge.getParticipant());
         assertArrayEquals(localParticipant.getPublicKeyAsBytes(), initChallenge.getContent(MessageField.CNT_CRPUBKEY));
         assertArrayEquals(challenge.localNonce, initChallenge.getContent(MessageField.CNT_CRNONCE));
@@ -89,7 +89,7 @@ public class HandshakeChallengeTest extends HandshakeTest {
         Message responseDone = challenge.produceResponseDone();
 
         assertEquals(Message.DEFAUTL_VERSION, responseDone.getVersion());
-        assertEquals(Handshake.Phase.RESPONSE_DONE.toString(), new String(responseDone.getContent(MessageField.CNT_CRPHASE)));
+        assertEquals(Handshake.Phase.SUCCESS.toString(), new String(responseDone.getContent(MessageField.CNT_CRPHASE)));
         assertEquals(remoteParticipant, responseDone.getParticipant());
 
         byte[] localDigest = digest(localParticipant, challenge.localNonce, remoteNonce);

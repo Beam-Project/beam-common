@@ -31,8 +31,10 @@ import org.beamproject.common.util.Exceptions;
  * generated which can be used for later communication.
  * <p>
  * {@link EccSigner} is used for signing.
+ *
  * @see HandshakeChallenge
  * @see HandshakeResponse
+ * @see EccSigner
  */
 public abstract class Handshake {
 
@@ -49,8 +51,8 @@ public abstract class Handshake {
          * PHASE 1 OF 3: The following is described from the point of view of
          * the participant who wants to establish an authenticated session.
          * <p>
-         * {@code INIT_CHALLENGE} tells the other side that an authenticated
-         * session should be established.
+         * {@code CHALLENGE} tells the other side that an authenticated session
+         * should be established.
          * <p>
          * At this time, this side knows the other sides {@link PublicKey} and
          * therefore already can encrypt the first message.
@@ -60,19 +62,18 @@ public abstract class Handshake {
          * as challenge a nonce as bytes of the length of
          * {@link AuthenticationSequence.NUMBER_OF_CHALLENGE_BYTES}.
          */
-        INIT_CHALLENGE("INIT_CHALLENGE"),
+        CHALLENGE("CHALLENGE"),
         /**
          * PHASE 2 OF 3: The following is described from the point of view of
          * the participant who has been contacted by an unidentified participant
          * who wants to establish an authenticated session.
          * <p>
-         * {@code RESPONSE_CHALLENGE} tells the other side that the challenge is
-         * accepted and this side therefore is able to
-         * encryptedResponseChallenge.
+         * {@code RESPONSE} tells the other side that the challenge is accepted
+         * and this side therefore is able to encryptedResponseChallenge.
          * <p>
          * At this time, this side knows the other sides {@link PublicKey} since
-         * it was sent as part of phase 1, {@code INIT_CHALLENGE}. Also, this
-         * side knows the challenge sent by the other side as a part of phase 1.
+         * it was sent as part of phase 1, {@code CHALLENGE}. Also, this side
+         * knows the challenge sent by the other side as a part of phase 1.
          * <p>
          * This side has to send: An own challenge (nonce as bytes) of the
          * length of {@link AuthenticationSequence.NUMBER_OF_CHALLENGE_BYTES}.
@@ -81,14 +82,14 @@ public abstract class Handshake {
          * with this sides private key. The resulting signature has to be sent
          * with the own nonce.
          */
-        RESPONSE_CHALLENGE("RESPONSE_CHALLENGE"),
+        RESPONSE("RESPONSE"),
         /**
          * PHASE 3 OF 3: The following is described from the point of view of
          * the participant who wants to establish an authenticated session.
          * <p>
-         * {@code RESPONSE_DONE} tells the other side that its during phase 1
-         * sent challenge is verified and the challenge, sent by the other side
-         * as part of phase 2, is accepted and this side therefore is able to
+         * {@code SUCCESS} tells the other side that its during phase 1 sent
+         * challenge is verified and the challenge, sent by the other side as
+         * part of phase 2, is accepted and this side therefore is able to
          * respond.
          * <p>
          * At this time, this side knows the other sides {@link PublicKey}, the
@@ -102,7 +103,16 @@ public abstract class Handshake {
          * generated in phase 1.) This digest has to be signed with this sides
          * private key. The resulting signature has to be sent.
          */
-        RESPONSE_DONE("RESPONSE_DONE");
+        SUCCESS("SUCCESS"),
+        /**
+         * {@code FAILURE} tells the other side that something went wrong during
+         * the authentication process. This could be a wrong key, a wrong phase,
+         * a delay, etc..
+         * <p>
+         * When a FAILURE is sent, the authentication process has to be
+         * restarted from the side how wants to establish authenticity.
+         */
+        FAILURE("FAILURE");
 
         private final String value;
 

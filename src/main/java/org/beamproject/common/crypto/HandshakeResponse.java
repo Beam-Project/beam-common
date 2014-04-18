@@ -64,7 +64,7 @@ public class HandshakeResponse extends Handshake {
         responseChallenge = new Message();
         responseChallenge.setVersion(Message.DEFAUTL_VERSION);
         responseChallenge.setParticipant(remoteParticipant);
-        responseChallenge.appendContent(MessageField.CNT_CRPHASE, Handshake.Phase.RESPONSE_CHALLENGE.getBytes());
+        responseChallenge.appendContent(MessageField.CNT_CRPHASE, Handshake.Phase.RESPONSE.getBytes());
         responseChallenge.appendContent(MessageField.CNT_CRNONCE, localNonce);
         responseChallenge.appendContent(MessageField.CNT_CRSIG, localSignature);
     }

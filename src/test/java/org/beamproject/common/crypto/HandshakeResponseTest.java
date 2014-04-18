@@ -70,7 +70,7 @@ public class HandshakeResponseTest extends HandshakeTest {
         Message responseChallenge = response.produceResponseChallenge();
 
         assertEquals(Message.DEFAUTL_VERSION, responseChallenge.getVersion());
-        assertEquals(Handshake.Phase.RESPONSE_CHALLENGE.toString(), new String(responseChallenge.getContent(MessageField.CNT_CRPHASE)));
+        assertEquals(Handshake.Phase.RESPONSE.toString(), new String(responseChallenge.getContent(MessageField.CNT_CRPHASE)));
         assertEquals(remoteParticipant, responseChallenge.getParticipant());
 
         byte[] localDigest = digest(localParticipant, response.localNonce, remoteNonce);
