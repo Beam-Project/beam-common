@@ -4,7 +4,7 @@
  * needed methods, reformatted the document, changed the Javadoc to our needs
  * and added input validation).
  *
- * All changes are release under the following license:
+ * All changes are released under the following license:
  * <p>
  * Copyright (C) 2013, 2014 beamproject.org
  *
