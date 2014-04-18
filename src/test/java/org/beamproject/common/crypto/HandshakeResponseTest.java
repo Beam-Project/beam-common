@@ -26,87 +26,85 @@ import org.junit.Before;
 
 public class HandshakeResponseTest extends HandshakeTest {
 
-    private HandshakeResponse response;
+    private HandshakeResponse responder;
 
     @Before
     public void setUpResponse() {
-        response = new HandshakeResponse(localParticipant);
+        responder = new HandshakeResponse(localParticipant);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNull() {
-        response = new HandshakeResponse(null);
+        responder = new HandshakeResponse(null);
     }
 
     @Test
     public void testConstructorOnAssignments() {
-        assertSame(localParticipant, response.localParticipant);
+        assertSame(localParticipant, responder.localParticipant);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testConsumeInitChallengeOnNull() {
-        response.consumeInitChallenge(null);
+    public void testConsumeChallengeOnNull() {
+        responder.consumeChallenge(null);
     }
 
     @Test
-    public void testConsumeInitChallenge() {
+    public void testConsumeChallenge() {
         remoteNonce = generateNonce();
+        Message challenge = new Message();
+        challenge.setVersion(Message.DEFAUTL_VERSION);
+        challenge.setParticipant(localParticipant);
+        challenge.appendContent(MessageField.CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
+        challenge.appendContent(MessageField.CNT_CRNONCE, remoteNonce);
 
-        Message initChallenge = new Message();
-        initChallenge.setVersion(Message.DEFAUTL_VERSION);
-        initChallenge.setParticipant(localParticipant);
-        initChallenge.appendContent(MessageField.CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
-        initChallenge.appendContent(MessageField.CNT_CRNONCE, remoteNonce);
+        responder.consumeChallenge(challenge);
 
-        response.consumeInitChallenge(initChallenge);
-
-        assertEquals(remoteParticipant, response.remoteParticipant);
-        assertArrayEquals(remoteNonce, response.remoteNonce);
+        assertEquals(remoteParticipant, responder.remoteParticipant);
+        assertArrayEquals(remoteNonce, responder.remoteNonce);
     }
 
     @Test
-    public void testProduceResponseChallenge() {
-        testConsumeInitChallenge(); // To set the response into the correct state.
-        Message responseChallenge = response.produceResponseChallenge();
+    public void testProduceResponse() {
+        testConsumeChallenge(); // To set the response into the correct state.
+        Message response = responder.produceResponse();
 
-        assertEquals(Message.DEFAUTL_VERSION, responseChallenge.getVersion());
-        assertEquals(Handshake.Phase.RESPONSE.toString(), new String(responseChallenge.getContent(MessageField.CNT_CRPHASE)));
-        assertEquals(remoteParticipant, responseChallenge.getParticipant());
+        assertEquals(Message.DEFAUTL_VERSION, response.getVersion());
+        assertEquals(Handshake.Phase.RESPONSE.toString(), new String(response.getContent(MessageField.CNT_CRPHASE)));
+        assertEquals(remoteParticipant, response.getParticipant());
 
-        byte[] localDigest = digest(localParticipant, response.localNonce, remoteNonce);
-        assertTrue(signer.verify(localDigest, responseChallenge.getContent(MessageField.CNT_CRSIG), localParticipant.getPublicKey()));
+        byte[] localDigest = digest(localParticipant, responder.localNonce, remoteNonce);
+        assertTrue(signer.verify(localDigest, response.getContent(MessageField.CNT_CRSIG), localParticipant.getPublicKey()));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testConsumeResponseDoneOnNull() {
-        response.consumeResponseDone(null);
+    public void testConsumeSuccessOnNull() {
+        responder.consumeSuccess(null);
     }
 
     @Test
-    public void testConsumeResponseDone() {
-        testProduceResponseChallenge(); // Set the response into correct state.
-        remoteSignature = sign(fullRemoteParticipant, remoteNonce, response.localNonce);
-        byte[] sessionKey = calculateSessionKey(remoteNonce, response.localNonce);
+    public void testConsumeSuccess() {
+        testProduceResponse(); // Set the response into correct state.
+        remoteSignature = sign(fullRemoteParticipant, remoteNonce, responder.localNonce);
+        byte[] sessionKey = calculateSessionKey(remoteNonce, responder.localNonce);
 
         Message responseDone = new Message();
         responseDone.setVersion(Message.DEFAUTL_VERSION);
         responseDone.setParticipant(localParticipant);
         responseDone.appendContent(MessageField.CNT_CRSIG, remoteSignature);
+        responder.consumeSuccess(responseDone);
 
-        response.consumeResponseDone(responseDone);
-
-        assertArrayEquals(sessionKey, response.getSessionKey());
+        assertArrayEquals(sessionKey, responder.getSessionKey());
     }
 
     @Test(expected = IllegalStateException.class)
     public void testGetSessionKeyOnUncompletedAuthentication() {
-        response.getSessionKey();
+        responder.getSessionKey();
     }
 
     public void testGetSessionKey() {
         byte[] testKey = new byte[]{1, 2, 3};
-        response.sessionKey = testKey;
-        assertSame(testKey, response.getSessionKey());
+        responder.sessionKey = testKey;
+        assertSame(testKey, responder.getSessionKey());
     }
 
 }

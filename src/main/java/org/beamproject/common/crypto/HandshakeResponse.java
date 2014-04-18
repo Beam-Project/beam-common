@@ -29,7 +29,7 @@ import org.beamproject.common.util.Exceptions;
 
 public class HandshakeResponse extends Handshake {
 
-    Message responseChallenge;
+    Message response;
 
     /**
      * Allows to negotiate authentication between {@link Participant}s. The
@@ -44,7 +44,7 @@ public class HandshakeResponse extends Handshake {
         super(localParticipant);
     }
 
-    public void consumeInitChallenge(Message challenge) {
+    public void consumeChallenge(Message challenge) {
         Exceptions.verifyArgumentsNotNull(challenge);
 
         KeyPair remoteKeyPair = EccKeyPairGenerator.fromPublicKey(challenge.getContent(MessageField.CNT_CRPUBKEY));
@@ -52,24 +52,24 @@ public class HandshakeResponse extends Handshake {
         remoteNonce = challenge.getContent(MessageField.CNT_CRNONCE);
     }
 
-    public Message produceResponseChallenge() {
+    public Message produceResponse() {
         generateLocalNonce();
         calculateLocalSignature();
-        createResponseChallenge();
+        createResponse();
 
-        return responseChallenge;
+        return response;
     }
 
-    private void createResponseChallenge() {
-        responseChallenge = new Message();
-        responseChallenge.setVersion(Message.DEFAUTL_VERSION);
-        responseChallenge.setParticipant(remoteParticipant);
-        responseChallenge.appendContent(MessageField.CNT_CRPHASE, Handshake.Phase.RESPONSE.getBytes());
-        responseChallenge.appendContent(MessageField.CNT_CRNONCE, localNonce);
-        responseChallenge.appendContent(MessageField.CNT_CRSIG, localSignature);
+    private void createResponse() {
+        response = new Message();
+        response.setVersion(Message.DEFAUTL_VERSION);
+        response.setParticipant(remoteParticipant);
+        response.appendContent(MessageField.CNT_CRPHASE, Handshake.Phase.RESPONSE.getBytes());
+        response.appendContent(MessageField.CNT_CRNONCE, localNonce);
+        response.appendContent(MessageField.CNT_CRSIG, localSignature);
     }
 
-    public void consumeResponseDone(Message done) {
+    public void consumeSuccess(Message done) {
         Exceptions.verifyArgumentsNotNull(done);
 
         remoteSignature = done.getContent(MessageField.CNT_CRSIG);

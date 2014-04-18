@@ -28,7 +28,7 @@ import org.beamproject.common.util.Exceptions;
 
 public class HandshakeChallenge extends Handshake {
 
-    Message initChallenge;
+    Message challenge;
 
     /**
      * Allows to negotiate authentication between the given
@@ -43,27 +43,27 @@ public class HandshakeChallenge extends Handshake {
         super(localParticipant);
     }
 
-    public Message produceInitChallenge(Participant remoteParticipant) {
+    public Message produceChallenge(Participant remoteParticipant) {
         Exceptions.verifyArgumentsNotNull(remoteParticipant);
 
         this.remoteParticipant = remoteParticipant;
 
         generateLocalNonce();
-        createInitChallenge();
+        createChallenge();
 
-        return initChallenge;
+        return challenge;
     }
 
-    private void createInitChallenge() {
-        initChallenge = new Message();
-        initChallenge.setVersion(Message.DEFAUTL_VERSION);
-        initChallenge.setParticipant(remoteParticipant);
-        initChallenge.appendContent(MessageField.CNT_CRPHASE, Phase.CHALLENGE.getBytes());
-        initChallenge.appendContent(MessageField.CNT_CRPUBKEY, localParticipant.getPublicKeyAsBytes());
-        initChallenge.appendContent(MessageField.CNT_CRNONCE, localNonce);
+    private void createChallenge() {
+        challenge = new Message();
+        challenge.setVersion(Message.DEFAUTL_VERSION);
+        challenge.setParticipant(remoteParticipant);
+        challenge.appendContent(MessageField.CNT_CRPHASE, Phase.CHALLENGE.getBytes());
+        challenge.appendContent(MessageField.CNT_CRPUBKEY, localParticipant.getPublicKeyAsBytes());
+        challenge.appendContent(MessageField.CNT_CRNONCE, localNonce);
     }
 
-    public void consumeResponseChallenge(Message challenge) {
+    public void consumeResponse(Message challenge) {
         Exceptions.verifyArgumentsNotNull(challenge);
 
         if (!challenge.containsContent(MessageField.CNT_CRNONCE)
@@ -77,15 +77,15 @@ public class HandshakeChallenge extends Handshake {
         verifyRemoteSignature();
     }
 
-    public Message produceResponseDone() {
+    public Message produceSuccess() {
         calculateLocalSignature();
-        createResponseDone();
+        createSuccess();
         calculateSessionKey();
 
         return responseDone;
     }
 
-    private void createResponseDone() {
+    private void createSuccess() {
         responseDone = new Message();
         responseDone.setVersion(Message.DEFAUTL_VERSION);
         responseDone.setParticipant(remoteParticipant);

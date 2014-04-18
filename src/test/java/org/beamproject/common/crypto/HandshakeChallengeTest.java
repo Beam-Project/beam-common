@@ -26,49 +26,49 @@ import org.junit.Before;
 
 public class HandshakeChallengeTest extends HandshakeTest {
 
-    private HandshakeChallenge challenge;
+    private HandshakeChallenge challenger;
 
     @Before
     public void setUpChallenge() {
-        challenge = new HandshakeChallenge(localParticipant);
+        challenger = new HandshakeChallenge(localParticipant);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNull() {
-        challenge = new HandshakeChallenge(null);
+        challenger = new HandshakeChallenge(null);
     }
 
     @Test
     public void testConstructorOnAssignments() {
-        assertSame(localParticipant, challenge.localParticipant);
+        assertSame(localParticipant, challenger.localParticipant);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testProduceInitChallengeOnNull() {
-        challenge.produceInitChallenge(null);
+    public void testProduceChallengeOnNull() {
+        challenger.produceChallenge(null);
     }
 
     @Test
-    public void testProduceInitChallenge() {
-        Message initChallenge = challenge.produceInitChallenge(remoteParticipant);
+    public void testProduceChallenge() {
+        Message challenge = challenger.produceChallenge(remoteParticipant);
 
-        assertEquals(Message.DEFAUTL_VERSION, initChallenge.getVersion());
-        assertEquals(Handshake.Phase.CHALLENGE.toString(), new String(initChallenge.getContent(MessageField.CNT_CRPHASE)));
-        assertEquals(remoteParticipant, initChallenge.getParticipant());
-        assertArrayEquals(localParticipant.getPublicKeyAsBytes(), initChallenge.getContent(MessageField.CNT_CRPUBKEY));
-        assertArrayEquals(challenge.localNonce, initChallenge.getContent(MessageField.CNT_CRNONCE));
+        assertEquals(Message.DEFAUTL_VERSION, challenge.getVersion());
+        assertEquals(Handshake.Phase.CHALLENGE.toString(), new String(challenge.getContent(MessageField.CNT_CRPHASE)));
+        assertEquals(remoteParticipant, challenge.getParticipant());
+        assertArrayEquals(localParticipant.getPublicKeyAsBytes(), challenge.getContent(MessageField.CNT_CRPUBKEY));
+        assertArrayEquals(challenger.localNonce, challenge.getContent(MessageField.CNT_CRNONCE));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testConsumeResponseChallengeOnNull() {
-        challenge.consumeResponseChallenge(null);
+    public void testConsumeResponseOnNull() {
+        challenger.consumeResponse(null);
     }
 
     @Test
-    public void testConsumeResponseChallenge() {
-        testProduceInitChallenge(); // To generate localNonce in challenge.
+    public void testConsumeResponse() {
+        testProduceChallenge(); // To generate localNonce in challenge.
         remoteNonce = generateNonce();
-        remoteSignature = sign(fullRemoteParticipant, remoteNonce, challenge.localNonce);
+        remoteSignature = sign(fullRemoteParticipant, remoteNonce, challenger.localNonce);
 
         Message response = new Message();
         response.setVersion(Message.DEFAUTL_VERSION);
@@ -76,38 +76,38 @@ public class HandshakeChallengeTest extends HandshakeTest {
         response.appendContent(MessageField.CNT_CRNONCE, remoteNonce);
         response.appendContent(MessageField.CNT_CRSIG, remoteSignature);
 
-        challenge.consumeResponseChallenge(response);
+        challenger.consumeResponse(response);
 
-        assertArrayEquals(remoteNonce, challenge.remoteNonce);
-        assertEquals(remoteParticipant, challenge.remoteParticipant);
-        assertArrayEquals(remoteSignature, challenge.remoteSignature);
+        assertArrayEquals(remoteNonce, challenger.remoteNonce);
+        assertEquals(remoteParticipant, challenger.remoteParticipant);
+        assertArrayEquals(remoteSignature, challenger.remoteSignature);
     }
 
     @Test
-    public void testProduceResponseDone() {
-        testConsumeResponseChallenge(); // To set the challenge into the correct state.
-        Message responseDone = challenge.produceResponseDone();
+    public void testProduceSuccess() {
+        testConsumeResponse(); // To set the challenge into the correct state.
+        Message success = challenger.produceSuccess();
 
-        assertEquals(Message.DEFAUTL_VERSION, responseDone.getVersion());
-        assertEquals(Handshake.Phase.SUCCESS.toString(), new String(responseDone.getContent(MessageField.CNT_CRPHASE)));
-        assertEquals(remoteParticipant, responseDone.getParticipant());
+        assertEquals(Message.DEFAUTL_VERSION, success.getVersion());
+        assertEquals(Handshake.Phase.SUCCESS.toString(), new String(success.getContent(MessageField.CNT_CRPHASE)));
+        assertEquals(remoteParticipant, success.getParticipant());
 
-        byte[] localDigest = digest(localParticipant, challenge.localNonce, remoteNonce);
-        assertTrue(signer.verify(localDigest, responseDone.getContent(MessageField.CNT_CRSIG), localParticipant.getPublicKey()));
+        byte[] localDigest = digest(localParticipant, challenger.localNonce, remoteNonce);
+        assertTrue(signer.verify(localDigest, success.getContent(MessageField.CNT_CRSIG), localParticipant.getPublicKey()));
 
-        byte[] sessionKey = calculateSessionKey(challenge.localNonce, remoteNonce);
-        assertArrayEquals(sessionKey, challenge.getSessionKey());
+        byte[] sessionKey = calculateSessionKey(challenger.localNonce, remoteNonce);
+        assertArrayEquals(sessionKey, challenger.getSessionKey());
     }
 
     @Test(expected = IllegalStateException.class)
     public void testGetSessionKeyOnUncompletedAuthentication() {
-        challenge.getSessionKey();
+        challenger.getSessionKey();
     }
 
     public void testGetSessionKey() {
         byte[] testKey = new byte[]{1, 2, 3};
-        challenge.sessionKey = testKey;
-        assertSame(testKey, challenge.getSessionKey());
+        challenger.sessionKey = testKey;
+        assertSame(testKey, challenger.getSessionKey());
     }
 
 }
