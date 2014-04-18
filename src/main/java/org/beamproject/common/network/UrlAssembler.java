@@ -32,7 +32,7 @@ import org.beamproject.common.util.Base58;
 import org.beamproject.common.util.Exceptions;
 
 /**
- * Creates an URL of a {@link Participant} and its Server.
+ * Creates an URL of a user and its server.
  */
 public class UrlAssembler {
 
@@ -43,7 +43,7 @@ public class UrlAssembler {
     public final static String PARAMETER_KEY_VALUE_ASSINGER = "=";
     public final static String NAME_PARAMETER_KEY = "name";
     public final static int PUBLIC_KEY_BASE58_LENGTH = 164;
-    public final static String SERVER_CLIENT_SCHEME_REGEX = "beam:[0-9a-zA-Z]"
+    public final static String SERVER_USER_SCHEME_REGEX = "beam:[0-9a-zA-Z]"
             + "{" + PUBLIC_KEY_BASE58_LENGTH + "}"
             + "\\" + SERVER_SEPERATOR + "[0-9a-zA-Z]"
             + "{" + PUBLIC_KEY_BASE58_LENGTH + "}"
@@ -55,21 +55,21 @@ public class UrlAssembler {
     }
 
     /**
-     * Assembles an beam URL of a client with its server.
+     * Assembles an beam URL of a user with its server.
      *
      * @param server The server, may not be null.
-     * @param client The client, may not be null.
-     * @param name The name of the client (the person).
+     * @param user The user, may not be null.
+     * @param name The name of the user (the person).
      * @return The link.
      * @throws IllegalArgumentException If at least one of the arguments is
      * null.
      */
-    public static String toUrlByServerAndClient(Participant server, Participant client, String name) {
-        Exceptions.verifyArgumentsNotNull(server, client);
+    public static String toUrlByServerAndUser(Participant server, Participant user, String name) {
+        Exceptions.verifyArgumentsNotNull(server, user);
         Exceptions.verifyArgumentsNotEmpty(name);
 
         return SCHEME_PART + server.getPublicKeyAsBase58()
-                + SERVER_SEPERATOR + client.getPublicKeyAsBase58()
+                + SERVER_SEPERATOR + user.getPublicKeyAsBase58()
                 + PARAMETER_PART + NAME_PARAMETER_KEY + PARAMETER_KEY_VALUE_ASSINGER + Base58.encode(name.getBytes());
     }
 
@@ -90,45 +90,45 @@ public class UrlAssembler {
      * Converts a given {@code url} to a {@link Contact} instance. Only the
      * public key values will be set.
      *
-     * @param url This has to be a valid beam url and may not be null.
+     * @param url This has to be a valid beam URL and may not be null.
      * @return The {@link Contact}, initialized with two {@link Participant}s, a
-     * server and a client. Both do only contain a {@link PublicKey}.
-     * @throws IllegalArgumentException If the argument is not a valid beam url.
+     * server and a user. Both do only contain a {@link PublicKey}.
+     * @throws IllegalArgumentException If the argument is not a valid beam URL.
      * @throws IllegalStateException If the internally used {@link KeyFactory}
      * could not be set up.
      */
-    public static Contact toContactByServerAndClientUrl(String url) {
+    public static Contact toContactByServerAndUserUrl(String url) {
         Exceptions.verifyArgumentsNotEmpty(url);
 
-        if (!url.matches(SERVER_CLIENT_SCHEME_REGEX)) {
+        if (!url.matches(SERVER_USER_SCHEME_REGEX)) {
             throw new IllegalArgumentException("The given url is not a valid beam url.");
         }
 
         int serverPartStart = SCHEME_PART.length();
         int serverPartEnd = serverPartStart + PUBLIC_KEY_BASE58_LENGTH;
-        int clientPartStart = serverPartEnd + SERVER_SEPERATOR.length();
-        int clientPartEnd = clientPartStart + PUBLIC_KEY_BASE58_LENGTH;
-        int parameterPartStart = clientPartEnd + PARAMETER_PART.length();
+        int userPartStart = serverPartEnd + SERVER_SEPERATOR.length();
+        int userPartEnd = userPartStart + PUBLIC_KEY_BASE58_LENGTH;
+        int parameterPartStart = userPartEnd + PARAMETER_PART.length();
         int parameterPartEnd = url.length();
 
         String serverPart = url.substring(serverPartStart, serverPartEnd);
-        String clientPart = url.substring(clientPartStart, clientPartEnd);
+        String userPart = url.substring(userPartStart, userPartEnd);
         String parameterPart = url.substring(parameterPartStart, parameterPartEnd);
 
         PublicKey serverKey = toPublicKey(serverPart);
-        PublicKey clientKey = toPublicKey(clientPart);
+        PublicKey userKey = toPublicKey(userPart);
 
         KeyPair serverKeyPair = new KeyPair(serverKey, null);
-        KeyPair clientKeyPair = new KeyPair(clientKey, null);
+        KeyPair userKeyPair = new KeyPair(userKey, null);
 
         Participant server = new Participant(serverKeyPair);
-        Participant client = new Participant(clientKeyPair);
+        Participant user = new Participant(userKeyPair);
 
         String[] parameterPairs = parameterPart.split(PARAMETER_SEPERATOR);
         String nameAsBase58 = getParameterValueByKey(parameterPairs, NAME_PARAMETER_KEY);
         String name = new String(Base58.decode(nameAsBase58));
 
-        return new Contact(server, client, name);
+        return new Contact(server, user, name);
     }
 
     private static String getParameterValueByKey(String[] parameterPairs, String key) {
