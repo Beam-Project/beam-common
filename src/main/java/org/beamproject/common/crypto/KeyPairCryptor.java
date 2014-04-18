@@ -31,12 +31,12 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import org.beamproject.common.util.Base64;
+import org.beamproject.common.util.Base58;
 import org.beamproject.common.util.Exceptions;
 
 /**
  * The {@link KeyPairCryptor} allows to encrypt/decrypt {@link  KeyPair}s to/from
- * {@link Base64}ed strings. It uses PBKDF2 to strengthen the user password.<p>
+ * {@link Base58}ed strings. It uses PBKDF2 to strengthen the user password.<p>
  * This code is inspired by Jerry Orrs article "Secure Password Storage - Lots
  * of don'ts, a few dos, and a concrete Java SE example". See:
  * http://blog.jerryorr.com/2012/05/secure-password-storage-lots-of-donts.html.
@@ -101,21 +101,18 @@ public class KeyPairCryptor {
 
     private static EncryptedKeyPair encryptKeys(Key aesKey, KeyPair keyPair, byte[] salt) {
         AesCbcCipher cipher = new AesCbcCipher(aesKey.getEncoded());
-        String publicKeyAsBase64 = "";
-        String privateKeyAsBase64 = "";
-        String saltAsBase64 = Base64.encode(salt);
+        byte[] encryptedPublicKey = null;
+        byte[] encryptedPrivateKey = null;
 
         if (keyPair.getPublic() != null) {
-            byte[] encryptedPublicKey = cipher.encrypt(keyPair.getPublic().getEncoded());
-            publicKeyAsBase64 = Base64.encode(encryptedPublicKey);
+            encryptedPublicKey = cipher.encrypt(keyPair.getPublic().getEncoded());
         }
 
         if (keyPair.getPrivate() != null) {
-            byte[] encryptedPrivateKey = cipher.encrypt(keyPair.getPrivate().getEncoded());
-            privateKeyAsBase64 = Base64.encode(encryptedPrivateKey);
+            encryptedPrivateKey = cipher.encrypt(keyPair.getPrivate().getEncoded());
         }
 
-        return new EncryptedKeyPair(publicKeyAsBase64, privateKeyAsBase64, saltAsBase64);
+        return new EncryptedKeyPair(encryptedPublicKey, encryptedPrivateKey, salt);
     }
 
     /**
