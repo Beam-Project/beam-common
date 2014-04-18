@@ -48,7 +48,7 @@ public class Base58Test {
 
     @Test(expected = IllegalArgumentException.class)
     public void testDecodeOnNull() {
-        Base64.decode(null);
+        Base58.decode(null);
     }
 
     @Test
