@@ -42,7 +42,7 @@ public class CryptoPackerTest {
         reomteParticipant = Participant.generate();
 
         plaintext = new Message();
-        plaintext.setVersion(Message.DEFAUTL_VERSION);
+        plaintext.setVersion(Message.VERSION);
         plaintext.setParticipant(localParticipant);
         plaintext.appendContent(MessageField.CNT_MSG, MESSAGE);
 
