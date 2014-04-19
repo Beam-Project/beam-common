@@ -20,6 +20,19 @@ package org.beamproject.common;
 
 import java.security.PublicKey;
 
+/**
+ * Defines all typically used field identifier used in {@link Message}s.
+ * <p>
+ * Identifier for nested structures are grouped by a common prefix. For example,
+ * all identifier that are used in the content field {@code CNT}, are named like
+ * {@code CNT_<identifier>}.
+ * <br />
+ * The identifier <b>values</b> itself do not have any prefixes, i.e. an
+ * identifier, say {@code CNT_MSG} (for the filed {@code CNT} and in that the
+ * field {@code MSG}), returns the value {@code MSG}.
+ *
+ * @see Message
+ */
 public enum MessageField {
 
     /**
