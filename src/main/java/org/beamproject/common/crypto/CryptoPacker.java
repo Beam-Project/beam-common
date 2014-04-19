@@ -82,7 +82,7 @@ public class CryptoPacker {
     private void validatePlaintext(Message plaintext) {
         Exceptions.verifyArgumentsNotNull(plaintext);
 
-        if (plaintext.getParticipant() == null) {
+        if (plaintext.getRecipient() == null) {
             throw new IllegalArgumentException("The argument has to have a Participant.");
         }
 
@@ -107,7 +107,7 @@ public class CryptoPacker {
         Map<String, byte[]> map = new HashMap<>();
 
         map.put(MessageField.VRS.toString(), plaintext.getVersion().getBytes());
-        map.put(MessageField.PRT.toString(), plaintext.getParticipant().getPublicKeyAsBytes());
+        map.put(MessageField.PRT.toString(), plaintext.getRecipient().getPublicKeyAsBytes());
         map.put(MessageField.CNT.toString(), encryptedPacketContent);
 
         ciphertext = serializeMap(map);
@@ -158,7 +158,7 @@ public class CryptoPacker {
         plaintext = new Message();
 
         plaintext.setVersion(readStringFromMap(map, MessageField.VRS));
-        plaintext.setParticipant(participant);
+        plaintext.setRecipient(participant);
         encryptedPacketContent = readByteArrayFromMap(map, MessageField.CNT);
     }
 

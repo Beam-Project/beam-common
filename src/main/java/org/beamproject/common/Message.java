@@ -24,13 +24,13 @@ import org.beamproject.common.util.Exceptions;
 
 /**
  * A message contains all necessary information to transport the content to the
- * targeted participant.
+ * targeted recipient.
  */
 public class Message {
 
     public final static String VERSION = "1.0";
     String version;
-    Participant participant;
+    Participant recipient;
     Map<String, byte[]> content = new HashMap<>();
 
     /**
@@ -50,20 +50,20 @@ public class Message {
     }
 
     /**
-     * Sets the {@link Participant} of this {@link Message}. This is the
-     * <i>recipient</i> (the next server or at the end the target client).
+     * Sets the recipient of this {@link Message}. This is the the next server
+     * or at the end the user.
      *
-     * @param participant
+     * @param recipient
      * @throws IllegalArgumentException If the argument is null.
      */
-    public void setParticipant(Participant participant) {
-        Exceptions.verifyArgumentsNotNull(participant);
+    public void setRecipient(Participant recipient) {
+        Exceptions.verifyArgumentsNotNull(recipient);
 
-        this.participant = participant;
+        this.recipient = recipient;
     }
 
-    public Participant getParticipant() {
-        return participant;
+    public Participant getRecipient() {
+        return recipient;
     }
 
     /**

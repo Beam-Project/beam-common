@@ -43,7 +43,7 @@ public class CryptoPackerTest {
 
         plaintext = new Message();
         plaintext.setVersion(Message.VERSION);
-        plaintext.setParticipant(localParticipant);
+        plaintext.setRecipient(localParticipant);
         plaintext.putContent(MessageField.CNT_MSG, MESSAGE);
 
         localPacker = new CryptoPacker();
@@ -79,7 +79,7 @@ public class CryptoPackerTest {
 
     @Test
     public void testPackAndEncryptOnParticipant() {
-        plaintext.setParticipant(localParticipant);
+        plaintext.setRecipient(localParticipant);
         localPacker.packAndEncrypt(plaintext, reomteParticipant);
     }
 

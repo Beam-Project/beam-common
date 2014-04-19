@@ -56,7 +56,7 @@ public class HandshakeChallengeTest extends HandshakeTest {
 
         assertEquals(VERSION, challenge.getVersion());
         assertEquals(CHALLENGE.toString(), new String(challenge.getContent(CNT_CRPHASE)));
-        assertEquals(remoteParticipant, challenge.getParticipant());
+        assertEquals(remoteParticipant, challenge.getRecipient());
         assertArrayEquals(localParticipant.getPublicKeyAsBytes(), challenge.getContent(CNT_CRPUBKEY));
         assertArrayEquals(challenger.localNonce, challenge.getContent(CNT_CRNONCE));
     }
@@ -74,7 +74,7 @@ public class HandshakeChallengeTest extends HandshakeTest {
 
         Message response = new Message();
         response.setVersion(VERSION);
-        response.setParticipant(localParticipant);
+        response.setRecipient(localParticipant);
         response.putContent(CNT_CRNONCE, remoteNonce);
         response.putContent(CNT_CRSIG, remoteSignature);
 
@@ -92,7 +92,7 @@ public class HandshakeChallengeTest extends HandshakeTest {
 
         assertEquals(VERSION, success.getVersion());
         assertEquals(SUCCESS.toString(), new String(success.getContent(CNT_CRPHASE)));
-        assertEquals(remoteParticipant, success.getParticipant());
+        assertEquals(remoteParticipant, success.getRecipient());
 
         byte[] localDigest = digest(localParticipant, challenger.localNonce, remoteNonce);
         assertTrue(signer.verify(localDigest, success.getContent(CNT_CRSIG), localParticipant.getPublicKey()));

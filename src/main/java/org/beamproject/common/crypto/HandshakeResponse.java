@@ -104,7 +104,7 @@ public class HandshakeResponse extends Handshake {
         } else if (challenge.getVersion() == null
                 || !challenge.getVersion().equals(VERSION)) {
             exceptionMessage += "version not set or unknown";
-        } else if (challenge.getParticipant() == null) {
+        } else if (challenge.getRecipient() == null) {
             exceptionMessage += "participant not set";
         } else if (!challenge.containsContent(CNT_CRPHASE)
                 || challenge.getContent(CNT_CRPHASE) == null
@@ -166,7 +166,7 @@ public class HandshakeResponse extends Handshake {
     private void assembleResponseMessage() {
         response = new Message();
         response.setVersion(VERSION);
-        response.setParticipant(remoteParticipant);
+        response.setRecipient(remoteParticipant);
         response.putContent(CNT_CRPHASE, RESPONSE.getBytes());
         response.putContent(CNT_CRNONCE, localNonce);
         response.putContent(CNT_CRSIG, localSignature);
@@ -218,7 +218,7 @@ public class HandshakeResponse extends Handshake {
         } else if (success.getVersion() == null
                 || !success.getVersion().equals(VERSION)) {
             exceptionMessage += "version not set or unknown";
-        } else if (success.getParticipant() == null) {
+        } else if (success.getRecipient() == null) {
             exceptionMessage += "participant not set";
         } else if (!success.containsContent(CNT_CRPHASE)
                 || success.getContent(CNT_CRPHASE) == null

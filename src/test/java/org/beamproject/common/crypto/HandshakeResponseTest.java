@@ -144,7 +144,7 @@ public class HandshakeResponseTest extends HandshakeTest {
         remoteNonce = generateNonce();
         Message challenge = new Message();
         challenge.setVersion(VERSION);
-        challenge.setParticipant(localParticipant);
+        challenge.setRecipient(localParticipant);
         challenge.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
         challenge.putContent(CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
         challenge.putContent(CNT_CRNONCE, remoteNonce);
@@ -156,7 +156,7 @@ public class HandshakeResponseTest extends HandshakeTest {
     public void testConsumeChallengeOnInvokingMethodTwice() {
         Message challenge = new Message();
         challenge.setVersion(VERSION);
-        challenge.setParticipant(localParticipant);
+        challenge.setRecipient(localParticipant);
         challenge.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
         challenge.putContent(CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
         challenge.putContent(CNT_CRNONCE, generateNonce());
@@ -173,7 +173,7 @@ public class HandshakeResponseTest extends HandshakeTest {
         Message response = responder.produceResponse();
 
         assertEquals(VERSION, response.getVersion());
-        assertEquals(remoteParticipant, response.getParticipant());
+        assertEquals(remoteParticipant, response.getRecipient());
         assertEquals(RESPONSE.toString(), new String(response.getContent(CNT_CRPHASE)));
         assertEquals(NONCE_LENGTH_IN_BYTES, responder.localNonce.length);
         assertTrue(responder.localSignature.length >= MINIMAL_SIGNATURE_LENGTH_IN_BYTES);
@@ -322,7 +322,7 @@ public class HandshakeResponseTest extends HandshakeTest {
     private Message getBasicSuccess() {
         Message success = new Message();
         success.setVersion(VERSION);
-        success.setParticipant(localParticipant);
+        success.setRecipient(localParticipant);
         success.putContent(CNT_CRPHASE, SUCCESS.getBytes());
         success.putContent(CNT_CRSIG, new byte[MINIMAL_SIGNATURE_LENGTH_IN_BYTES]);
 

@@ -60,7 +60,7 @@ public class HandshakeChallenge extends Handshake {
     private void assembleChallengeMessage() {
         challenge = new Message();
         challenge.setVersion(VERSION);
-        challenge.setParticipant(remoteParticipant);
+        challenge.setRecipient(remoteParticipant);
         challenge.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
         challenge.putContent(CNT_CRPUBKEY, localParticipant.getPublicKeyAsBytes());
         challenge.putContent(CNT_CRNONCE, localNonce);
@@ -91,7 +91,7 @@ public class HandshakeChallenge extends Handshake {
     private void assembleSuccessMessage() {
         success = new Message();
         success.setVersion(VERSION);
-        success.setParticipant(remoteParticipant);
+        success.setRecipient(remoteParticipant);
         success.putContent(CNT_CRPHASE, SUCCESS.getBytes());
         success.putContent(CNT_CRSIG, localSignature);
     }
