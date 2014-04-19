@@ -51,14 +51,26 @@ public class Participant implements Serializable {
         this.keyPair = keyPair;
     }
 
+    /**
+     * @return The public key.
+     */
     public PublicKey getPublicKey() {
         return keyPair.getPublic();
     }
 
+    /**
+     * @return The bytes of the {@link PublicKey}, X509 encoded.
+     */
     public byte[] getPublicKeyAsBytes() {
         return getPublicKey().getEncoded();
     }
 
+    /**
+     * Gets the public key of this {@link Participant}. The bytes of the public
+     * key, encoded as X509, are {@link Base58} encoded to a String.
+     *
+     * @return The public key, {@link Base58} encoded.
+     */
     public String getPublicKeyAsBase58() {
         return Base58.encode(getPublicKeyAsBytes());
     }
@@ -67,10 +79,17 @@ public class Participant implements Serializable {
         return keyPair.getPrivate();
     }
 
+    /**
+     * @return The bytes of the {@link PublicKey}, PKCS8 encoded.
+     */
     public byte[] getPrivateKeyAsBytes() {
         return getPrivateKey().getEncoded();
     }
 
+    /**
+     * @return The private key of this {@link Participant}, if available.
+     * {@code null} otherwise.
+     */
     public KeyPair getKeyPair() {
         return keyPair;
     }
