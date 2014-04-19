@@ -38,12 +38,12 @@ import org.beamproject.common.util.Exceptions;
  */
 public abstract class Handshake {
 
-    public final static int NUMBER_OF_CHALLENGE_BYTES = 128;
+    public final static int CHALLENGE_LENGTH_IN_BYTES = 128;
 
     /**
-     * Lists all the allowed different phases in the Challenge-Response
-     * protocol. Every {@link Message} has to contain exactly one {@link Phase}
-     * value in its content.
+     * Lists all the allowed different phases in the handshake protocol. Every
+     * {@link Message} has to contain exactly one {@link Phase} value in its
+     * content.
      */
     public enum Phase {
 
@@ -145,7 +145,7 @@ public abstract class Handshake {
     }
 
     protected void generateLocalNonce() {
-        localNonce = new byte[NUMBER_OF_CHALLENGE_BYTES];
+        localNonce = new byte[CHALLENGE_LENGTH_IN_BYTES];
         SecureRandom random = new SecureRandom();
         random.nextBytes(localNonce);
     }
