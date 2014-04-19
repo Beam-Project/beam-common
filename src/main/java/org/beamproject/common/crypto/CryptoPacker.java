@@ -34,6 +34,9 @@ import org.msgpack.unpacker.Unpacker;
 /**
  * Allows to pack-and-encrypt and decrypt-and-unpack using {@link EccCipher} and
  * {@link MessagePack}.
+ *
+ * @see Message
+ * @see EccCipher
  */
 public class CryptoPacker {
 
@@ -61,16 +64,13 @@ public class CryptoPacker {
      * <b>not</b> be encrypted.
      *
      * @param plaintext The unencrypted {@link Message}. This may not be null.
-     * @param participant The {@link Participant} with the needed key, in this
-     * case the public key of the remote side. This may not be null.
      * @return The messagePacked and encrypted message.
      * @throws IllegalArgumentException If at least one argument is null.
      * @throws PackerException If anything goes wrong during
      * packing/serializing.
      */
-    public byte[] packAndEncrypt(Message plaintext, Participant participant) {
+    public byte[] packAndEncrypt(Message plaintext) {
         validatePlaintext(plaintext);
-        validateParticipant(participant);
 
         packContentField();
         encryptContentField();
@@ -89,18 +89,12 @@ public class CryptoPacker {
         this.plaintext = plaintext;
     }
 
-    private void validateParticipant(Participant participant) {
-        Exceptions.verifyArgumentsNotNull(participant);
-
-        this.participant = participant;
-    }
-
     private void packContentField() {
         packedContent = serializeMap(plaintext.getContent());
     }
 
     private void encryptContentField() {
-        encryptedPacketContent = eccCipher.encrypt(packedContent, participant.getPublicKey());
+        encryptedPacketContent = eccCipher.encrypt(packedContent, plaintext.getRecipient().getPublicKey());
     }
 
     private void packAllPartsToCiphertext() {
@@ -150,6 +144,12 @@ public class CryptoPacker {
         Exceptions.verifyArgumentsNotNull(ciphertext);
 
         this.ciphertext = ciphertext;
+    }
+
+    private void validateParticipant(Participant participant) {
+        Exceptions.verifyArgumentsNotNull(participant);
+
+        this.participant = participant;
     }
 
     private void unpackAllPartsFromCiphertext() {

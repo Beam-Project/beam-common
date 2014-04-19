@@ -31,17 +31,16 @@ public class CryptoPackerTest {
     private final int EXPECTED_CPHERTEXT_LENGTH_IN_BYTES = 304;
     private CryptoPacker localPacker;
     private CryptoPacker remotePacker;
-    private Participant localParticipant;
-    private Participant reomteParticipant;
+    private Participant participantWithBothKeys;
+    private Participant participantWithPublicKey;
     private Message plaintext;
     private byte[] ciphertext;
 
     @Before
     public void setUp() {
-        localParticipant = Participant.generate();
-        reomteParticipant = Participant.generate();
-
-        plaintext = new Message(localParticipant);
+        participantWithBothKeys = Participant.generate();
+        participantWithPublicKey = new Participant(EccKeyPairGenerator.fromPublicKey(participantWithBothKeys.getPublicKeyAsBytes()));
+        plaintext = new Message(participantWithPublicKey);
         plaintext.putContent(MessageField.CNT_MSG, MESSAGE);
 
         localPacker = new CryptoPacker();
@@ -55,32 +54,22 @@ public class CryptoPackerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testPackAndEncryptOnNulls() {
-        localPacker.packAndEncrypt(null, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testPackAndEncryptOnNullPlaintext() {
-        localPacker.packAndEncrypt(null, localParticipant);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testPackAndEncryptOnNullParticipant() {
-        localPacker.packAndEncrypt(plaintext, null);
+    public void testPackAndEncryptOnNull() {
+        localPacker.packAndEncrypt(null);
     }
 
     @Test
     public void testPackAndEncryptOnParticipant() {
-        plaintext.setRecipient(localParticipant);
-        localPacker.packAndEncrypt(plaintext, reomteParticipant);
+        plaintext.setRecipient(participantWithPublicKey);
+        localPacker.packAndEncrypt(plaintext);
     }
 
     @Test
     public void testPackAndEncryptAndAlsoDecryptAndUnpack() {
-        ciphertext = localPacker.packAndEncrypt(plaintext, reomteParticipant);
+        ciphertext = localPacker.packAndEncrypt(plaintext);
         assertEquals(EXPECTED_CPHERTEXT_LENGTH_IN_BYTES, ciphertext.length);
 
-        Message decryptedCiphertext = remotePacker.decryptAndUnpack(ciphertext, reomteParticipant);
+        Message decryptedCiphertext = remotePacker.decryptAndUnpack(ciphertext, participantWithBothKeys);
         assertEquals(plaintext.getVersion(), decryptedCiphertext.getVersion());
         assertArrayEquals(plaintext.getContent(MessageField.CNT_MSG), decryptedCiphertext.getContent(MessageField.CNT_MSG));
     }
@@ -92,7 +81,7 @@ public class CryptoPackerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testDecryptAndUnPackOnNullCiphertext() {
-        remotePacker.decryptAndUnpack(null, reomteParticipant);
+        remotePacker.decryptAndUnpack(null, participantWithPublicKey);
     }
 
     @Test(expected = IllegalArgumentException.class)
