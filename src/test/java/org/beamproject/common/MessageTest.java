@@ -33,14 +33,20 @@ public class MessageTest {
 
     @Before
     public void setUp() {
-        message = new Message();
         recipient = Participant.generate();
+        message = new Message(recipient);
         content = new HashMap<>();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructorOnNull() {
+        message = new Message(null);
+    }
+
     @Test
-    public void testConstructorOnCreatingMap() {
-        message = new Message();
+    public void testConstructor() {
+        assertEquals(Message.VERSION, message.version);
+        assertSame(recipient, message.recipient);
         assertNotNull(message.content);
         assertTrue(message.content.isEmpty());
     }

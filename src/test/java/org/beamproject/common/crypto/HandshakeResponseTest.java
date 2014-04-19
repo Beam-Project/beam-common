@@ -69,17 +69,6 @@ public class HandshakeResponseTest extends HandshakeTest {
     }
 
     @Test(expected = HandshakeException.class)
-    public void testConsumeChallengeOnMissingParticipant() {
-        Message challenge = new Message();
-        challenge.setVersion(VERSION);
-        challenge.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
-        challenge.putContent(CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
-        challenge.putContent(CNT_CRNONCE, generateNonce());
-
-        responder.consumeChallenge(challenge);
-    }
-
-    @Test(expected = HandshakeException.class)
     public void testConsumeChallengeOnMissingPhase() {
         Message challenge = getBasicChallenge();
         challenge.getContent().remove(CNT_CRPHASE.toString());
@@ -142,9 +131,7 @@ public class HandshakeResponseTest extends HandshakeTest {
 
     private Message getBasicChallenge() {
         remoteNonce = generateNonce();
-        Message challenge = new Message();
-        challenge.setVersion(VERSION);
-        challenge.setRecipient(localParticipant);
+        Message challenge = new Message(localParticipant);
         challenge.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
         challenge.putContent(CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
         challenge.putContent(CNT_CRNONCE, remoteNonce);
@@ -154,9 +141,7 @@ public class HandshakeResponseTest extends HandshakeTest {
 
     @Test(expected = HandshakeException.class)
     public void testConsumeChallengeOnInvokingMethodTwice() {
-        Message challenge = new Message();
-        challenge.setVersion(VERSION);
-        challenge.setRecipient(localParticipant);
+        Message challenge = new Message(localParticipant);
         challenge.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
         challenge.putContent(CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
         challenge.putContent(CNT_CRNONCE, generateNonce());
@@ -320,9 +305,7 @@ public class HandshakeResponseTest extends HandshakeTest {
     }
 
     private Message getBasicSuccess() {
-        Message success = new Message();
-        success.setVersion(VERSION);
-        success.setRecipient(localParticipant);
+        Message success = new Message(localParticipant);
         success.putContent(CNT_CRPHASE, SUCCESS.getBytes());
         success.putContent(CNT_CRSIG, new byte[MINIMAL_SIGNATURE_LENGTH_IN_BYTES]);
 

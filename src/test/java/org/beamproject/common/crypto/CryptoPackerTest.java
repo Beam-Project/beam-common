@@ -41,9 +41,7 @@ public class CryptoPackerTest {
         localParticipant = Participant.generate();
         reomteParticipant = Participant.generate();
 
-        plaintext = new Message();
-        plaintext.setVersion(Message.VERSION);
-        plaintext.setRecipient(localParticipant);
+        plaintext = new Message(localParticipant);
         plaintext.putContent(MessageField.CNT_MSG, MESSAGE);
 
         localPacker = new CryptoPacker();
@@ -69,12 +67,6 @@ public class CryptoPackerTest {
     @Test(expected = IllegalArgumentException.class)
     public void testPackAndEncryptOnNullParticipant() {
         localPacker.packAndEncrypt(plaintext, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testPackAndEncryptOnNotSetParticipant() {
-        plaintext = new Message();
-        localPacker.packAndEncrypt(plaintext, reomteParticipant);
     }
 
     @Test

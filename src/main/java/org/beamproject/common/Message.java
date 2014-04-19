@@ -23,15 +23,29 @@ import java.util.Map;
 import org.beamproject.common.util.Exceptions;
 
 /**
- * A message contains all necessary information to transport the content to the
+ * A message contains all necessary information to encrypt the content to the
  * targeted recipient.
  */
 public class Message {
 
     public final static String VERSION = "1.0";
-    String version;
+    String version = VERSION;
     Participant recipient;
     Map<String, byte[]> content = new HashMap<>();
+
+    /**
+     * Creates a new message for the given recipient.
+     * <p>
+     * The version is set to the default value, if not specified differently.
+     *
+     * @param recipient The recipient to which this message should be sent.
+     * @throws IllegalArgumentException If the argument is null.
+     */
+    public Message(Participant recipient) {
+        Exceptions.verifyArgumentsNotNull(recipient);
+
+        this.recipient = recipient;
+    }
 
     /**
      * Sets the version.

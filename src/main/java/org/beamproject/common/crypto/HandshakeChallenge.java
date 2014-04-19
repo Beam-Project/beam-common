@@ -21,7 +21,6 @@ package org.beamproject.common.crypto;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import org.beamproject.common.Message;
-import static org.beamproject.common.Message.VERSION;
 import static org.beamproject.common.MessageField.*;
 import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.beamproject.common.Participant;
@@ -58,9 +57,7 @@ public class HandshakeChallenge extends Handshake {
     }
 
     private void assembleChallengeMessage() {
-        challenge = new Message();
-        challenge.setVersion(VERSION);
-        challenge.setRecipient(remoteParticipant);
+        challenge = new Message(remoteParticipant);
         challenge.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
         challenge.putContent(CNT_CRPUBKEY, localParticipant.getPublicKeyAsBytes());
         challenge.putContent(CNT_CRNONCE, localNonce);
@@ -89,9 +86,7 @@ public class HandshakeChallenge extends Handshake {
     }
 
     private void assembleSuccessMessage() {
-        success = new Message();
-        success.setVersion(VERSION);
-        success.setRecipient(remoteParticipant);
+        success = new Message(remoteParticipant);
         success.putContent(CNT_CRPHASE, SUCCESS.getBytes());
         success.putContent(CNT_CRSIG, localSignature);
     }

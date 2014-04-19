@@ -155,10 +155,8 @@ public class CryptoPacker {
     private void unpackAllPartsFromCiphertext() {
         Map<String, byte[]> map = buildMapFromBytes(ciphertext);
 
-        plaintext = new Message();
-
+        plaintext = new Message(participant);
         plaintext.setVersion(readStringFromMap(map, MessageField.VRS));
-        plaintext.setRecipient(participant);
         encryptedPacketContent = readByteArrayFromMap(map, MessageField.CNT);
     }
 
