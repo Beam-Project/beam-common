@@ -81,23 +81,23 @@ public class MessageTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void testAppendContentOnNulls() {
-        message.appendContent(null, null);
+        message.putContent(null, null);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void testAppendContentOnNullKey() {
-        message.appendContent(null, new byte[]{1, 2, 3});
+        message.putContent(null, new byte[]{1, 2, 3});
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void testAppendContentOnNullContent() {
-        message.appendContent(MessageField.CNT, null);
+        message.putContent(MessageField.CNT, null);
     }
     
     @Test
     public void testAppendContent() {
         byte[] value = "hello".getBytes();
-        message.appendContent(MessageField.CNT, value);
+        message.putContent(MessageField.CNT, value);
         
         assertTrue(message.content.containsKey(MessageField.CNT.toString()));
         assertArrayEquals(value, message.content.get(MessageField.CNT.toString()));
@@ -116,7 +116,7 @@ public class MessageTest {
     
     @Test
     public void testGetContentToBytes() {
-        message.appendContent(MessageField.VRS, VERSION.getBytes());
+        message.putContent(MessageField.VRS, VERSION.getBytes());
         assertArrayEquals(VERSION.getBytes(), message.getContent(MessageField.VRS));
     }
 
@@ -129,7 +129,7 @@ public class MessageTest {
     public void testContainsContent() {
         assertFalse(message.containsContent(MessageField.VRS));
         
-        message.appendContent(MessageField.VRS, VERSION.getBytes());
+        message.putContent(MessageField.VRS, VERSION.getBytes());
         assertTrue(message.containsContent(MessageField.VRS));
         
         message.content.remove(MessageField.VRS.toString());

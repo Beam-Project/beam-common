@@ -61,9 +61,9 @@ public class HandshakeChallenge extends Handshake {
         challenge = new Message();
         challenge.setVersion(VERSION);
         challenge.setParticipant(remoteParticipant);
-        challenge.appendContent(CNT_CRPHASE, CHALLENGE.getBytes());
-        challenge.appendContent(CNT_CRPUBKEY, localParticipant.getPublicKeyAsBytes());
-        challenge.appendContent(CNT_CRNONCE, localNonce);
+        challenge.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
+        challenge.putContent(CNT_CRPUBKEY, localParticipant.getPublicKeyAsBytes());
+        challenge.putContent(CNT_CRNONCE, localNonce);
     }
 
     public void consumeResponse(Message challenge) {
@@ -92,8 +92,8 @@ public class HandshakeChallenge extends Handshake {
         success = new Message();
         success.setVersion(VERSION);
         success.setParticipant(remoteParticipant);
-        success.appendContent(CNT_CRPHASE, SUCCESS.getBytes());
-        success.appendContent(CNT_CRSIG, localSignature);
+        success.putContent(CNT_CRPHASE, SUCCESS.getBytes());
+        success.putContent(CNT_CRSIG, localSignature);
     }
 
     @Override

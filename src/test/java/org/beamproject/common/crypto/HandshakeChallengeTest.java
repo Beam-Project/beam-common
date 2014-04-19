@@ -75,8 +75,8 @@ public class HandshakeChallengeTest extends HandshakeTest {
         Message response = new Message();
         response.setVersion(VERSION);
         response.setParticipant(localParticipant);
-        response.appendContent(CNT_CRNONCE, remoteNonce);
-        response.appendContent(CNT_CRSIG, remoteSignature);
+        response.putContent(CNT_CRNONCE, remoteNonce);
+        response.putContent(CNT_CRSIG, remoteSignature);
 
         challenger.consumeResponse(response);
 

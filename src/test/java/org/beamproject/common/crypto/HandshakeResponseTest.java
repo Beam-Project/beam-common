@@ -72,9 +72,9 @@ public class HandshakeResponseTest extends HandshakeTest {
     public void testConsumeChallengeOnMissingParticipant() {
         Message challenge = new Message();
         challenge.setVersion(VERSION);
-        challenge.appendContent(CNT_CRPHASE, CHALLENGE.getBytes());
-        challenge.appendContent(CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
-        challenge.appendContent(CNT_CRNONCE, generateNonce());
+        challenge.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
+        challenge.putContent(CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
+        challenge.putContent(CNT_CRNONCE, generateNonce());
 
         responder.consumeChallenge(challenge);
     }
@@ -89,7 +89,7 @@ public class HandshakeResponseTest extends HandshakeTest {
     @Test(expected = HandshakeException.class)
     public void testConsumeChallengeOnWrongPhase() {
         Message challenge = getBasicChallenge();
-        challenge.appendContent(CNT_CRPHASE, SUCCESS.getBytes());
+        challenge.putContent(CNT_CRPHASE, SUCCESS.getBytes());
         responder.consumeChallenge(challenge);
     }
 
@@ -103,7 +103,7 @@ public class HandshakeResponseTest extends HandshakeTest {
     @Test(expected = HandshakeException.class)
     public void testConsumeChallengeOnEmptyPublicKey() {
         Message challenge = getBasicChallenge();
-        challenge.appendContent(CNT_CRPUBKEY, new byte[]{});
+        challenge.putContent(CNT_CRPUBKEY, new byte[]{});
 
         responder.consumeChallenge(challenge);
     }
@@ -127,7 +127,7 @@ public class HandshakeResponseTest extends HandshakeTest {
                 copy[length] = value;
             }
 
-            challenge.appendContent(CNT_CRNONCE, copy);
+            challenge.putContent(CNT_CRNONCE, copy);
 
             try {
                 responder.consumeChallenge(challenge);
@@ -145,9 +145,9 @@ public class HandshakeResponseTest extends HandshakeTest {
         Message challenge = new Message();
         challenge.setVersion(VERSION);
         challenge.setParticipant(localParticipant);
-        challenge.appendContent(CNT_CRPHASE, CHALLENGE.getBytes());
-        challenge.appendContent(CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
-        challenge.appendContent(CNT_CRNONCE, remoteNonce);
+        challenge.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
+        challenge.putContent(CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
+        challenge.putContent(CNT_CRNONCE, remoteNonce);
 
         return challenge;
     }
@@ -157,9 +157,9 @@ public class HandshakeResponseTest extends HandshakeTest {
         Message challenge = new Message();
         challenge.setVersion(VERSION);
         challenge.setParticipant(localParticipant);
-        challenge.appendContent(CNT_CRPHASE, CHALLENGE.getBytes());
-        challenge.appendContent(CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
-        challenge.appendContent(CNT_CRNONCE, generateNonce());
+        challenge.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
+        challenge.putContent(CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
+        challenge.putContent(CNT_CRNONCE, generateNonce());
 
         assertFalse(responder.wasConsumeChallengeInvoked);
         responder.consumeChallenge(challenge);
@@ -208,7 +208,7 @@ public class HandshakeResponseTest extends HandshakeTest {
         byte[] sessionKey = calculateSessionKey(remoteNonce, responder.localNonce);
 
         Message success = getBasicSuccess();
-        success.appendContent(CNT_CRSIG, remoteSignature);
+        success.putContent(CNT_CRSIG, remoteSignature);
         responder.consumeSuccess(success);
 
         assertArrayEquals(sessionKey, responder.getSessionKey());
@@ -235,7 +235,7 @@ public class HandshakeResponseTest extends HandshakeTest {
         testProduceResponse(); // Set the responder into needed state
 
         Message success = getBasicSuccess();
-        success.appendContent(CNT_CRPHASE, CHALLENGE.getBytes());
+        success.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
         responder.consumeSuccess(success);
     }
 
@@ -253,7 +253,7 @@ public class HandshakeResponseTest extends HandshakeTest {
         testProduceResponse(); // Set the responder into needed state.
 
         Message success = getBasicSuccess();
-        success.appendContent(CNT_CRSIG, new byte[0]);
+        success.putContent(CNT_CRSIG, new byte[0]);
         responder.consumeSuccess(success);
     }
 
@@ -268,7 +268,7 @@ public class HandshakeResponseTest extends HandshakeTest {
         testProduceResponse(); // Set the responder into needed state.
 
         Message success = getBasicSuccess();
-        success.appendContent(CNT_CRSIG, calculateRemoteSignature());
+        success.putContent(CNT_CRSIG, calculateRemoteSignature());
         ArrayList<Byte> signature = new ArrayList<>();
 
         for (int length = 0; length < MAXIMAL_SIGNATURE_LENGTH_IN_BYTES * 2; length++) {
@@ -278,7 +278,7 @@ public class HandshakeResponseTest extends HandshakeTest {
                 copy[length] = value;
             }
 
-            success.appendContent(CNT_CRSIG, copy);
+            success.putContent(CNT_CRSIG, copy);
 
             try {
                 responder.consumeSuccess(success);
@@ -297,7 +297,7 @@ public class HandshakeResponseTest extends HandshakeTest {
         testProduceResponse(); // Set the responder into needed state.
 
         Message success = getBasicSuccess();
-        success.appendContent(CNT_CRSIG, calculateRemoteSignature());
+        success.putContent(CNT_CRSIG, calculateRemoteSignature());
 
         assertFalse(responder.wasConsumeSuccessInvoked);
         responder.consumeSuccess(success);
@@ -323,8 +323,8 @@ public class HandshakeResponseTest extends HandshakeTest {
         Message success = new Message();
         success.setVersion(VERSION);
         success.setParticipant(localParticipant);
-        success.appendContent(CNT_CRPHASE, SUCCESS.getBytes());
-        success.appendContent(CNT_CRSIG, new byte[MINIMAL_SIGNATURE_LENGTH_IN_BYTES]);
+        success.putContent(CNT_CRPHASE, SUCCESS.getBytes());
+        success.putContent(CNT_CRSIG, new byte[MINIMAL_SIGNATURE_LENGTH_IN_BYTES]);
 
         return success;
     }

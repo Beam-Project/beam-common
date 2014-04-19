@@ -167,9 +167,9 @@ public class HandshakeResponse extends Handshake {
         response = new Message();
         response.setVersion(VERSION);
         response.setParticipant(remoteParticipant);
-        response.appendContent(CNT_CRPHASE, RESPONSE.getBytes());
-        response.appendContent(CNT_CRNONCE, localNonce);
-        response.appendContent(CNT_CRSIG, localSignature);
+        response.putContent(CNT_CRPHASE, RESPONSE.getBytes());
+        response.putContent(CNT_CRNONCE, localNonce);
+        response.putContent(CNT_CRSIG, localSignature);
     }
 
     /**

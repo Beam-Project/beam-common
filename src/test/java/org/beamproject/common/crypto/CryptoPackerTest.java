@@ -44,7 +44,7 @@ public class CryptoPackerTest {
         plaintext = new Message();
         plaintext.setVersion(Message.VERSION);
         plaintext.setParticipant(localParticipant);
-        plaintext.appendContent(MessageField.CNT_MSG, MESSAGE);
+        plaintext.putContent(MessageField.CNT_MSG, MESSAGE);
 
         localPacker = new CryptoPacker();
         remotePacker = new CryptoPacker();

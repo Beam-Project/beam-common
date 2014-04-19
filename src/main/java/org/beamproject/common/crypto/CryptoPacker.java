@@ -171,7 +171,7 @@ public class CryptoPacker {
 
         for (MessageField field : MessageField.values()) {
             if (map.containsKey(field.toString())) {
-                plaintext.appendContent(field, readByteArrayFromMap(map, field));
+                plaintext.putContent(field, readByteArrayFromMap(map, field));
             }
         }
     }

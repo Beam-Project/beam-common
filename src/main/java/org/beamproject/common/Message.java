@@ -67,14 +67,16 @@ public class Message {
     }
 
     /**
-     * Appends the content as reference to the internally used {@link Map}. The
+     * Puts the content as reference to the internally used {@link Map}. The
      * array is NOT copied.
+     * <p>
+     * Content can be overwritten using equal {@code key}s.
      *
      * @param key The key of the field.
      * @param content The content bytes.
      * @throws IllegalArgumentException If at least one argument is null.
      */
-    public void appendContent(MessageField key, byte[] content) {
+    public void putContent(MessageField key, byte[] content) {
         Exceptions.verifyArgumentsNotNull(key, content);
 
         this.content.put(key.toString(), content);
