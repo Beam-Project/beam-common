@@ -24,8 +24,8 @@ import static org.junit.Assert.*;
 public class PackerExceptionTest {
 
     @Test
-    public void testArgumentHandover() {
-        String message = "myArgumentMessage";
+    public void testArgumentAssignment() {
+        String message = "error";
 
         try {
             throw new PackerException(message);
