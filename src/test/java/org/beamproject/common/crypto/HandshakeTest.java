@@ -20,7 +20,7 @@ package org.beamproject.common.crypto;
 
 import java.security.SecureRandom;
 import org.beamproject.common.Participant;
-import static org.beamproject.common.crypto.Handshake.NUMBER_OF_CHALLENGE_BYTES;
+import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
 import org.beamproject.common.util.Arrays;
 import org.junit.Before;
 
@@ -42,7 +42,7 @@ public class HandshakeTest {
     }
 
     protected byte[] generateNonce() {
-        byte[] nonce = new byte[NUMBER_OF_CHALLENGE_BYTES];
+        byte[] nonce = new byte[NONCE_LENGTH_IN_BYTES];
         SecureRandom random = new SecureRandom();
         random.nextBytes(nonce);
 

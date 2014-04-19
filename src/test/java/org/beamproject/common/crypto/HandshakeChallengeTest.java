@@ -19,7 +19,7 @@
 package org.beamproject.common.crypto;
 
 import org.beamproject.common.Message;
-import static org.beamproject.common.Message.DEFAUTL_VERSION;
+import static org.beamproject.common.Message.VERSION;
 import static org.beamproject.common.MessageField.*;
 import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class HandshakeChallengeTest extends HandshakeTest {
     public void testProduceChallenge() {
         Message challenge = challenger.produceChallenge(remoteParticipant);
 
-        assertEquals(DEFAUTL_VERSION, challenge.getVersion());
+        assertEquals(VERSION, challenge.getVersion());
         assertEquals(CHALLENGE.toString(), new String(challenge.getContent(CNT_CRPHASE)));
         assertEquals(remoteParticipant, challenge.getParticipant());
         assertArrayEquals(localParticipant.getPublicKeyAsBytes(), challenge.getContent(CNT_CRPUBKEY));
@@ -73,7 +73,7 @@ public class HandshakeChallengeTest extends HandshakeTest {
         remoteSignature = sign(fullRemoteParticipant, remoteNonce, challenger.localNonce);
 
         Message response = new Message();
-        response.setVersion(DEFAUTL_VERSION);
+        response.setVersion(VERSION);
         response.setParticipant(localParticipant);
         response.appendContent(CNT_CRNONCE, remoteNonce);
         response.appendContent(CNT_CRSIG, remoteSignature);
@@ -90,7 +90,7 @@ public class HandshakeChallengeTest extends HandshakeTest {
         testConsumeResponse(); // To set the challenge into the correct state.
         Message success = challenger.produceSuccess();
 
-        assertEquals(DEFAUTL_VERSION, success.getVersion());
+        assertEquals(VERSION, success.getVersion());
         assertEquals(SUCCESS.toString(), new String(success.getContent(CNT_CRPHASE)));
         assertEquals(remoteParticipant, success.getParticipant());
 
@@ -106,6 +106,7 @@ public class HandshakeChallengeTest extends HandshakeTest {
         challenger.getSessionKey();
     }
 
+    @Test
     public void testGetSessionKey() {
         byte[] testKey = new byte[]{1, 2, 3};
         challenger.sessionKey = testKey;

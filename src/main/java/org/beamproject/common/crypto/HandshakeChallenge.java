@@ -21,7 +21,7 @@ package org.beamproject.common.crypto;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import org.beamproject.common.Message;
-import static org.beamproject.common.Message.DEFAUTL_VERSION;
+import static org.beamproject.common.Message.VERSION;
 import static org.beamproject.common.MessageField.*;
 import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.beamproject.common.Participant;
@@ -59,7 +59,7 @@ public class HandshakeChallenge extends Handshake {
 
     private void assembleChallengeMessage() {
         challenge = new Message();
-        challenge.setVersion(DEFAUTL_VERSION);
+        challenge.setVersion(VERSION);
         challenge.setParticipant(remoteParticipant);
         challenge.appendContent(CNT_CRPHASE, CHALLENGE.getBytes());
         challenge.appendContent(CNT_CRPUBKEY, localParticipant.getPublicKeyAsBytes());
@@ -90,7 +90,7 @@ public class HandshakeChallenge extends Handshake {
 
     private void assembleSuccessMessage() {
         success = new Message();
-        success.setVersion(DEFAUTL_VERSION);
+        success.setVersion(VERSION);
         success.setParticipant(remoteParticipant);
         success.appendContent(CNT_CRPHASE, SUCCESS.getBytes());
         success.appendContent(CNT_CRSIG, localSignature);
