@@ -249,7 +249,7 @@ public class HandshakeResponseTest extends HandshakeTest {
      * specific length.
      */
     @Test
-    public void testConsumeSuccessOnWrongNonceLength() {
+    public void testConsumeSuccessOnWrongSignatureLength() {
         testProduceResponse(); // Set the responder into needed state.
 
         Message success = getBasicSuccess();
