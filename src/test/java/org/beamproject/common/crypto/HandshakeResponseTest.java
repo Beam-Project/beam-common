@@ -49,9 +49,12 @@ public class HandshakeResponseTest extends HandshakeTest {
 
     @Test
     public void testConsumeChallenge() {
+        assertFalse(responder.wasConsumeChallengeInvoked);
+
         Message challenge = getBasicChallenge();
         responder.consumeChallenge(challenge);
 
+        assertTrue(responder.wasConsumeChallengeInvoked);
         assertEquals(remoteParticipant, responder.remoteParticipant);
         assertArrayEquals(remoteNonce, responder.remoteNonce);
     }
@@ -93,7 +96,6 @@ public class HandshakeResponseTest extends HandshakeTest {
     public void testConsumeChallengeOnEmptyPublicKey() {
         Message challenge = getBasicChallenge();
         challenge.putContent(CNT_CRPUBKEY, new byte[]{});
-
         responder.consumeChallenge(challenge);
     }
 
@@ -107,26 +109,33 @@ public class HandshakeResponseTest extends HandshakeTest {
     @Test
     public void testConsumeChallengeOnWrongNonceLength() {
         Message challenge = getBasicChallenge();
-
         ArrayList<Byte> nonce = new ArrayList<>();
+
         for (int length = 0; length < NONCE_LENGTH_IN_BYTES * 2; length++) {
-            byte[] copy = new byte[length];
-
-            for (Byte value : nonce) {
-                copy[length] = value;
-            }
-
-            challenge.putContent(CNT_CRNONCE, copy);
+            challenge.putContent(CNT_CRNONCE, toBytes(nonce));
 
             try {
+                responder.wasConsumeChallengeInvoked = false;
                 responder.consumeChallenge(challenge);
 
                 if (length != NONCE_LENGTH_IN_BYTES) {
-                    fail("An exception should have been thrwon.");
+                    fail("An exception should have been thrown.");
                 }
             } catch (HandshakeException ex) {
             }
+            
+            nonce.add((byte) length);
         }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testConsumeChallengeOnInvokingMethodTwice() {
+        Message challenge = getBasicChallenge();
+
+        assertFalse(responder.wasConsumeChallengeInvoked);
+        responder.consumeChallenge(challenge);
+        assertTrue(responder.wasConsumeChallengeInvoked);
+        responder.consumeChallenge(challenge); // should throw the exception
     }
 
     private Message getBasicChallenge() {
@@ -139,19 +148,6 @@ public class HandshakeResponseTest extends HandshakeTest {
         return challenge;
     }
 
-    @Test(expected = HandshakeException.class)
-    public void testConsumeChallengeOnInvokingMethodTwice() {
-        Message challenge = new Message(localParticipant);
-        challenge.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
-        challenge.putContent(CNT_CRPUBKEY, remoteParticipant.getPublicKeyAsBytes());
-        challenge.putContent(CNT_CRNONCE, generateNonce());
-
-        assertFalse(responder.wasConsumeChallengeInvoked);
-        responder.consumeChallenge(challenge);
-        assertTrue(responder.wasConsumeChallengeInvoked);
-        responder.consumeChallenge(challenge); // should throw the exception
-    }
-
     @Test
     public void testProduceResponse() {
         testConsumeChallenge(); // To set the response into the needed state.
@@ -159,7 +155,7 @@ public class HandshakeResponseTest extends HandshakeTest {
 
         assertEquals(VERSION, response.getVersion());
         assertEquals(remoteParticipant, response.getRecipient());
-        assertEquals(RESPONSE.toString(), new String(response.getContent(CNT_CRPHASE)));
+        assertArrayEquals(RESPONSE.getBytes(), response.getContent(CNT_CRPHASE));
         assertEquals(NONCE_LENGTH_IN_BYTES, responder.localNonce.length);
         assertTrue(responder.localSignature.length >= MINIMAL_SIGNATURE_LENGTH_IN_BYTES);
         assertTrue(responder.localSignature.length <= MAXIMAL_SIGNATURE_LENGTH_IN_BYTES);
@@ -175,7 +171,7 @@ public class HandshakeResponseTest extends HandshakeTest {
         responder.produceResponse();
     }
 
-    @Test(expected = HandshakeException.class)
+    @Test(expected = IllegalStateException.class)
     public void testProduceResponseOnInvokingMethodTwice() {
         testConsumeChallenge(); // to set responder into needed state
 
@@ -189,13 +185,11 @@ public class HandshakeResponseTest extends HandshakeTest {
     public void testConsumeSuccess() {
         testProduceResponse(); // Set the responder into needed state.
 
-        remoteSignature = sign(fullRemoteParticipant, remoteNonce, responder.localNonce);
-        byte[] sessionKey = calculateSessionKey(remoteNonce, responder.localNonce);
-
         Message success = getBasicSuccess();
-        success.putContent(CNT_CRSIG, remoteSignature);
+        success.putContent(CNT_CRSIG, calculateRemoteSignature());
         responder.consumeSuccess(success);
 
+        byte[] sessionKey = calculateSessionKey(remoteNonce, responder.localNonce);
         assertArrayEquals(sessionKey, responder.getSessionKey());
     }
 
@@ -212,11 +206,20 @@ public class HandshakeResponseTest extends HandshakeTest {
 
         Message success = getBasicSuccess();
         success.setVersion(VERSION + ".1");
-        responder.consumeChallenge(success);
+        responder.consumeSuccess(success);
     }
 
     @Test(expected = HandshakeException.class)
-    public void testSuccessChallengeOnMissingPhase() {
+    public void testConsumeSuccessOnMissingPhase() {
+        testProduceResponse(); // Set the responder into needed state
+
+        Message success = getBasicSuccess();
+        success.getContent().remove(CNT_CRPHASE.toString());
+        responder.consumeSuccess(success);
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeSuccessOnWrongPhase() {
         testProduceResponse(); // Set the responder into needed state
 
         Message success = getBasicSuccess();
@@ -233,51 +236,38 @@ public class HandshakeResponseTest extends HandshakeTest {
         responder.consumeSuccess(success);
     }
 
-    @Test(expected = HandshakeException.class)
-    public void testConsumeSuccessOnEmptySignature() {
-        testProduceResponse(); // Set the responder into needed state.
-
-        Message success = getBasicSuccess();
-        success.putContent(CNT_CRSIG, new byte[0]);
-        responder.consumeSuccess(success);
-    }
-
     /**
      * This tests if the signature length can be too far away from the usual
      * length. Since the length can change for about a few bytes (depending on
-     * the random in the {@link EccSigner}), this can't be tested on one
-     * specific length.
+     * randomness in {@link EccSigner}), this can't be tested on one specific
+     * length.
      */
     @Test
     public void testConsumeSuccessOnWrongSignatureLength() {
         testProduceResponse(); // Set the responder into needed state.
 
         Message success = getBasicSuccess();
-        success.putContent(CNT_CRSIG, calculateRemoteSignature());
         ArrayList<Byte> signature = new ArrayList<>();
 
         for (int length = 0; length < MAXIMAL_SIGNATURE_LENGTH_IN_BYTES * 2; length++) {
-            byte[] copy = new byte[length];
-
-            for (Byte value : signature) {
-                copy[length] = value;
-            }
-
-            success.putContent(CNT_CRSIG, copy);
+            success.putContent(CNT_CRSIG, toBytes(signature));
 
             try {
+                responder.wasConsumeSuccessInvoked = false;
                 responder.consumeSuccess(success);
 
                 if (length > MINIMAL_SIGNATURE_LENGTH_IN_BYTES
                         && length < MAXIMAL_SIGNATURE_LENGTH_IN_BYTES) {
-                    fail("An exception should have been thrwon.");
+                    fail("An exception should have been thrown.");
                 }
             } catch (HandshakeException ex) {
             }
+            
+            signature.add((byte) length);
         }
     }
 
-    @Test(expected = HandshakeException.class)
+    @Test(expected = IllegalStateException.class)
     public void testConsumeSuccessOnInvokingMethodTwice() {
         testProduceResponse(); // Set the responder into needed state.
 

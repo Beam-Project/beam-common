@@ -18,10 +18,12 @@
  */
 package org.beamproject.common.crypto;
 
+import java.util.ArrayList;
 import org.beamproject.common.Message;
 import static org.beamproject.common.Message.VERSION;
 import static org.beamproject.common.MessageField.*;
 import static org.beamproject.common.crypto.Handshake.Phase.*;
+import static org.beamproject.common.crypto.HandshakeResponse.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -45,50 +47,186 @@ public class HandshakeChallengeTest extends HandshakeTest {
         assertSame(localParticipant, challenger.localParticipant);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testProduceChallengeOnNull() {
-        challenger.produceChallenge(null);
-    }
-
     @Test
     public void testProduceChallenge() {
-        Message challenge = challenger.produceChallenge(remoteParticipant);
+        assertFalse(challenger.wasProduceChallengeInvoked);
 
+        Message challenge = challenger.produceChallenge(remoteParticipant);
+        assertTrue(challenger.wasProduceChallengeInvoked);
         assertEquals(VERSION, challenge.getVersion());
-        assertEquals(CHALLENGE.toString(), new String(challenge.getContent(CNT_CRPHASE)));
         assertEquals(remoteParticipant, challenge.getRecipient());
+        assertArrayEquals(CHALLENGE.getBytes(), challenge.getContent(CNT_CRPHASE));
         assertArrayEquals(localParticipant.getPublicKeyAsBytes(), challenge.getContent(CNT_CRPUBKEY));
         assertArrayEquals(challenger.localNonce, challenge.getContent(CNT_CRNONCE));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testConsumeResponseOnNull() {
-        challenger.consumeResponse(null);
+    public void testProduceChallengeOnNull() {
+        challenger.produceChallenge(null);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testProduceChallengeOnInvokingMethodTwice() {
+        assertFalse(challenger.wasProduceChallengeInvoked);
+        challenger.produceChallenge(remoteParticipant);
+        assertTrue(challenger.wasProduceChallengeInvoked);
+        challenger.produceChallenge(remoteParticipant); // should throw the exception
     }
 
     @Test
     public void testConsumeResponse() {
-        testProduceChallenge(); // To generate localNonce in challenge.
+        testProduceChallenge(); // Set the challenger into needed state.
+
         remoteNonce = generateNonce();
         remoteSignature = sign(fullRemoteParticipant, remoteNonce, challenger.localNonce);
 
         Message response = new Message(localParticipant);
         response.setVersion(VERSION);
+        response.putContent(CNT_CRPHASE, RESPONSE.getBytes());
         response.putContent(CNT_CRNONCE, remoteNonce);
         response.putContent(CNT_CRSIG, remoteSignature);
+        assertFalse(challenger.wasConsumeResponseInvoked);
 
         challenger.consumeResponse(response);
 
+        assertTrue(challenger.wasConsumeResponseInvoked);
         assertArrayEquals(remoteNonce, challenger.remoteNonce);
         assertEquals(remoteParticipant, challenger.remoteParticipant);
         assertArrayEquals(remoteSignature, challenger.remoteSignature);
     }
 
+    @Test(expected = HandshakeException.class)
+    public void testConsumeResponseOnNull() {
+        testProduceChallenge(); // Set the challenger into needed state.
+
+        challenger.consumeResponse(null);
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeResponseOnWrongVersion() {
+        testProduceChallenge(); // Set the challenger into needed state.
+
+        Message response = getBasicResponse();
+        response.setVersion(VERSION + ".1");
+        challenger.consumeResponse(response);
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeResponseOnMissingPhase() {
+        testProduceChallenge(); // Set the challenger into needed state.
+
+        Message response = getBasicResponse();
+        response.getContent().remove(CNT_CRPHASE.toString());
+        challenger.consumeResponse(response);
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeResponseOnWrongPhase() {
+        testProduceChallenge(); // Set the challenger into needed state.
+
+        Message response = getBasicResponse();
+        response.putContent(CNT_CRPHASE, SUCCESS.getBytes());
+        challenger.consumeResponse(response);
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeResponseOnMissingNonce() {
+        testProduceChallenge(); // Set the challenger into needed state.
+
+        Message response = getBasicResponse();
+        response.getContent().remove(CNT_CRNONCE.toString());
+        challenger.consumeResponse(response);
+    }
+
+    @Test
+    public void testConsumeResponseOnWrongNonceLength() {
+        testProduceChallenge(); // Set the challenger into needed state.
+
+        Message challenge = getBasicResponse();
+        ArrayList<Byte> nonce = new ArrayList<>();
+
+        for (int length = 0; length < NONCE_LENGTH_IN_BYTES * 2; length++) {
+            challenge.putContent(CNT_CRNONCE, toBytes(nonce));
+
+            try {
+                challenger.wasConsumeResponseInvoked = false;
+                challenger.consumeResponse(challenge);
+
+                if (length != NONCE_LENGTH_IN_BYTES) {
+                    fail("An exception should have been thrown.");
+                }
+            } catch (HandshakeException ex) {
+            }
+
+            nonce.add((byte) length);
+        }
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeResponseOnMissingSignature() {
+        testProduceChallenge(); // Set the challenger into needed state.
+
+        Message response = getBasicResponse();
+        response.getContent().remove(CNT_CRSIG.toString());
+        challenger.consumeResponse(response);
+    }
+
+    /**
+     * This tests if the signature length can be too far away from the usual
+     * length. Since the length can change for about a few bytes (depending on
+     * randomness in {@link EccSigner}), this can't be tested on one specific
+     * length.
+     */
+    @Test
+    public void testConsumeResponseOnWrongSignatureLength() {
+        testProduceChallenge(); // Set the challenger into needed state.
+
+        Message response = getBasicResponse();
+        ArrayList<Byte> signature = new ArrayList<>();
+
+        for (int length = 0; length < MAXIMAL_SIGNATURE_LENGTH_IN_BYTES * 2; length++) {
+            response.putContent(CNT_CRSIG, toBytes(signature));
+
+            try {
+                challenger.wasConsumeResponseInvoked = false;
+                challenger.consumeResponse(response);
+
+                if (length > MINIMAL_SIGNATURE_LENGTH_IN_BYTES
+                        && length < MAXIMAL_SIGNATURE_LENGTH_IN_BYTES) {
+                    fail("An exception should have been thrown.");
+                }
+            } catch (HandshakeException ex) {
+            }
+
+            signature.add((byte) length);
+        }
+    }
+
+    private Message getBasicResponse() {
+        remoteNonce = generateNonce();
+        calculateRemoteSignature();
+
+        Message challenge = new Message(localParticipant);
+        challenge.putContent(CNT_CRPHASE, RESPONSE.getBytes());
+        challenge.putContent(CNT_CRSIG, remoteSignature);
+        challenge.putContent(CNT_CRNONCE, remoteNonce);
+
+        return challenge;
+    }
+
+    private byte[] calculateRemoteSignature() {
+        remoteSignature = sign(fullRemoteParticipant, remoteNonce, challenger.localNonce);
+        return remoteSignature;
+    }
+
     @Test
     public void testProduceSuccess() {
-        testConsumeResponse(); // To set the challenge into the correct state.
+        testConsumeResponse(); // To set the challenge into needed state.
+        assertFalse(challenger.wasProduceSuccessInvoked);
+
         Message success = challenger.produceSuccess();
 
+        assertTrue(challenger.wasProduceSuccessInvoked);
         assertEquals(VERSION, success.getVersion());
         assertEquals(SUCCESS.toString(), new String(success.getContent(CNT_CRPHASE)));
         assertEquals(remoteParticipant, success.getRecipient());
@@ -98,6 +236,22 @@ public class HandshakeChallengeTest extends HandshakeTest {
 
         byte[] sessionKey = calculateSessionKey(challenger.localNonce, remoteNonce);
         assertArrayEquals(sessionKey, challenger.getSessionKey());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testProduceSuccessOnInvokingMethodBeforeConsumeRespose() {
+        assertFalse(challenger.wasConsumeResponseInvoked);
+        challenger.produceSuccess();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testProduceSuccessOnInvokingMethodTwice() {
+        testConsumeResponse(); // to set responder into needed state
+
+        assertFalse(challenger.wasProduceSuccessInvoked);
+        challenger.produceSuccess();
+        assertTrue(challenger.wasProduceSuccessInvoked);
+        challenger.produceSuccess(); // should throw the exception
     }
 
     @Test(expected = IllegalStateException.class)

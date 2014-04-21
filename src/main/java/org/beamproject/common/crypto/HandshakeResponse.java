@@ -38,16 +38,6 @@ import org.beamproject.common.util.Arrays;
  */
 public class HandshakeResponse extends Handshake {
 
-    /**
-     * The minimal length of the signature sent by the client. Since the length
-     * varies, a spectrum has to be defined.
-     */
-    final static int MINIMAL_SIGNATURE_LENGTH_IN_BYTES = 96;
-    /**
-     * The maximal length of the signature sent by the client. Since the length
-     * varies, a spectrum has to be defined.
-     */
-    final static int MAXIMAL_SIGNATURE_LENGTH_IN_BYTES = 128;
     Message response;
     boolean wasConsumeChallengeInvoked = false;
     boolean wasProduceResponseInvoked = false;
@@ -75,8 +65,9 @@ public class HandshakeResponse extends Handshake {
      * critical.
      *
      * @param challenge The challenge to consume.
+     * @throws IllegalStateException If the method is invoked more than once.
      * @throws HandshakeException If the challenge is null, does not contain all
-     * needed fields, if they are invalid fields or if this method is invoked
+     * needed fields, if there are invalid fields or if this method is invoked
      * more than once.
      */
     public void consumeChallenge(Message challenge) {
@@ -90,7 +81,7 @@ public class HandshakeResponse extends Handshake {
 
     private void verifyChallengeCusumptionAuthorization() {
         if (wasConsumeChallengeInvoked) {
-            throw new HandshakeException("This method can only be invoked once on the same instance.");
+            throw new IllegalStateException("This method can only be invoked once on the same instance.");
         }
 
         wasConsumeChallengeInvoked = true;
@@ -117,7 +108,7 @@ public class HandshakeResponse extends Handshake {
         } else if (!challenge.containsContent(CNT_CRNONCE)
                 || challenge.getContent(CNT_CRNONCE) == null
                 || challenge.getContent(CNT_CRNONCE).length != NONCE_LENGTH_IN_BYTES) {
-            exceptionMessage += "challenger nonce not set";
+            exceptionMessage += "challenger nonce not set or has invalid length";
         } else {
             return;
         }
@@ -136,8 +127,7 @@ public class HandshakeResponse extends Handshake {
      *
      * @return The {@code RESPONSE} message.
      * @throws IllegalStateException If the method {@code consumeChallenge} was
-     * not invoked before.
-     * @throws HandshakeException If this method is invoked more than once.
+     * not invoked before or this method is invoked more than once.
      */
     public Message produceResponse() {
         verifyResponseProductionAuthorization();
@@ -150,13 +140,9 @@ public class HandshakeResponse extends Handshake {
     }
 
     private void verifyResponseProductionAuthorization() {
-        if (!wasConsumeChallengeInvoked) {
+        if (!wasConsumeChallengeInvoked || wasProduceResponseInvoked) {
             throw new IllegalStateException("This method has to be invoked after "
-                    + "the challenge was consumed.");
-        }
-
-        if (wasProduceResponseInvoked) {
-            throw new HandshakeException("This method can only be invoked once "
+                    + "the challenge was consumed and may only be once invoked "
                     + "on the same instance.");
         }
 
@@ -181,9 +167,10 @@ public class HandshakeResponse extends Handshake {
      * critical.
      *
      * @param success The success to consume.
-     * @throws HandshakeException If the challenge is null, does not contain all
-     * needed fields, if they are invalid fields or if this method is invoked
-     * more than once.
+     * @throws IllegalStateException If the method {@code produceResponse} was
+     * not invoked before or this method is invoked more than once.
+     * @throws HandshakeException If the success is null, does not contain all
+     * needed fields or if there are invalid fields.
      */
     public void consumeSuccess(Message success) {
         verifySuccessCusumptionAuthorization();
@@ -195,14 +182,12 @@ public class HandshakeResponse extends Handshake {
     }
 
     private void verifySuccessCusumptionAuthorization() {
-        if (!wasConsumeChallengeInvoked || !wasProduceResponseInvoked) {
+        if (!wasConsumeChallengeInvoked
+                || !wasProduceResponseInvoked
+                || wasConsumeSuccessInvoked) {
             throw new IllegalStateException("This method has to be invoked after "
-                    + "the challenge was consumed and the response produced.");
-        }
-
-        if (wasConsumeSuccessInvoked) {
-            throw new HandshakeException("This method can only be invoked once "
-                    + "on the same instance.");
+                    + "the challenge was consumed and the response produced and "
+                    + "may only be once invoked on the same instance.");
         }
 
         wasConsumeSuccessInvoked = true;

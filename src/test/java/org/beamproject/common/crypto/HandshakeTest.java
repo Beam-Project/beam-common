@@ -19,6 +19,7 @@
 package org.beamproject.common.crypto;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
 import org.beamproject.common.util.Arrays;
@@ -60,6 +61,16 @@ public class HandshakeTest {
 
     protected byte[] calculateSessionKey(byte[] requesterNonce, byte[] requesteeNonce) {
         return Digest.digestWithSha256(Arrays.mergeArrays(requesterNonce, requesteeNonce));
+    }
+
+    protected byte[] toBytes(ArrayList<Byte> list) {
+        byte[] copy = new byte[list.size()];
+
+        for (int i = 0; i < list.size(); i++) {
+            copy[i] = list.get(i);
+        }
+
+        return copy;
     }
 
 }

@@ -21,21 +21,34 @@ package org.beamproject.common.crypto;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import org.beamproject.common.Message;
+import static org.beamproject.common.Message.VERSION;
 import static org.beamproject.common.MessageField.*;
 import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.beamproject.common.Participant;
+import static org.beamproject.common.crypto.HandshakeResponse.*;
 import org.beamproject.common.util.Arrays;
 import org.beamproject.common.util.Exceptions;
 
+/**
+ * Allows to negotiate authentication between {@link Participant}s. The
+ * {@link HandshakeChallenge} is used by the one who wants to establish
+ * authenticity.
+ *
+ * @see Handshake
+ * @see HandshakeResponse
+ */
 public class HandshakeChallenge extends Handshake {
 
     Message challenge;
     Message success;
+    boolean wasProduceChallengeInvoked = false;
+    boolean wasConsumeResponseInvoked = false;
+    boolean wasProduceSuccessInvoked = false;
 
     /**
-     * Allows to negotiate authentication between the given
-     * {@link Participant}s. The {@link HandshakeChallenge} is used by the one
-     * who initializes the authentication process.
+     * Allows to negotiate authentication between {@link Participant}s. The
+     * {@link HandshakeChallenge} is used by the one who wants to establish
+     * authenticity.
      *
      * @param localParticipant The local {@link Participant} with both
      * {@link PublicKey} and {@link PrivateKey}.
@@ -45,8 +58,22 @@ public class HandshakeChallenge extends Handshake {
         super(localParticipant);
     }
 
+    /**
+     * Produces the {@code CHALLENGE}.
+     * <p>
+     * This method can only be invoked once per instance of
+     * {@link HandshakeChallenge} for security reasons since authentication is
+     * critical.
+     *
+     * @param remoteParticipant The {@link Participant} between whom
+     * authenticity should be established.
+     * @return The {@code CHALLENGE} message.
+     * @throws IllegalArgumentException If the argument is null.
+     * @throws IllegalStateException If this method is invoked more than once.
+     */
     public Message produceChallenge(Participant remoteParticipant) {
         Exceptions.verifyArgumentsNotNull(remoteParticipant);
+        verifyChallengeProductionAuthorization();
 
         this.remoteParticipant = remoteParticipant;
 
@@ -56,6 +83,15 @@ public class HandshakeChallenge extends Handshake {
         return challenge;
     }
 
+    private void verifyChallengeProductionAuthorization() {
+        if (wasProduceChallengeInvoked) {
+            throw new IllegalStateException("This method can only be invoked once "
+                    + "on the same instance.");
+        }
+
+        wasProduceChallengeInvoked = true;
+    }
+
     private void assembleChallengeMessage() {
         challenge = new Message(remoteParticipant);
         challenge.putContent(CNT_CRPHASE, CHALLENGE.getBytes());
@@ -63,13 +99,24 @@ public class HandshakeChallenge extends Handshake {
         challenge.putContent(CNT_CRNONCE, localNonce);
     }
 
+    /**
+     * Consumes the {@code RESPONSE}, generated with {@link HandshakeResponse}.
+     * <p>
+     * Before this method, {@code produceResponse(..)} has to be invoked.
+     * <p>
+     * This method can only be invoked once per instance of
+     * {@link HandshakeChallenge} for security reasons since authentication is
+     * critical.
+     *
+     * @param challenge The response to consume.
+     * @throws IllegalStateException If the method {@code produceResponce} was
+     * not invoked before or this method is invoked more than once.
+     * @throws HandshakeException If the response is null, does not contain all
+     * needed fields or if there are invalid fields.
+     */
     public void consumeResponse(Message challenge) {
-        Exceptions.verifyArgumentsNotNull(challenge);
-
-        if (!challenge.containsContent(CNT_CRNONCE)
-                || !challenge.containsContent(CNT_CRSIG)) {
-            throw new IllegalStateException("At this state, the response has to contain CRNONCE and CRSIG of the ohter side.");
-        }
+        verifyResponseCusumptionAuthorization();
+        verifyResponseValidity(challenge);
 
         remoteNonce = challenge.getContent(CNT_CRNONCE);
         remoteSignature = challenge.getContent(CNT_CRSIG);
@@ -77,12 +124,77 @@ public class HandshakeChallenge extends Handshake {
         verifyRemoteSignature();
     }
 
+    private void verifyResponseCusumptionAuthorization() {
+        if (!wasProduceChallengeInvoked || wasConsumeResponseInvoked) {
+            throw new IllegalStateException("This method has to be invoked after "
+                    + "the challenge was produced and may only be once invoked "
+                    + "on the same instance.");
+        }
+
+        wasConsumeResponseInvoked = true;
+    }
+
+    private void verifyResponseValidity(Message response) {
+        String exceptionMessage = "The response is invalid: ";
+
+        if (response == null) {
+            exceptionMessage += "response is null";
+        } else if (response.getVersion() == null
+                || !response.getVersion().equals(VERSION)) {
+            exceptionMessage += "version not set or unknown";
+        } else if (response.getRecipient() == null) {
+            exceptionMessage += "participant not set";
+        } else if (!response.containsContent(CNT_CRPHASE)
+                || response.getContent(CNT_CRPHASE) == null
+                || !RESPONSE.toString().equals(new String(response.getContent(CNT_CRPHASE)))) {
+            exceptionMessage += "phase not set or an unexpected one";
+        } else if (!response.containsContent(CNT_CRNONCE)
+                || response.getContent(CNT_CRNONCE) == null
+                || response.getContent(CNT_CRNONCE).length != NONCE_LENGTH_IN_BYTES) {
+            exceptionMessage += "responder nonce not set or has invalid length";
+        } else if (!response.containsContent(CNT_CRSIG)
+                || response.getContent(CNT_CRSIG) == null
+                || response.getContent(CNT_CRSIG).length > MAXIMAL_SIGNATURE_LENGTH_IN_BYTES
+                || response.getContent(CNT_CRSIG).length < MINIMAL_SIGNATURE_LENGTH_IN_BYTES) {
+            exceptionMessage += "responder signature not set or has invalid length";
+        } else {
+            return;
+        }
+
+        throw new HandshakeException(exceptionMessage);
+    }
+
+    /**
+     * Produces the {@code SUCCESS}.
+     * <p>
+     * Before this method, {@code consumeResponse(..)} has to be invoked.
+     * <p>
+     * This method can only be invoked once per instance of
+     * {@link HandshakeChallenge} for security reasons since authentication is
+     * critical.
+     *
+     * @return The {@code SUCCESS} message.
+     * @throws IllegalStateException If the method {@code consumeResponse} was
+     * not invoked before or this method is invoked more than once.
+     */
     public Message produceSuccess() {
+        verifySuccessProductionAuthorization();
+
         calculateLocalSignature();
         assembleSuccessMessage();
         calculateSessionKey();
 
         return success;
+    }
+
+    private void verifySuccessProductionAuthorization() {
+        if (!wasConsumeResponseInvoked || wasProduceSuccessInvoked) {
+            throw new IllegalStateException("This method has to be invoked after "
+                    + "the response was consumed and may only be once invoked "
+                    + "on the same instance.");
+        }
+
+        wasProduceSuccessInvoked = true;
     }
 
     private void assembleSuccessMessage() {

@@ -38,8 +38,6 @@ import org.beamproject.common.util.Exceptions;
  */
 public abstract class Handshake {
 
-    public final static int NONCE_LENGTH_IN_BYTES = 128;
-
     /**
      * Lists all the allowed different phases in the handshake protocol. Every
      * {@link Message} has to contain exactly one {@link Phase} value in its
@@ -113,21 +111,32 @@ public abstract class Handshake {
          * restarted from the side how wants to establish authenticity.
          */
         FAILURE("FAILURE");
-
+        
         private final String value;
-
+        
         private Phase(String value) {
             this.value = value;
         }
-
+        
         public byte[] getBytes() {
             return value.getBytes();
         }
-
+        
         public static Phase valueOf(byte[] value) {
             return valueOf(new String(value));
         }
     }
+    public final static int NONCE_LENGTH_IN_BYTES = 128;
+    /**
+     * The minimal length of the signature. Since the length varies depending on
+     * randomness in, a spectrum has to be defined.
+     */
+    final static int MINIMAL_SIGNATURE_LENGTH_IN_BYTES = 96;
+    /**
+     * The maximal length of the signature. Since the length varies depending on
+     * randomness in, a spectrum has to be defined.
+     */
+    final static int MAXIMAL_SIGNATURE_LENGTH_IN_BYTES = 128;
     Participant localParticipant;
     Participant remoteParticipant;
     byte[] localNonce;
@@ -136,35 +145,44 @@ public abstract class Handshake {
     byte[] remoteSignature;
     EccSigner signer;
     byte[] sessionKey;
-
+    
     protected Handshake(Participant localParticipant) {
         Exceptions.verifyArgumentsNotNull(localParticipant);
-
+        
         this.localParticipant = localParticipant;
         signer = new EccSigner();
     }
-
+    
     protected void generateLocalNonce() {
         localNonce = new byte[NONCE_LENGTH_IN_BYTES];
         SecureRandom random = new SecureRandom();
         random.nextBytes(localNonce);
     }
-
+    
     protected void calculateLocalSignature() {
         byte[] merged = Arrays.mergeArrays(localParticipant.getPublicKeyAsBytes(), localNonce, remoteNonce);
         byte[] digest = Digest.digestWithSha256(merged);
         localSignature = signer.sign(digest, localParticipant.getPrivateKey());
     }
-
+    
     protected void verifyRemoteSignature() {
         byte[] merged = Arrays.mergeArrays(remoteParticipant.getPublicKeyAsBytes(), remoteNonce, localNonce);
         byte[] digest = Digest.digestWithSha256(merged);
-
-        if (!signer.verify(digest, remoteSignature, remoteParticipant.getPublicKey())) {
-            throw new ChallengeResponseException("Could not verify the correctness of the remote signature.");
+        boolean isRemoteSignatureVerified = false;
+        
+        try {
+            isRemoteSignatureVerified = signer.verify(digest, remoteSignature, remoteParticipant.getPublicKey());
+        } catch (IllegalStateException ex) {
+            throw new HandshakeException("Could not verify the correctness of "
+                    + "the remote signature since an error occurred: " + ex.getMessage());
+        }
+        
+        if (!isRemoteSignatureVerified) {
+            throw new HandshakeException("Could not verify the correctness of "
+                    + "the remote signature.");
         }
     }
-
+    
     protected abstract void calculateSessionKey();
 
     /**
@@ -182,8 +200,8 @@ public abstract class Handshake {
         if (sessionKey == null) {
             throw new IllegalStateException("The authentication process has to be completed first.");
         }
-
+        
         return sessionKey;
     }
-
+    
 }
