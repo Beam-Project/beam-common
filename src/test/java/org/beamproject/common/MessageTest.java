@@ -23,6 +23,7 @@ import java.util.Map;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import static org.beamproject.common.MessageField.ContentField.*;
 
 public class MessageTest {
 
@@ -97,16 +98,16 @@ public class MessageTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testPutContentOnNullContent() {
-        message.putContent(MessageField.CNT, null);
+        message.putContent(MSG, null);
     }
 
     @Test
     public void testPutContent() {
         byte[] value = "hello".getBytes();
-        message.putContent(MessageField.CNT, value);
+        message.putContent(MSG, value);
 
-        assertTrue(message.content.containsKey(MessageField.CNT.toString()));
-        assertArrayEquals(value, message.content.get(MessageField.CNT.toString()));
+        assertTrue(message.content.containsKey(MSG.toString()));
+        assertArrayEquals(value, message.content.get(MSG.toString()));
     }
 
     @Test
@@ -122,8 +123,8 @@ public class MessageTest {
 
     @Test
     public void testGetContentToBytes() {
-        message.putContent(MessageField.VRS, VERSION.getBytes());
-        assertArrayEquals(VERSION.getBytes(), message.getContent(MessageField.VRS));
+        message.putContent(MSG, VERSION.getBytes());
+        assertArrayEquals(VERSION.getBytes(), message.getContent(MSG));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -133,12 +134,12 @@ public class MessageTest {
 
     @Test
     public void testContainsContent() {
-        assertFalse(message.containsContent(MessageField.VRS));
+        assertFalse(message.containsContent(MSG));
 
-        message.putContent(MessageField.VRS, VERSION.getBytes());
-        assertTrue(message.containsContent(MessageField.VRS));
+        message.putContent(MSG, VERSION.getBytes());
+        assertTrue(message.containsContent(MSG));
 
-        message.content.remove(MessageField.VRS.toString());
-        assertFalse(message.containsContent(MessageField.VRS));
+        message.content.remove(MSG.toString());
+        assertFalse(message.containsContent(MSG));
     }
 }

@@ -19,7 +19,7 @@
 package org.beamproject.common.crypto;
 
 import org.beamproject.common.Message;
-import org.beamproject.common.MessageField;
+import static org.beamproject.common.MessageField.ContentField.*;
 import org.beamproject.common.Participant;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -41,7 +41,7 @@ public class CryptoPackerTest {
         participantWithBothKeys = Participant.generate();
         participantWithPublicKey = new Participant(EccKeyPairGenerator.fromPublicKey(participantWithBothKeys.getPublicKeyAsBytes()));
         plaintext = new Message(participantWithPublicKey);
-        plaintext.putContent(MessageField.CNT_MSG, MESSAGE);
+        plaintext.putContent(MSG, MESSAGE);
 
         localPacker = new CryptoPacker();
         remotePacker = new CryptoPacker();
@@ -71,7 +71,7 @@ public class CryptoPackerTest {
 
         Message decryptedCiphertext = remotePacker.decryptAndUnpack(ciphertext, participantWithBothKeys);
         assertEquals(plaintext.getVersion(), decryptedCiphertext.getVersion());
-        assertArrayEquals(plaintext.getContent(MessageField.CNT_MSG), decryptedCiphertext.getContent(MessageField.CNT_MSG));
+        assertArrayEquals(plaintext.getContent(MSG), decryptedCiphertext.getContent(MSG));
     }
 
     @Test(expected = IllegalArgumentException.class)

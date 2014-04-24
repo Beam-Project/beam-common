@@ -21,6 +21,7 @@ package org.beamproject.common;
 import java.util.HashMap;
 import java.util.Map;
 import org.beamproject.common.util.Exceptions;
+import org.beamproject.common.MessageField.ContentField;
 
 /**
  * A message contains all necessary information to encrypt the content to the
@@ -84,13 +85,13 @@ public class Message {
      * Puts the content as reference to the internally used {@link Map}. The
      * array is NOT copied.
      * <p>
-     * Content can be overwritten using equal {@code key}s.
+ ContentField can be overwritten using equal {@code key}s.
      *
      * @param key The key of the field.
      * @param content The content bytes.
      * @throws IllegalArgumentException If at least one argument is null.
      */
-    public void putContent(MessageField key, byte[] content) {
+    public void putContent(ContentField key, byte[] content) {
         Exceptions.verifyArgumentsNotNull(key, content);
 
         this.content.put(key.toString(), content);
@@ -113,7 +114,7 @@ public class Message {
      * @throws MessageContentException If the key could not be found.
      * @throws IllegalArgumentException If the argument is null.
      */
-    public byte[] getContent(MessageField key) {
+    public byte[] getContent(ContentField key) {
         Exceptions.verifyArgumentsNotNull(key);
 
         return content.get(key.toString());
@@ -126,7 +127,7 @@ public class Message {
      * @return True, if the field exists, otherwise false.
      * @throws IllegalArgumentException If the argument is null.
      */
-    public boolean containsContent(MessageField key) {
+    public boolean containsContent(ContentField key) {
         Exceptions.verifyArgumentsNotNull(key);
 
         return content.containsKey(key.toString());

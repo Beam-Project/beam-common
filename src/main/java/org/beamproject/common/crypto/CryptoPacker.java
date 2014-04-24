@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.beamproject.common.Message;
 import org.beamproject.common.MessageField;
+import org.beamproject.common.MessageField.ContentField;
 import org.beamproject.common.Participant;
 import org.beamproject.common.util.Exceptions;
 import org.msgpack.MessagePack;
@@ -59,7 +60,7 @@ public class CryptoPacker {
     /**
      * Packs and encrypts the given {@code plaintext} to a {@link MessagePack}
      * byte array.<p>
-     * The field Content ({@code CNT}) will be encrypted.<p>
+ The field ContentField ({@code CNT}) will be encrypted.<p>
      * The fields Version ({@code VRS}) and Participant ({@code PRT}) will
      * <b>not</b> be encrypted.
      *
@@ -156,8 +157,8 @@ public class CryptoPacker {
         Map<String, byte[]> map = buildMapFromBytes(ciphertext);
 
         plaintext = new Message(participant);
-        plaintext.setVersion(readStringFromMap(map, MessageField.VRS));
-        encryptedPacketContent = readByteArrayFromMap(map, MessageField.CNT);
+        plaintext.setVersion(readStringFromMap(map, MessageField.VRS.toString()));
+        encryptedPacketContent = readByteArrayFromMap(map, MessageField.CNT.toString());
     }
 
     private void decyptContent() {
@@ -167,9 +168,9 @@ public class CryptoPacker {
     private void unpackContent() {
         Map<String, byte[]> map = buildMapFromBytes(packedContent);
 
-        for (MessageField field : MessageField.values()) {
+        for (ContentField field : ContentField.values()) {
             if (map.containsKey(field.toString())) {
-                plaintext.putContent(field, readByteArrayFromMap(map, field));
+                plaintext.putContent(field, readByteArrayFromMap(map, field.toString()));
             }
         }
     }
@@ -187,12 +188,12 @@ public class CryptoPacker {
         }
     }
 
-    private String readStringFromMap(Map<String, byte[]> map, MessageField field) {
+    private String readStringFromMap(Map<String, byte[]> map, String field) {
         return new String(readByteArrayFromMap(map, field));
     }
 
-    private byte[] readByteArrayFromMap(Map<String, byte[]> map, MessageField field) {
-        return map.get(field.toString());
+    private byte[] readByteArrayFromMap(Map<String, byte[]> map, String field) {
+        return map.get(field);
     }
 
 }
