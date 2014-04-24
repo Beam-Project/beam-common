@@ -225,4 +225,20 @@ public class HandshakeResponse extends Handshake {
         sessionKey = Digest.digestWithSha256(merged);
     }
 
+    /**
+     * Gets the remote {@link Participant}, if available. It is only filled with
+     * the {@link  PublicKey}.
+     *
+     * @return The remote {@link Participant}.
+     * @throws IllegalStateException If the {@link Participant} is not available
+     * at the time of invocation.
+     */
+    public Participant getRemoteParticipant() {
+        if (remoteParticipant == null) {
+            throw new IllegalStateException("The remote participant is not available at this moment.");
+        }
+
+        return remoteParticipant;
+    }
+
 }

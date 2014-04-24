@@ -123,7 +123,7 @@ public class HandshakeResponseTest extends HandshakeTest {
                 }
             } catch (HandshakeException ex) {
             }
-            
+
             nonce.add((byte) length);
         }
     }
@@ -262,7 +262,7 @@ public class HandshakeResponseTest extends HandshakeTest {
                 }
             } catch (HandshakeException ex) {
             }
-            
+
             signature.add((byte) length);
         }
     }
@@ -317,6 +317,18 @@ public class HandshakeResponseTest extends HandshakeTest {
         byte[] testKey = new byte[]{1, 2, 3};
         responder.sessionKey = testKey;
         assertSame(testKey, responder.getSessionKey());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testGetRemoteParticipantWhenNotAvailable() {
+        responder.remoteParticipant = null;
+        responder.getRemoteParticipant();
+    }
+
+    @Test
+    public void testGetRemoteParticipant() {
+        responder.remoteParticipant = remoteParticipant;
+        assertSame(remoteParticipant, responder.getRemoteParticipant());
     }
 
 }
