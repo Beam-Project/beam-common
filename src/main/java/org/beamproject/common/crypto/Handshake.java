@@ -111,17 +111,28 @@ public abstract class Handshake {
          * restarted from the side how wants to establish authenticity.
          */
         FAILURE("FAILURE");
-        
+
         private final String value;
-        
+
         private Phase(String value) {
             this.value = value;
         }
-        
+
         public byte[] getBytes() {
             return value.getBytes();
         }
-        
+
+        /**
+         * Returns the {@link Phase} constant with the specified name. The bytes
+         * must match exactly the identifiers bytes.
+         *
+         *
+         * @param value The byte representation of the requested {@link Phase}
+         * constant.
+         * @return The {@link Phase} constant with the specified name.
+         * @throws IllegalArgumentException If there is no constant with the
+         * specified name.
+         */
         public static Phase valueOf(byte[] value) {
             return valueOf(new String(value));
         }
@@ -145,44 +156,44 @@ public abstract class Handshake {
     byte[] remoteSignature;
     EccSigner signer;
     byte[] sessionKey;
-    
+
     protected Handshake(Participant localParticipant) {
         Exceptions.verifyArgumentsNotNull(localParticipant);
-        
+
         this.localParticipant = localParticipant;
         signer = new EccSigner();
     }
-    
+
     protected void generateLocalNonce() {
         localNonce = new byte[NONCE_LENGTH_IN_BYTES];
         SecureRandom random = new SecureRandom();
         random.nextBytes(localNonce);
     }
-    
+
     protected void calculateLocalSignature() {
         byte[] merged = Arrays.mergeArrays(localParticipant.getPublicKeyAsBytes(), localNonce, remoteNonce);
         byte[] digest = Digest.digestWithSha256(merged);
         localSignature = signer.sign(digest, localParticipant.getPrivateKey());
     }
-    
+
     protected void verifyRemoteSignature() {
         byte[] merged = Arrays.mergeArrays(remoteParticipant.getPublicKeyAsBytes(), remoteNonce, localNonce);
         byte[] digest = Digest.digestWithSha256(merged);
         boolean isRemoteSignatureVerified = false;
-        
+
         try {
             isRemoteSignatureVerified = signer.verify(digest, remoteSignature, remoteParticipant.getPublicKey());
         } catch (IllegalStateException ex) {
             throw new HandshakeException("Could not verify the correctness of "
                     + "the remote signature since an error occurred: " + ex.getMessage());
         }
-        
+
         if (!isRemoteSignatureVerified) {
             throw new HandshakeException("Could not verify the correctness of "
                     + "the remote signature.");
         }
     }
-    
+
     protected abstract void calculateSessionKey();
 
     /**
@@ -200,8 +211,8 @@ public abstract class Handshake {
         if (sessionKey == null) {
             throw new IllegalStateException("The authentication process has to be completed first.");
         }
-        
+
         return sessionKey;
     }
-    
+
 }
