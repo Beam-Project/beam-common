@@ -23,8 +23,8 @@ package org.beamproject.common.crypto;
  * participants goes wrong.
  *
  * @see Handshake
- * @see HandshakeChallenge
- * @see HandshakeResponse
+ * @see HandshakeChallenger
+ * @see HandshakeResponder
  */
 public class HandshakeException extends RuntimeException {
 

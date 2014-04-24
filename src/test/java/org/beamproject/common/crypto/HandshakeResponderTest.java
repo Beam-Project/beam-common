@@ -22,24 +22,24 @@ import java.util.ArrayList;
 import org.beamproject.common.Message;
 import static org.beamproject.common.Message.VERSION;
 import static org.beamproject.common.MessageField.*;
-import static org.beamproject.common.crypto.HandshakeResponse.*;
+import static org.beamproject.common.crypto.HandshakeResponder.*;
 import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 
-public class HandshakeResponseTest extends HandshakeTest {
+public class HandshakeResponderTest extends HandshakeTest {
 
-    private HandshakeResponse responder;
+    private HandshakeResponder responder;
 
     @Before
     public void setUpResponse() {
-        responder = new HandshakeResponse(localParticipant);
+        responder = new HandshakeResponder(localParticipant);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNull() {
-        responder = new HandshakeResponse(null);
+        responder = new HandshakeResponder(null);
     }
 
     @Test

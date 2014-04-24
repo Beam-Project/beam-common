@@ -23,23 +23,23 @@ import org.beamproject.common.Message;
 import static org.beamproject.common.Message.VERSION;
 import static org.beamproject.common.MessageField.*;
 import static org.beamproject.common.crypto.Handshake.Phase.*;
-import static org.beamproject.common.crypto.HandshakeResponse.*;
+import static org.beamproject.common.crypto.HandshakeResponder.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 
-public class HandshakeChallengeTest extends HandshakeTest {
+public class HandshakeChallengerTest extends HandshakeTest {
 
-    private HandshakeChallenge challenger;
+    private HandshakeChallenger challenger;
 
     @Before
     public void setUpChallenge() {
-        challenger = new HandshakeChallenge(localParticipant);
+        challenger = new HandshakeChallenger(localParticipant);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNull() {
-        challenger = new HandshakeChallenge(null);
+        challenger = new HandshakeChallenger(null);
     }
 
     @Test

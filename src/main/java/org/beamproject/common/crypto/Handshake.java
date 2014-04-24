@@ -26,14 +26,14 @@ import org.beamproject.common.util.Arrays;
 import org.beamproject.common.util.Exceptions;
 
 /**
- * This challenge response protocol uses the involved {@link Participant}
- * signatures to authenticate both sides. During this process, a session id is
- * generated which can be used for later communication.
+ * This handshake protocol uses the involved {@link Participant} signatures to
+ * authenticate both sides. During this process, a session id is generated which
+ * can be used for later communication.
  * <p>
  * {@link EccSigner} is used for signing.
  *
- * @see HandshakeChallenge
- * @see HandshakeResponse
+ * @see HandshakeChallenger
+ * @see HandshakeResponder
  * @see EccSigner
  */
 public abstract class Handshake {
@@ -56,9 +56,9 @@ public abstract class Handshake {
          * therefore already can encrypt the first message.
          * <p>
          * This side has to send: The own {@link PublicKey} as bytes (for
-         * identification and encryption when the the other side responses) and
+         * identification and encryption when the the other side responds) and
          * as challenge a nonce as bytes of the length of
-         * {@link AuthenticationSequence.NUMBER_OF_CHALLENGE_BYTES}.
+         * {@link Handshake.NONCE_LENGTH_IN_BYTES}.
          */
         CHALLENGE("CHALLENGE"),
         /**
@@ -66,19 +66,22 @@ public abstract class Handshake {
          * the participant who has been contacted by an unidentified participant
          * who wants to establish an authenticated session.
          * <p>
-         * {@code RESPONSE} tells the other side that the challenge is accepted
-         * and this side therefore is able to encryptedResponseChallenge.
+         * {@code RESPONSE} tells the other side that the challenge was accepted
+         * and this side therefore is able to send a challenge to whichs the
+         * other side has to response to.
          * <p>
          * At this time, this side knows the other sides {@link PublicKey} since
          * it was sent as part of phase 1, {@code CHALLENGE}. Also, this side
          * knows the challenge sent by the other side as a part of phase 1.
          * <p>
          * This side has to send: An own challenge (nonce as bytes) of the
-         * length of {@link AuthenticationSequence.NUMBER_OF_CHALLENGE_BYTES}.
-         * Further, this side has to calculate a digest of [the own public key +
-         * the own nonce + the other sides nonce]. This digest has to be signed
-         * with this sides private key. The resulting signature has to be sent
-         * with the own nonce.
+         * length of {@link Handshake.NONCE_LENGTH_IN_BYTES}. Further, this side
+         * has to calculate a digest of [the own public key + the own nonce +
+         * the other sides nonce], so the own public key followed by the own
+         * nonce followed by the other sides nonce have to be concatenated to
+         * one large array of bytes. This large array is then used to calculate
+         * the digest. This digest has to be signed with this sides private key.
+         * The resulting signature has to be sent with the own nonce.
          */
         RESPONSE("RESPONSE"),
         /**
@@ -97,18 +100,22 @@ public abstract class Handshake {
          * <p>
          * This side has to send: The response to the challenge from phase 2.
          * Therefore, this side has to calculate a digest of [the own public key
-         * + the own nonce + the other sides nonce]. (This sides nonce was
-         * generated in phase 1.) This digest has to be signed with this sides
-         * private key. The resulting signature has to be sent.
+         * + the own nonce + the other sides nonce], so the own public key
+         * followed by the own nonce followed by the other sides nonce have to
+         * be concatenated to one large array of bytes. This large array is then
+         * used to calculate the digest. (This sides nonce was generated in
+         * phase 1.) This digest has to be signed with this sides private key.
+         * The resulting signature has to be sent.
          */
         SUCCESS("SUCCESS"),
         /**
          * {@code FAILURE} tells the other side that something went wrong during
          * the authentication process. This could be a wrong key, a wrong phase,
-         * a delay, etc..
+         * a too long delay, etc..
          * <p>
          * When a FAILURE is sent, the authentication process has to be
-         * restarted from the side how wants to establish authenticity.
+         * restarted from the side how wants to establish authenticity. All
+         * values (nonces, etc.) have to be generated again.
          */
         FAILURE("FAILURE");
 

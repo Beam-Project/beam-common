@@ -30,13 +30,13 @@ import org.beamproject.common.util.Arrays;
 
 /**
  * Allows to negotiate authentication between {@link Participant}s. The
- * {@link HandshakeResponse} is used by the one who reacts to an incoming
- * {@link HandshakeChallenge}.
+ * {@link HandshakeResponder} is used by the one who reacts to an incoming
+ * {@link HandshakeChallenger}.
  *
  * @see Handshake
- * @see HandshakeChallenge
+ * @see HandshakeChallenger
  */
-public class HandshakeResponse extends Handshake {
+public class HandshakeResponder extends Handshake {
 
     Message response;
     boolean wasConsumeChallengeInvoked = false;
@@ -45,23 +45,23 @@ public class HandshakeResponse extends Handshake {
 
     /**
      * Allows to negotiate authentication between {@link Participant}s. The
-     * {@link HandshakeResponse} is used by the one who reacts to an incoming
-     * {@link HandshakeChallenge}.
+     * {@link HandshakeResponder} is used by the one who reacts to an incoming
+     * {@link HandshakeChallenger}.
      *
      * @param localParticipant The local {@link Participant} with both
      * {@link PublicKey} and {@link PrivateKey}.
      * @throws IllegalArgumentException If the argument is null.
      */
-    public HandshakeResponse(Participant localParticipant) {
+    public HandshakeResponder(Participant localParticipant) {
         super(localParticipant);
     }
 
     /**
      * Consumes the {@code CHALLENGE}, generated with
-     * {@link HandshakeChallenge}.
+     * {@link HandshakeChallenger}.
      * <p>
      * This method can only be invoked once per instance of
-     * {@link HandshakeResponse} for security reasons since authentication is
+     * {@link HandshakeResponder} for security reasons since authentication is
      * critical.
      *
      * @param challenge The challenge to consume.
@@ -122,7 +122,7 @@ public class HandshakeResponse extends Handshake {
      * Before this method, {@code consumeChallenge(..)} has to be invoked.
      * <p>
      * This method can only be invoked once per instance of
-     * {@link HandshakeResponse} for security reasons since authentication is
+     * {@link HandshakeResponder} for security reasons since authentication is
      * critical.
      *
      * @return The {@code RESPONSE} message.
@@ -157,13 +157,13 @@ public class HandshakeResponse extends Handshake {
     }
 
     /**
-     * Consumes the {@code SUCCESS}, generated with {@link HandshakeChallenge}.
+     * Consumes the {@code SUCCESS}, generated with {@link HandshakeChallenger}.
      * <p>
      * Before this method, {@code consumeChallenge(..)} and
      * {@code produceResponse(..)} have to be invoked.
      * <p>
      * This method can only be invoked once per instance of
-     * {@link HandshakeResponse} for security reasons since authentication is
+     * {@link HandshakeResponder} for security reasons since authentication is
      * critical.
      *
      * @param success The success to consume.

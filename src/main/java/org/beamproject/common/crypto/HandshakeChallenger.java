@@ -25,19 +25,19 @@ import static org.beamproject.common.Message.VERSION;
 import static org.beamproject.common.MessageField.*;
 import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.beamproject.common.Participant;
-import static org.beamproject.common.crypto.HandshakeResponse.*;
+import static org.beamproject.common.crypto.HandshakeResponder.*;
 import org.beamproject.common.util.Arrays;
 import org.beamproject.common.util.Exceptions;
 
 /**
  * Allows to negotiate authentication between {@link Participant}s. The
- * {@link HandshakeChallenge} is used by the one who wants to establish
+ * {@link HandshakeChallenger} is used by the one who wants to establish
  * authenticity.
  *
  * @see Handshake
- * @see HandshakeResponse
+ * @see HandshakeResponder
  */
-public class HandshakeChallenge extends Handshake {
+public class HandshakeChallenger extends Handshake {
 
     Message challenge;
     Message success;
@@ -47,14 +47,14 @@ public class HandshakeChallenge extends Handshake {
 
     /**
      * Allows to negotiate authentication between {@link Participant}s. The
-     * {@link HandshakeChallenge} is used by the one who wants to establish
+     * {@link HandshakeChallenger} is used by the one who wants to establish
      * authenticity.
      *
      * @param localParticipant The local {@link Participant} with both
      * {@link PublicKey} and {@link PrivateKey}.
      * @throws IllegalArgumentException If the argument is null.
      */
-    public HandshakeChallenge(Participant localParticipant) {
+    public HandshakeChallenger(Participant localParticipant) {
         super(localParticipant);
     }
 
@@ -62,7 +62,7 @@ public class HandshakeChallenge extends Handshake {
      * Produces the {@code CHALLENGE}.
      * <p>
      * This method can only be invoked once per instance of
-     * {@link HandshakeChallenge} for security reasons since authentication is
+     * {@link HandshakeChallenger} for security reasons since authentication is
      * critical.
      *
      * @param remoteParticipant The {@link Participant} between whom
@@ -100,12 +100,12 @@ public class HandshakeChallenge extends Handshake {
     }
 
     /**
-     * Consumes the {@code RESPONSE}, generated with {@link HandshakeResponse}.
+     * Consumes the {@code RESPONSE}, generated with {@link HandshakeResponder}.
      * <p>
      * Before this method, {@code produceResponse(..)} has to be invoked.
      * <p>
      * This method can only be invoked once per instance of
-     * {@link HandshakeChallenge} for security reasons since authentication is
+     * {@link HandshakeChallenger} for security reasons since authentication is
      * critical.
      *
      * @param challenge The response to consume.
@@ -170,7 +170,7 @@ public class HandshakeChallenge extends Handshake {
      * Before this method, {@code consumeResponse(..)} has to be invoked.
      * <p>
      * This method can only be invoked once per instance of
-     * {@link HandshakeChallenge} for security reasons since authentication is
+     * {@link HandshakeChallenger} for security reasons since authentication is
      * critical.
      *
      * @return The {@code SUCCESS} message.
