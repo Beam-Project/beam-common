@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import org.apache.http.HttpStatus;
@@ -41,29 +40,21 @@ public class HttpConnector {
     public final static String ENCODING = "UTF-8";
     private final String VALUE_PARAMETER_NAME = "value";
     private HttpURLConnection connection;
-    URL target;
+    URL recipientUrl;
 
     /**
      * Prepares for a new HTTP connection to the server behind the given URL.
      * The connection is set up when it's needed for the first time. Internally,
      * a connection pool is used.
      *
-     * @param targetUrl The URL of the server. This has to be a valid URL.
+     * @param recipientUrl The URL of the recipients host.
      * @throws IllegalArgumentException If the argument is null, empty or not a
      * valid {@link URL}.
      */
-    public HttpConnector(String targetUrl) {
-        Exceptions.verifyArgumentsNotEmpty(targetUrl);
+    public HttpConnector(URL recipientUrl) {
+        Exceptions.verifyArgumentsNotNull(recipientUrl);
 
-        handleUrl(targetUrl);
-    }
-
-    private void handleUrl(String targetUrl) {
-        try {
-            target = new URL(targetUrl);
-        } catch (MalformedURLException ex) {
-            throw new IllegalArgumentException("The given argument is not a valid URL.");
-        }
+        this.recipientUrl = recipientUrl;
     }
 
     /**
@@ -96,7 +87,7 @@ public class HttpConnector {
     }
 
     private void openConnection(int contentLength) throws IOException {
-        connection = (HttpURLConnection) target.openConnection();
+        connection = (HttpURLConnection) recipientUrl.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         connection.setRequestProperty("Content-Length", "" + Integer.toString(contentLength));

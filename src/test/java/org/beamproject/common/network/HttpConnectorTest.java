@@ -32,7 +32,7 @@ public class HttpConnectorTest {
     @Before
     public void setUp() throws MalformedURLException {
         url = new URL("http://127.0.0.1:8080/beam-server/deliver");
-        http = new HttpConnector(url.toString());
+        http = new HttpConnector(url);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -40,19 +40,9 @@ public class HttpConnectorTest {
         http = new HttpConnector(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnEmptyString() {
-        http = new HttpConnector("");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnInvalidUrl() {
-        http = new HttpConnector("");
-    }
-
     @Test
     public void testConstructorOnAssignment() {
-        assertEquals(url, http.target);
+        assertEquals(url, http.recipientUrl);
     }
 
     @Test(expected = IllegalArgumentException.class)
