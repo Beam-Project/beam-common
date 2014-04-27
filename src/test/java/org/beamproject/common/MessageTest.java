@@ -87,27 +87,26 @@ public class MessageTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testPutContentOnNulls() {
-        message.putContent(null, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void testPutContentOnNullKey() {
         message.putContent(null, new byte[]{1, 2, 3});
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testPutContentOnNullContent() {
-        message.putContent(MSG, null);
-    }
-
     @Test
-    public void testPutContent() {
+    public void testPutContentAsBytes() {
         byte[] value = "hello".getBytes();
         message.putContent(MSG, value);
 
         assertTrue(message.content.containsKey(MSG.toString()));
         assertArrayEquals(value, message.content.get(MSG.toString()));
+    }
+
+    @Test
+    public void testPutContentAsString() {
+        String value = "hello";
+        message.putContent(MSG, value);
+
+        assertTrue(message.content.containsKey(MSG.toString()));
+        assertArrayEquals(value.getBytes(), message.content.get(MSG.toString()));
     }
 
     @Test

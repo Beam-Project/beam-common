@@ -82,10 +82,10 @@ public class Message {
     }
 
     /**
-     * Puts the content as reference to the internally used {@link Map}. The
-     * array is NOT copied.
+     * Puts the content to this {@link Message}. The array is not copied, just
+     * referenced.
      * <p>
- ContentField can be overwritten using equal {@code key}s.
+     * ContentField can be overwritten using equal {@code key}s.
      *
      * @param key The key of the field.
      * @param content The content bytes.
@@ -95,6 +95,21 @@ public class Message {
         Exceptions.verifyArgumentsNotNull(key, content);
 
         this.content.put(key.toString(), content);
+    }
+
+    /**
+     * Puts the content to this {@link Message}.
+     * <p>
+     * ContentField can be overwritten using equal {@code key}s.
+     *
+     * @param key The key of the field.
+     * @param content The content.
+     * @throws IllegalArgumentException If at least one argument is null.
+     */
+    public void putContent(ContentField key, String content) {
+        Exceptions.verifyArgumentsNotNull(key, content);
+
+        this.content.put(key.toString(), content.getBytes());
     }
 
     /**
