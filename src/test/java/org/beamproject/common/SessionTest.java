@@ -73,5 +73,21 @@ public class SessionTest {
         session.key = null;
         assertNull(session.getKey());
     }
+    
+    @Test
+    public void testInvalidate() {
+        int length = key.length;
+        assertSame(key, session.key);
+        
+        session.invalidateSession();
+        assertSame(key, session.key);
+        assertEquals(length, session.key.length);
+        
+        for (byte b : session.key) {
+            assertEquals(b, 0);
+        }
+        
+        assertNull(session.remoteParticipant);
+    }
 
 }

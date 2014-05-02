@@ -74,4 +74,16 @@ public class Session {
     public byte[] getKey() {
         return key;
     }
+
+    /**
+     * Invalidates this session. The key byte array is set to zeros. The
+     * reference to the remote participant is set to null.
+     */
+    public void invalidateSession() {
+        for (int i = 0; i < key.length; i++) {
+            key[i] = 0;
+        }
+
+        remoteParticipant = null;
+    }
 }
