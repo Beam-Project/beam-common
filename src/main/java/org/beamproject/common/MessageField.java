@@ -37,8 +37,6 @@ public enum MessageField {
 
     /**
      * Stands for "Version". This field contains the message format version.
-     *//**
-     * Stands for "Version". This field contains the message format version.
      */
     VRS,
     /**
@@ -89,6 +87,14 @@ public enum MessageField {
          * the signature, created with the other sides private key.
          */
         CRSIG,
+        /**
+         * This field is a part of the Challenge-Response protocol. This
+         * protocol allows to establish a long-time session.
+         * <p>
+         * {@code CRKEY} stands for "Challenge Response Key" and contains the
+         * session key that was established earlier.
+         */
+        CRKEY,
         /**
          * Stands for "Message" and contains the message text itself.
          */
