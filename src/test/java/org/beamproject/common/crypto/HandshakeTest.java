@@ -20,10 +20,15 @@ package org.beamproject.common.crypto;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import org.beamproject.common.Message;
+import static org.beamproject.common.MessageField.ContentField.*;
 import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
+import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.beamproject.common.util.Arrays;
+import static org.junit.Assert.assertArrayEquals;
 import org.junit.Before;
+import org.junit.Test;
 
 public class HandshakeTest {
 
@@ -33,6 +38,7 @@ public class HandshakeTest {
     protected EccSigner signer;
     protected byte[] remoteNonce;
     protected byte[] remoteSignature;
+    private byte[] sessionKey;
 
     @Before
     public void setUp() {
@@ -40,6 +46,8 @@ public class HandshakeTest {
         fullRemoteParticipant = Participant.generate();
         remoteParticipant = new Participant(EccKeyPairGenerator.fromPublicKey(fullRemoteParticipant.getPublicKeyAsBytes()));
         signer = new EccSigner();
+
+        sessionKey = "hello".getBytes();
     }
 
     protected byte[] generateNonce() {
@@ -71,6 +79,28 @@ public class HandshakeTest {
         }
 
         return copy;
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetInvalidateOnNulls() {
+        Handshake.getInvalidate(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetInvalidateOnNullParticipant() {
+        Handshake.getInvalidate(null, sessionKey);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetInvalidateOnNullKey() {
+        Handshake.getInvalidate(remoteParticipant, null);
+    }
+
+    @Test
+    public void testGetInvalidate() {
+        Message message = Handshake.getInvalidate(remoteParticipant, sessionKey);
+        assertArrayEquals(INVALIDATE.getBytes(), message.getContent(CRPHASE));
+        assertArrayEquals(sessionKey, message.getContent(CRKEY));
     }
 
 }

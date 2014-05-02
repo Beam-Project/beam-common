@@ -21,6 +21,7 @@ package org.beamproject.common.crypto;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import org.beamproject.common.Message;
+import static org.beamproject.common.MessageField.ContentField.*;
 import org.beamproject.common.Participant;
 import org.beamproject.common.util.Arrays;
 import org.beamproject.common.util.Exceptions;
@@ -60,7 +61,7 @@ public abstract class Handshake {
          * as challenge a nonce as bytes of the length of
          * {@link Handshake.NONCE_LENGTH_IN_BYTES}.
          */
-        CHALLENGE("CHALLENGE"),
+        CHALLENGE,
         /**
          * PHASE 2 OF 3: The following is described from the point of view of
          * the participant who has been contacted by an unidentified participant
@@ -83,7 +84,7 @@ public abstract class Handshake {
          * the digest. This digest has to be signed with this sides private key.
          * The resulting signature has to be sent with the own nonce.
          */
-        RESPONSE("RESPONSE"),
+        RESPONSE,
         /**
          * PHASE 3 OF 3: The following is described from the point of view of
          * the participant who wants to establish an authenticated session.
@@ -107,7 +108,7 @@ public abstract class Handshake {
          * phase 1.) This digest has to be signed with this sides private key.
          * The resulting signature has to be sent.
          */
-        SUCCESS("SUCCESS"),
+        SUCCESS,
         /**
          * {@code FAILURE} tells the other side that something went wrong during
          * the authentication process. This could be a wrong key, a wrong phase,
@@ -117,17 +118,14 @@ public abstract class Handshake {
          * restarted from the side how wants to establish authenticity. All
          * values (nonces, etc.) have to be generated again.
          */
-        FAILURE("FAILURE");
-
-        private final String value;
-
-        private Phase(String value) {
-            this.value = value;
-        }
-
-        public byte[] getBytes() {
-            return value.getBytes();
-        }
+        FAILURE,
+        /**
+         * {@code INVALIDATE} tells the other side that an already established
+         * session has to be invalidated an that it will no longer be valid.
+         * <p>
+         * This side has to send the session key to the other side.
+         */
+        INVALIDATE;
 
         /**
          * Returns the {@link Phase} constant with the specified name. The bytes
@@ -142,6 +140,13 @@ public abstract class Handshake {
          */
         public static Phase valueOf(byte[] value) {
             return valueOf(new String(value));
+        }
+
+        /**
+         * @return The bytes of the string representation of this value.
+         */
+        public byte[] getBytes() {
+            return toString().getBytes();
         }
     }
     public final static int NONCE_LENGTH_IN_BYTES = 128;
@@ -220,6 +225,23 @@ public abstract class Handshake {
         }
 
         return sessionKey;
+    }
+
+    /**
+     * Creates an {@code INVALIDATE} {@link Message} with the given session key.
+     *
+     * @param remoteParticipant The participant with whom the session was
+     * established.
+     * @param sessionKey The established session key.
+     * @return A message to invalidate the session.
+     * @throws IllegalArgumentException If at least one argument is null.
+     */
+    public static Message getInvalidate(Participant remoteParticipant, byte[] sessionKey) {
+        Exceptions.verifyArgumentsNotNull(remoteParticipant, sessionKey);
+        Message message = new Message(remoteParticipant);
+        message.putContent(CRPHASE, Phase.INVALIDATE);
+        message.putContent(CRKEY, sessionKey);
+        return message;
     }
 
 }
