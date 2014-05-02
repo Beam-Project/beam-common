@@ -47,12 +47,12 @@ public class HttpConnectorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testExecutePostOnNull() {
-        http.excutePost(null);
+        http.executePost(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testExecutePostOnEmptyArray() {
-        http.excutePost(new byte[0]);
+        http.executePost(new byte[0]);
     }
 
 }

@@ -71,7 +71,7 @@ public class HttpConnector {
      * @throws IllegalArgumentException If the argument is null or empty (zero
      * length).
      */
-    public byte[] excutePost(byte[] content) {
+    public byte[] executePost(byte[] content) {
         if (content == null || content.length == 0) {
             throw new IllegalArgumentException("The argument may not be null nor may it be empty.");
         }
