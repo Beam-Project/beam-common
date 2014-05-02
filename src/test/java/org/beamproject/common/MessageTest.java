@@ -24,6 +24,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import static org.beamproject.common.MessageField.ContentField.*;
+import org.beamproject.common.crypto.Handshake;
 
 public class MessageTest {
 
@@ -107,6 +108,14 @@ public class MessageTest {
 
         assertTrue(message.content.containsKey(MSG.toString()));
         assertArrayEquals(value.getBytes(), message.content.get(MSG.toString()));
+    }
+
+    @Test
+    public void testPutContentAsEnum() {
+        message.putContent(CRPHASE, Handshake.Phase.INVALIDATE);
+
+        assertTrue(message.content.containsKey(CRPHASE.toString()));
+        assertArrayEquals(Handshake.Phase.INVALIDATE.getBytes(), message.content.get(CRPHASE.toString()));
     }
 
     @Test

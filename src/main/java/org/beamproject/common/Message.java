@@ -113,6 +113,21 @@ public class Message {
     }
 
     /**
+     * Puts the content to this {@link Message}.
+     * <p>
+     * ContentField can be overwritten using equal {@code key}s.
+     *
+     * @param key The key of the field.
+     * @param content The content.
+     * @throws IllegalArgumentException If at least one argument is null.
+     */
+    public void putContent(ContentField key, Enum content) {
+        Exceptions.verifyArgumentsNotNull(key, content);
+
+        this.content.put(key.toString(), content.toString().getBytes());
+    }
+
+    /**
      * Returns the {@link Map} that contains the content.
      *
      * @return The original map.
