@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import org.beamproject.common.Message;
 import static org.beamproject.common.Message.VERSION;
 import static org.beamproject.common.MessageField.ContentField.*;
+import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
 import static org.beamproject.common.crypto.HandshakeResponder.*;
 import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.junit.Test;
@@ -68,6 +69,20 @@ public class HandshakeResponderTest extends HandshakeTest {
     public void testConsumeChallengeOnWrongVersion() {
         Message challenge = getBasicChallenge();
         challenge.setVersion(VERSION + ".1");
+        responder.consumeChallenge(challenge);
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeChallengeOnMissingType() {
+        Message challenge = getBasicChallenge();
+        challenge.getContent().remove(TYPE.toString());
+        responder.consumeChallenge(challenge);
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeChallengeOnWrongType() {
+        Message challenge = getBasicChallenge();
+        challenge.putContent(TYPE, HEARTBEAT.getBytes());
         responder.consumeChallenge(challenge);
     }
 
@@ -141,6 +156,7 @@ public class HandshakeResponderTest extends HandshakeTest {
     private Message getBasicChallenge() {
         remoteNonce = generateNonce();
         Message challenge = new Message(localParticipant);
+        challenge.putContent(TYPE, HANDSHAKE.getBytes());
         challenge.putContent(HSPHASE, CHALLENGE.getBytes());
         challenge.putContent(HSPUBKEY, remoteParticipant.getPublicKeyAsBytes());
         challenge.putContent(HSNONCE, remoteNonce);
@@ -155,6 +171,7 @@ public class HandshakeResponderTest extends HandshakeTest {
 
         assertEquals(VERSION, response.getVersion());
         assertEquals(remoteParticipant, response.getRecipient());
+        assertArrayEquals(HANDSHAKE.getBytes(), response.getContent(TYPE));
         assertArrayEquals(RESPONSE.getBytes(), response.getContent(HSPHASE));
         assertEquals(NONCE_LENGTH_IN_BYTES, responder.localNonce.length);
         assertTrue(responder.localSignature.length >= MINIMAL_SIGNATURE_LENGTH_IN_BYTES);
@@ -206,6 +223,24 @@ public class HandshakeResponderTest extends HandshakeTest {
 
         Message success = getBasicSuccess();
         success.setVersion(VERSION + ".1");
+        responder.consumeSuccess(success);
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeSuccessOnMissingType() {
+        testProduceResponse(); // Set the responder into needed state
+
+        Message success = getBasicSuccess();
+        success.getContent().remove(TYPE.toString());
+        responder.consumeSuccess(success);
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeSuccessOnWrongType() {
+        testProduceResponse(); // Set the responder into needed state
+
+        Message success = getBasicSuccess();
+        success.putContent(TYPE, HEARTBEAT.getBytes());
         responder.consumeSuccess(success);
     }
 

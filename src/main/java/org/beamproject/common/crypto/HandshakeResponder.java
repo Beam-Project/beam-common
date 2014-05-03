@@ -24,6 +24,7 @@ import java.security.PublicKey;
 import org.beamproject.common.Message;
 import static org.beamproject.common.Message.VERSION;
 import static org.beamproject.common.MessageField.ContentField.*;
+import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
 import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.beamproject.common.Participant;
 import org.beamproject.common.util.Arrays;
@@ -97,6 +98,10 @@ public class HandshakeResponder extends Handshake {
             exceptionMessage += "version not set or unknown";
         } else if (challenge.getRecipient() == null) {
             exceptionMessage += "participant not set";
+        } else if (!challenge.containsContent(TYPE)
+                || challenge.getContent(TYPE) == null
+                || !HANDSHAKE.toString().equals(new String(challenge.getContent(TYPE)))) {
+            exceptionMessage += "phase not set or an unexpected one";
         } else if (!challenge.containsContent(HSPHASE)
                 || challenge.getContent(HSPHASE) == null
                 || !CHALLENGE.toString().equals(new String(challenge.getContent(HSPHASE)))) {
@@ -151,7 +156,8 @@ public class HandshakeResponder extends Handshake {
 
     private void assembleResponseMessage() {
         response = new Message(remoteParticipant);
-        response.putContent(HSPHASE, RESPONSE.getBytes());
+        response.putContent(TYPE, HANDSHAKE);
+        response.putContent(HSPHASE, RESPONSE);
         response.putContent(HSNONCE, localNonce);
         response.putContent(HSSIG, localSignature);
     }
