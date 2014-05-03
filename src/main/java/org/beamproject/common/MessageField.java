@@ -40,13 +40,15 @@ public enum MessageField {
 
     /**
      * Stands for "Version". This field contains the message format version.
+     *//**
+     * Stands for "Version". This field contains the message format version.
      */
     VRS,
     /**
-     * Stands for "Participant" and is the public key (X.509 encoded) of the
+     * Stands for "Recipient" and is the public key (X.509 encoded) of the
      * target {@link Participant} of this message.
      */
-    PRT,
+    RCP,
     /**
      * Stands for "ContentField" and contains the message as several sub fields.
      */
