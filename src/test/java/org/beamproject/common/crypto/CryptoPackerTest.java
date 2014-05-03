@@ -20,6 +20,7 @@ package org.beamproject.common.crypto;
 
 import org.beamproject.common.Message;
 import static org.beamproject.common.MessageField.ContentField.*;
+import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
 import org.beamproject.common.Participant;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -28,7 +29,7 @@ import org.junit.Before;
 public class CryptoPackerTest {
 
     private final byte[] MESSAGE = "hello world".getBytes();
-    private final int EXPECTED_CPHERTEXT_LENGTH_IN_BYTES = 304;
+    private final int EXPECTED_CPHERTEXT_LENGTH_IN_BYTES = 320;
     private CryptoPacker localPacker;
     private CryptoPacker remotePacker;
     private Participant participantWithBothKeys;
@@ -40,7 +41,7 @@ public class CryptoPackerTest {
     public void setUp() {
         participantWithBothKeys = Participant.generate();
         participantWithPublicKey = new Participant(EccKeyPairGenerator.fromPublicKey(participantWithBothKeys.getPublicKeyAsBytes()));
-        plaintext = new Message(participantWithPublicKey);
+        plaintext = new Message(HEARTBEAT, participantWithPublicKey);
         plaintext.putContent(MSG, MESSAGE);
 
         localPacker = new CryptoPacker();
@@ -71,6 +72,7 @@ public class CryptoPackerTest {
 
         Message decryptedCiphertext = remotePacker.decryptAndUnpack(ciphertext, participantWithBothKeys);
         assertEquals(plaintext.getVersion(), decryptedCiphertext.getVersion());
+        assertEquals(plaintext.getType(), decryptedCiphertext.getType());
         assertArrayEquals(plaintext.getContent(MSG), decryptedCiphertext.getContent(MSG));
     }
 

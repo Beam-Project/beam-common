@@ -94,8 +94,7 @@ public class HandshakeChallenger extends Handshake {
     }
 
     private void assembleChallengeMessage() {
-        challenge = new Message(remoteParticipant);
-        challenge.putContent(TYPE, HANDSHAKE);
+        challenge = new Message(HANDSHAKE, remoteParticipant);
         challenge.putContent(HSPHASE, CHALLENGE);
         challenge.putContent(HSPUBKEY, localParticipant.getPublicKeyAsBytes());
         challenge.putContent(HSNONCE, localNonce);
@@ -204,8 +203,7 @@ public class HandshakeChallenger extends Handshake {
     }
 
     private void assembleSuccessMessage() {
-        success = new Message(remoteParticipant);
-        success.putContent(TYPE, HANDSHAKE);
+        success = new Message(HANDSHAKE, remoteParticipant);
         success.putContent(HSPHASE, SUCCESS);
         success.putContent(HSSIG, localSignature);
     }

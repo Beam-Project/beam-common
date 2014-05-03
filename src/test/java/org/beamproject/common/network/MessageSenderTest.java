@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import org.beamproject.common.Message;
 import static org.beamproject.common.MessageField.ContentField.*;
+import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
 import org.beamproject.common.Participant;
 import org.beamproject.common.crypto.CryptoPacker;
 import org.beamproject.common.util.Base64;
@@ -49,7 +50,7 @@ public class MessageSenderTest {
         connector = createMock(HttpConnector.class);
         localParticipant = Participant.generate();
         remoteParticipant = Participant.generate();
-        message = new Message(remoteParticipant);
+        message = new Message(HANDSHAKE, remoteParticipant);
         url = new URL(urlAsString);
         sender = new MessageSender(url, localParticipant);
         sender.connector = connector;
@@ -76,12 +77,12 @@ public class MessageSenderTest {
         assertNotNull(sender.connector);
         assertSame(localParticipant, sender.localParticipant);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testSendOnNull() {
         sender.send(null);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testSendAndReceiveOnNull() {
         sender.sendAndReceive(null);
@@ -91,18 +92,18 @@ public class MessageSenderTest {
     public void testSend() {
         expect(connector.executePost(anyObject(byte[].class))).andReturn(null);
         replay(connector);
-        
+
         message.putContent(MSG, "");
         sender = new MessageSender(url, localParticipant);
         sender.connector = connector;
         sender.send(message);
-        
+
         verify(connector);
     }
 
     @Test
     public void testSendAndReceive() {
-        Message response = new Message(localParticipant);
+        Message response = new Message(HANDSHAKE, localParticipant);
         response.putContent(MSG, "response");
         byte[] encryptedResponse = new CryptoPacker().packAndEncrypt(response);
         byte[] encryptedBase64Response = Base64.encode(encryptedResponse).getBytes();

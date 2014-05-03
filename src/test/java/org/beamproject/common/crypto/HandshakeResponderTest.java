@@ -155,8 +155,7 @@ public class HandshakeResponderTest extends HandshakeTest {
 
     private Message getBasicChallenge() {
         remoteNonce = generateNonce();
-        Message challenge = new Message(localParticipant);
-        challenge.putContent(TYPE, HANDSHAKE.getBytes());
+        Message challenge = new Message(HANDSHAKE, localParticipant);
         challenge.putContent(HSPHASE, CHALLENGE.getBytes());
         challenge.putContent(HSPUBKEY, remoteParticipant.getPublicKeyAsBytes());
         challenge.putContent(HSNONCE, remoteNonce);
@@ -330,7 +329,7 @@ public class HandshakeResponderTest extends HandshakeTest {
     }
 
     private Message getBasicSuccess() {
-        Message success = new Message(localParticipant);
+        Message success = new Message(HANDSHAKE, localParticipant);
         success.putContent(HSPHASE, SUCCESS.getBytes());
         success.putContent(HSSIG, new byte[MINIMAL_SIGNATURE_LENGTH_IN_BYTES]);
 

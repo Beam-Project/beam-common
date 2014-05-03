@@ -25,6 +25,7 @@ import java.util.Map;
 import org.beamproject.common.Message;
 import org.beamproject.common.MessageField;
 import org.beamproject.common.MessageField.ContentField;
+import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
 import org.beamproject.common.Participant;
 import org.beamproject.common.util.Exceptions;
 import org.msgpack.MessagePack;
@@ -156,7 +157,7 @@ public class CryptoPacker {
     private void unpackAllPartsFromCiphertext() {
         Map<String, byte[]> map = buildMapFromBytes(ciphertext);
 
-        plaintext = new Message(participant);
+        plaintext = new Message(BLANK, participant);
         plaintext.setVersion(readStringFromMap(map, MessageField.VRS.toString()));
         encryptedPacketContent = readByteArrayFromMap(map, MessageField.CNT.toString());
     }

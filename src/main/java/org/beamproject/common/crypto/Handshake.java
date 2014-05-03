@@ -22,6 +22,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import org.beamproject.common.Message;
 import static org.beamproject.common.MessageField.ContentField.*;
+import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
 import org.beamproject.common.Participant;
 import org.beamproject.common.util.Arrays;
 import org.beamproject.common.util.Exceptions;
@@ -238,7 +239,7 @@ public abstract class Handshake {
      */
     public static Message getInvalidate(Participant remoteParticipant, byte[] sessionKey) {
         Exceptions.verifyArgumentsNotNull(remoteParticipant, sessionKey);
-        Message message = new Message(remoteParticipant);
+        Message message = new Message(HANDSHAKE, remoteParticipant);
         message.putContent(HSPHASE, Phase.INVALIDATE);
         message.putContent(HSKEY, sessionKey);
         return message;

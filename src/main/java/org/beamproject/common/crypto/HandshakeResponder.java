@@ -155,8 +155,7 @@ public class HandshakeResponder extends Handshake {
     }
 
     private void assembleResponseMessage() {
-        response = new Message(remoteParticipant);
-        response.putContent(TYPE, HANDSHAKE);
+        response = new Message(HANDSHAKE, remoteParticipant);
         response.putContent(HSPHASE, RESPONSE);
         response.putContent(HSNONCE, localNonce);
         response.putContent(HSSIG, localSignature);

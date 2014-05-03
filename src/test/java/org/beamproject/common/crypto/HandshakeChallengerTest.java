@@ -82,9 +82,8 @@ public class HandshakeChallengerTest extends HandshakeTest {
         remoteNonce = generateNonce();
         remoteSignature = sign(fullRemoteParticipant, remoteNonce, challenger.localNonce);
 
-        Message response = new Message(localParticipant);
+        Message response = new Message(HANDSHAKE, localParticipant);
         response.setVersion(VERSION);
-        response.putContent(TYPE, HANDSHAKE.getBytes());
         response.putContent(HSPHASE, RESPONSE.getBytes());
         response.putContent(HSNONCE, remoteNonce);
         response.putContent(HSSIG, remoteSignature);
@@ -227,7 +226,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         remoteNonce = generateNonce();
         calculateRemoteSignature();
 
-        Message challenge = new Message(localParticipant);
+        Message challenge = new Message(HANDSHAKE, localParticipant);
         challenge.putContent(HSPHASE, RESPONSE.getBytes());
         challenge.putContent(HSSIG, remoteSignature);
         challenge.putContent(HSNONCE, remoteNonce);
