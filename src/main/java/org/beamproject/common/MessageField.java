@@ -19,6 +19,9 @@
 package org.beamproject.common;
 
 import java.security.PublicKey;
+import org.beamproject.common.crypto.Handshake;
+import org.beamproject.common.crypto.HandshakeChallenger;
+import org.beamproject.common.crypto.HandshakeResponder;
 
 /**
  * Defines all typically used field identifier used in {@link Message}s.
@@ -55,6 +58,10 @@ public enum MessageField {
      */
     public enum ContentField {
 
+        /**
+         * Defines the type of this message, e.g. HANDSHAKE, HEARTBEAT, etc..
+         */
+        TYPE,
         /**
          * This field is a part of the Challenge-Response protocol. This
          * protocol allows to establish a long-time session.
@@ -100,5 +107,29 @@ public enum MessageField {
          */
         MSG;
 
+        /**
+         * Contains all needed values for the {@link ContentField} TYPE.
+         */
+        public enum TypeValue {
+
+            /**
+             * Tells the recipient that the message with this type should be
+             * interpreted as part of the handshake, which is used to establish
+             * authenticity.
+             *
+             * @see Handshake
+             * @see HandshakeChallenger
+             * @see HandshakeResponder
+             */
+            HANDSHAKE,
+            /**
+             * Tells the recipient that the message with this type should be
+             * interpreted as heartbeat.
+             * <p>
+             * The heartbeat ensures that an already established {@link Session}
+             * is kept alive.
+             */
+            HEARTBEAT;
+        }
     }
 }
