@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import org.beamproject.common.Message;
 import static org.beamproject.common.Message.VERSION;
 import static org.beamproject.common.MessageField.ContentField.*;
+import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
 import static org.beamproject.common.crypto.Handshake.Phase.*;
 import static org.beamproject.common.crypto.HandshakeResponder.*;
 import org.junit.Test;
@@ -55,6 +56,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         assertTrue(challenger.wasProduceChallengeInvoked);
         assertEquals(VERSION, challenge.getVersion());
         assertEquals(remoteParticipant, challenge.getRecipient());
+        assertArrayEquals(HANDSHAKE.getBytes(), challenge.getContent(TYPE));
         assertArrayEquals(CHALLENGE.getBytes(), challenge.getContent(HSPHASE));
         assertArrayEquals(localParticipant.getPublicKeyAsBytes(), challenge.getContent(HSPUBKEY));
         assertArrayEquals(challenger.localNonce, challenge.getContent(HSNONCE));
@@ -82,6 +84,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
 
         Message response = new Message(localParticipant);
         response.setVersion(VERSION);
+        response.putContent(TYPE, HANDSHAKE.getBytes());
         response.putContent(HSPHASE, RESPONSE.getBytes());
         response.putContent(HSNONCE, remoteNonce);
         response.putContent(HSSIG, remoteSignature);
@@ -108,6 +111,24 @@ public class HandshakeChallengerTest extends HandshakeTest {
 
         Message response = getBasicResponse();
         response.setVersion(VERSION + ".1");
+        challenger.consumeResponse(response);
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeResponseOnMissingType() {
+        testProduceChallenge(); // Set the challenger into needed state.
+
+        Message response = getBasicResponse();
+        response.getContent().remove(TYPE.toString());
+        challenger.consumeResponse(response);
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeResponseOnWrongType() {
+        testProduceChallenge(); // Set the challenger into needed state.
+
+        Message response = getBasicResponse();
+        response.putContent(TYPE, HEARTBEAT.getBytes());
         challenger.consumeResponse(response);
     }
 
@@ -228,7 +249,8 @@ public class HandshakeChallengerTest extends HandshakeTest {
 
         assertTrue(challenger.wasProduceSuccessInvoked);
         assertEquals(VERSION, success.getVersion());
-        assertEquals(SUCCESS.toString(), new String(success.getContent(HSPHASE)));
+        assertArrayEquals(HANDSHAKE.getBytes(), success.getContent(TYPE));
+        assertArrayEquals(SUCCESS.getBytes(), success.getContent(HSPHASE));
         assertEquals(remoteParticipant, success.getRecipient());
 
         byte[] localDigest = digest(localParticipant, challenger.localNonce, remoteNonce);

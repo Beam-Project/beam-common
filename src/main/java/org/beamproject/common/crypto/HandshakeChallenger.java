@@ -23,6 +23,7 @@ import java.security.PublicKey;
 import org.beamproject.common.Message;
 import static org.beamproject.common.Message.VERSION;
 import static org.beamproject.common.MessageField.ContentField.*;
+import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
 import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.HandshakeResponder.*;
@@ -94,6 +95,7 @@ public class HandshakeChallenger extends Handshake {
 
     private void assembleChallengeMessage() {
         challenge = new Message(remoteParticipant);
+        challenge.putContent(TYPE, HANDSHAKE);
         challenge.putContent(HSPHASE, CHALLENGE);
         challenge.putContent(HSPUBKEY, localParticipant.getPublicKeyAsBytes());
         challenge.putContent(HSNONCE, localNonce);
@@ -144,6 +146,10 @@ public class HandshakeChallenger extends Handshake {
             exceptionMessage += "version not set or unknown";
         } else if (response.getRecipient() == null) {
             exceptionMessage += "participant not set";
+        } else if (!response.containsContent(TYPE)
+                || response.getContent(TYPE) == null
+                || !HANDSHAKE.toString().equals(new String(response.getContent(TYPE)))) {
+            exceptionMessage += "type not set or an unexpected one";
         } else if (!response.containsContent(HSPHASE)
                 || response.getContent(HSPHASE) == null
                 || !RESPONSE.toString().equals(new String(response.getContent(HSPHASE)))) {
@@ -199,6 +205,7 @@ public class HandshakeChallenger extends Handshake {
 
     private void assembleSuccessMessage() {
         success = new Message(remoteParticipant);
+        success.putContent(TYPE, HANDSHAKE);
         success.putContent(HSPHASE, SUCCESS);
         success.putContent(HSSIG, localSignature);
     }
