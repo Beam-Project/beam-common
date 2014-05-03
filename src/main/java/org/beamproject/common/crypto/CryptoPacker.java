@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.beamproject.common.Message;
-import org.beamproject.common.MessageField;
+import static org.beamproject.common.MessageField.*;
 import org.beamproject.common.MessageField.ContentField;
 import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
 import org.beamproject.common.Participant;
@@ -62,7 +62,7 @@ public class CryptoPacker {
     /**
      * Packs and encrypts the given {@code plaintext} to a {@link MessagePack}
      * byte array.<p>
- The field ContentField ({@code CNT}) will be encrypted.<p>
+     * The field ContentField ({@code CNT}) will be encrypted.<p>
      * The fields Version ({@code VRS}) and Participant ({@code PRT}) will
      * <b>not</b> be encrypted.
      *
@@ -103,9 +103,9 @@ public class CryptoPacker {
     private void packAllPartsToCiphertext() {
         Map<String, byte[]> map = new HashMap<>();
 
-        map.put(MessageField.VRS.toString(), plaintext.getVersion().getBytes());
-        map.put(MessageField.PRT.toString(), plaintext.getRecipient().getPublicKeyAsBytes());
-        map.put(MessageField.CNT.toString(), encryptedPacketContent);
+        map.put(VRS.toString(), plaintext.getVersion().getBytes());
+        map.put(PRT.toString(), plaintext.getRecipient().getPublicKeyAsBytes());
+        map.put(CNT.toString(), encryptedPacketContent);
 
         ciphertext = serializeMap(map);
     }
@@ -159,8 +159,8 @@ public class CryptoPacker {
         Map<String, byte[]> map = buildMapFromBytes(ciphertext);
 
         plaintext = new Message(BLANK, participant);
-        plaintext.setVersion(readStringFromMap(map, MessageField.VRS.toString()));
-        encryptedPacketContent = readByteArrayFromMap(map, MessageField.CNT.toString());
+        plaintext.setVersion(readStringFromMap(map, VRS));
+        encryptedPacketContent = readByteArrayFromMap(map, CNT);
     }
 
     private void decyptContent() {
@@ -172,7 +172,7 @@ public class CryptoPacker {
 
         for (ContentField field : ContentField.values()) {
             if (map.containsKey(field.toString())) {
-                plaintext.putContent(field, readByteArrayFromMap(map, field.toString()));
+                plaintext.putContent(field, readByteArrayFromMap(map, field));
             }
         }
     }
@@ -190,12 +190,12 @@ public class CryptoPacker {
         }
     }
 
-    private String readStringFromMap(Map<String, byte[]> map, String field) {
+    private String readStringFromMap(Map<String, byte[]> map, Enum field) {
         return new String(readByteArrayFromMap(map, field));
     }
 
-    private byte[] readByteArrayFromMap(Map<String, byte[]> map, String field) {
-        return map.get(field);
+    private byte[] readByteArrayFromMap(Map<String, byte[]> map, Enum field) {
+        return map.get(field.toString());
     }
 
 }
