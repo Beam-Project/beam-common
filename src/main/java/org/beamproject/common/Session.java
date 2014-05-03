@@ -18,12 +18,12 @@
  */
 package org.beamproject.common;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import org.beamproject.common.crypto.Handshake;
 import org.beamproject.common.crypto.HandshakeChallenger;
 import org.beamproject.common.crypto.HandshakeResponder;
 import org.beamproject.common.util.Exceptions;
+import org.beamproject.common.util.Timestamps;
+import org.joda.time.DateTime;
 
 /**
  * Stores a currently valid session between this and an other
@@ -37,7 +37,7 @@ public class Session {
 
     Participant remoteParticipant;
     byte[] key;
-    Timestamp creationTimestamp;
+    DateTime latestInteractionTime;
 
     /**
      * Creates a new instance of {@link Session}, initialized with the given
@@ -46,7 +46,9 @@ public class Session {
      * To create the session key, the remoteParticipant and this participant
      * have to complete a {@link Handshake}.
      * <p>
-     * This instance also stores a {@link Timestamp} with the time of creation.
+     * This instance also stores a {@link DateTime} with the time of creation.
+     * It will be updated every time the session is refreshed using a HEARTBEAT
+     * message.
      *
      * @param remoteParticipant The remoteParticipant who holds this session
      * key.
@@ -58,7 +60,7 @@ public class Session {
 
         this.remoteParticipant = remoteParticipant;
         this.key = key;
-        creationTimestamp = new Timestamp(new Date().getTime());
+        latestInteractionTime = Timestamps.getUtcTimestamp();
     }
 
     /**
@@ -73,6 +75,25 @@ public class Session {
      */
     public byte[] getKey() {
         return key;
+    }
+
+    /**
+     * Sets the latest interaction timestamp of this {@link Session}.
+     *
+     * @param latestInteractionTime The latest interaction timestamp.
+     * @throws IllegalArgumentException If the argument is null.
+     */
+    public void setLastestInteractionTime(DateTime latestInteractionTime) {
+        Exceptions.verifyArgumentsNotNull(latestInteractionTime);
+
+        this.latestInteractionTime = latestInteractionTime;
+    }
+
+    /**
+     * @return The latest interaction timestamp of this {@link Session}.
+     */
+    public DateTime getLatestInteractionTime() {
+        return latestInteractionTime;
     }
 
     /**

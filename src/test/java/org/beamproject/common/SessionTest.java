@@ -18,6 +18,8 @@
  */
 package org.beamproject.common;
 
+import org.beamproject.common.util.Timestamps;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -57,7 +59,7 @@ public class SessionTest {
 
     @Test
     public void testConstructorOnCreatingTimestamp() {
-        assertNotNull(session.creationTimestamp);
+        assertNotNull(session.latestInteractionTime);
     }
 
     @Test
@@ -73,20 +75,40 @@ public class SessionTest {
         session.key = null;
         assertNull(session.getKey());
     }
-    
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetLastInteractionTimeOnNull() {
+        session.setLastestInteractionTime(null);
+    }
+
+    @Test
+    public void testSetLastInteractionTime() {
+        DateTime now = Timestamps.getUtcTimestamp();
+        session.latestInteractionTime = null;
+        session.setLastestInteractionTime(now);
+        assertSame(now, session.latestInteractionTime);
+    }
+
+    @Test
+    public void testGetLastInteractionTime() {
+        assertSame(session.latestInteractionTime, session.getLatestInteractionTime());
+        session.latestInteractionTime = null;
+        assertNull(session.getLatestInteractionTime());
+    }
+
     @Test
     public void testInvalidate() {
         int length = key.length;
         assertSame(key, session.key);
-        
+
         session.invalidateSession();
         assertSame(key, session.key);
         assertEquals(length, session.key.length);
-        
+
         for (byte b : session.key) {
             assertEquals(b, 0);
         }
-        
+
         assertNull(session.remoteParticipant);
     }
 
