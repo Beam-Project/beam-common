@@ -29,6 +29,7 @@ import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
 import org.beamproject.common.Participant;
 import org.beamproject.common.util.Exceptions;
 import org.msgpack.MessagePack;
+import org.msgpack.MessageTypeException;
 import org.msgpack.template.Template;
 import org.msgpack.template.Templates;
 import org.msgpack.unpacker.Unpacker;
@@ -184,7 +185,7 @@ public class CryptoPacker {
 
         try {
             return unpacker.read(mapTemplate);
-        } catch (IOException ex) {
+        } catch (MessageTypeException | IOException ex) {
             throw new PackerException("Could not read from an unpacker: " + ex.getMessage());
         }
     }
