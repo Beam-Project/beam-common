@@ -120,6 +120,13 @@ public enum MessageField {
         public enum TypeValue {
 
             /**
+             * This type can be used when the type of a {@link Message} is not
+             * clear yet, e.g. before it's been decrypted.
+             * <p>
+             * This is not a valid value when sending messages around.
+             */
+            BLANK,
+            /**
              * Tells the recipient that the message with this type should be
              * interpreted as part of the handshake, which is used to establish
              * authenticity.
