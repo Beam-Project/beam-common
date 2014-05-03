@@ -18,6 +18,7 @@
  */
 package org.beamproject.common.util;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -25,7 +26,70 @@ public class TimestampsTest {
 
     @Test
     public void testGetIso8601UtcTimestamp() {
-        assertTrue(Timestamps.getIso8601UtcTimestamp().matches("2[0-9]{3}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z"));
+        String timestamp = Timestamps.getIso8601UtcTimestamp();
+        assertTrue(timestamp.matches(Timestamps.TIMESTAMP_REGEX));
+
+        DateTime reversedTimestamp = Timestamps.parseIso8601UtcTimestamp(timestamp);
+        assertEquals(reversedTimestamp.hourOfDay().get(), Integer.parseInt(timestamp.substring(11, 13))); // Verify that time zone is UTC
+    }
+
+    @Test
+    public void testIsValidIso8601UtcTimestamp() {
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp(null));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp(""));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("as;d fkjasdlfkj"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014-05-03 T15:03:37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014.05.03T15:03:37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014-05-03 T 15:03:37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp(" 2014-05-03T15:03:37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014-05-03T15:03:37.143Z "));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014-05-03T15:03:37.143"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("-2014-05-03T15:03:37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014-13-03T15:03:37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014-05-03t15:03:37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014-05-03T15:03:37.143z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014-05-03T15:03:37.143"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("20140-05-03T15:03:37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("0140-05-03T15:03:37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("140-05-03T15:03:37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014-05-03T15.03.37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014-00-03T15:03:37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014-05-00T15:03:37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014-05-0T15:03:37.143Z"));
+        assertFalse(Timestamps.isValidIso8601UtcTimestamp("2014-0-03T15:03:37.143Z"));
+
+        assertTrue(Timestamps.isValidIso8601UtcTimestamp("2014-05-03T15:03:37.143Z"));
+        assertTrue(Timestamps.isValidIso8601UtcTimestamp("1999-05-03T15:03:37.143Z"));
+        assertTrue(Timestamps.isValidIso8601UtcTimestamp("2999-12-03T15:03:37.143Z"));
+        assertTrue(Timestamps.isValidIso8601UtcTimestamp("2014-05-03T23:03:37.143Z"));
+        assertTrue(Timestamps.isValidIso8601UtcTimestamp("2014-05-03T00:00:00.000Z"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseIso8601UtcTimestampOnNull() {
+        Timestamps.parseIso8601UtcTimestamp(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseIso8601UtcTimestampOnEmptyString() {
+        Timestamps.parseIso8601UtcTimestamp("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseIso8601UtcTimestampOnInvalidString() {
+        Timestamps.parseIso8601UtcTimestamp("2014-05-03 T 15:03:37.143 Z");
+    }
+
+    @Test
+    public void testParseIso8601UtcTimestamp() {
+        DateTime timestamp = Timestamps.parseIso8601UtcTimestamp("2014-05-03T15:03:37.143Z");
+        assertEquals(2014, timestamp.getYear());
+        assertEquals(5, timestamp.getMonthOfYear());
+        assertEquals(3, timestamp.getDayOfMonth());
+        assertEquals(15, timestamp.getHourOfDay());
+        assertEquals(3, timestamp.getMinuteOfHour());
+        assertEquals(37, timestamp.getSecondOfMinute());
+        assertEquals(143, timestamp.getMillisOfSecond());
     }
 
 }
