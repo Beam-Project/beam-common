@@ -24,6 +24,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import static org.beamproject.common.MessageField.ContentField.*;
+import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
 import org.beamproject.common.crypto.Handshake;
 
 public class MessageTest {
@@ -36,13 +37,23 @@ public class MessageTest {
     @Before
     public void setUp() {
         recipient = Participant.generate();
-        message = new Message(recipient);
+        message = new Message(HANDSHAKE, recipient);
         content = new HashMap<>();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testConstructorOnNull() {
-        message = new Message(null);
+    public void testConstructorOnNulls() {
+        message = new Message(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructorOnNullType() {
+        message = new Message(null, recipient);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructorOnNullRecipient() {
+        message = new Message(HANDSHAKE, null);
     }
 
     @Test
@@ -50,7 +61,8 @@ public class MessageTest {
         assertEquals(Message.VERSION, message.version);
         assertSame(recipient, message.recipient);
         assertNotNull(message.content);
-        assertTrue(message.content.isEmpty());
+        assertTrue(message.content.containsKey(TYPE.toString()));
+        assertEquals(1, message.content.size());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -85,6 +97,24 @@ public class MessageTest {
     public void testGetRecipient() {
         message.recipient = recipient;
         assertSame(recipient, message.getRecipient());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetTypeOnNull() {
+        message.setType(null);
+    }
+
+    @Test
+    public void testSetType() {
+        message.setType(HEARTBEAT);
+        assertArrayEquals(HEARTBEAT.getBytes(), message.content.get(TYPE.toString()));
+    }
+
+    @Test
+    public void testGetType() {
+        assertArrayEquals(HANDSHAKE.getBytes(), message.content.get(TYPE.toString()));
+        message.setType(HEARTBEAT);
+        assertArrayEquals(HEARTBEAT.getBytes(), message.content.get(TYPE.toString()));
     }
 
     @Test(expected = IllegalArgumentException.class)

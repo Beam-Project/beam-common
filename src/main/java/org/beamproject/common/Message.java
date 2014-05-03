@@ -21,7 +21,9 @@ package org.beamproject.common;
 import java.util.HashMap;
 import java.util.Map;
 import org.beamproject.common.util.Exceptions;
-import org.beamproject.common.MessageField.ContentField;
+import static org.beamproject.common.MessageField.ContentField;
+import static org.beamproject.common.MessageField.ContentField.*;
+import static org.beamproject.common.MessageField.ContentField.TypeValue;
 
 /**
  * A message contains all necessary information to encrypt the content to the
@@ -39,12 +41,14 @@ public class Message {
      * <p>
      * The version is set to the default value, if not specified differently.
      *
+     * @param type The {@link TypeValue} of this message.
      * @param recipient The recipient to which this message should be sent.
      * @throws IllegalArgumentException If the argument is null.
      */
-    public Message(Participant recipient) {
-        Exceptions.verifyArgumentsNotNull(recipient);
+    public Message(TypeValue type, Participant recipient) {
+        Exceptions.verifyArgumentsNotNull(type, recipient);
 
+        this.content.put(TYPE.toString(), type.getBytes());
         this.recipient = recipient;
     }
 
@@ -79,6 +83,23 @@ public class Message {
 
     public Participant getRecipient() {
         return recipient;
+    }
+
+    /**
+     * Sets the type of this {@link Message}. This overwrites the value set
+     * during object construction.
+     *
+     * @param type The type to set.
+     * @throws IllegalArgumentException If the argument is null.
+     */
+    public void setType(TypeValue type) {
+        Exceptions.verifyArgumentsNotNull(type);
+
+        putContent(TYPE, type);
+    }
+
+    public TypeValue getType() {
+        return TypeValue.valueOf(new String(getContent(TYPE)));
     }
 
     /**
