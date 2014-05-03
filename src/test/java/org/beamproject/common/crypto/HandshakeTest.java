@@ -99,8 +99,8 @@ public class HandshakeTest {
     @Test
     public void testGetInvalidate() {
         Message message = Handshake.getInvalidate(remoteParticipant, sessionKey);
-        assertArrayEquals(INVALIDATE.getBytes(), message.getContent(CRPHASE));
-        assertArrayEquals(sessionKey, message.getContent(CRKEY));
+        assertArrayEquals(INVALIDATE.getBytes(), message.getContent(HSPHASE));
+        assertArrayEquals(sessionKey, message.getContent(HSKEY));
     }
 
 }

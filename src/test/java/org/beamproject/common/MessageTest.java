@@ -112,10 +112,10 @@ public class MessageTest {
 
     @Test
     public void testPutContentAsEnum() {
-        message.putContent(CRPHASE, Handshake.Phase.INVALIDATE);
+        message.putContent(HSPHASE, Handshake.Phase.INVALIDATE);
 
-        assertTrue(message.content.containsKey(CRPHASE.toString()));
-        assertArrayEquals(Handshake.Phase.INVALIDATE.getBytes(), message.content.get(CRPHASE.toString()));
+        assertTrue(message.content.containsKey(HSPHASE.toString()));
+        assertArrayEquals(Handshake.Phase.INVALIDATE.getBytes(), message.content.get(HSPHASE.toString()));
     }
 
     @Test

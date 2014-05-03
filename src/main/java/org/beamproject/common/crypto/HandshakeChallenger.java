@@ -94,9 +94,9 @@ public class HandshakeChallenger extends Handshake {
 
     private void assembleChallengeMessage() {
         challenge = new Message(remoteParticipant);
-        challenge.putContent(CRPHASE, CHALLENGE.getBytes());
-        challenge.putContent(CRPUBKEY, localParticipant.getPublicKeyAsBytes());
-        challenge.putContent(CRNONCE, localNonce);
+        challenge.putContent(HSPHASE, CHALLENGE.getBytes());
+        challenge.putContent(HSPUBKEY, localParticipant.getPublicKeyAsBytes());
+        challenge.putContent(HSNONCE, localNonce);
     }
 
     /**
@@ -118,8 +118,8 @@ public class HandshakeChallenger extends Handshake {
         verifyResponseCusumptionAuthorization();
         verifyResponseValidity(challenge);
 
-        remoteNonce = challenge.getContent(CRNONCE);
-        remoteSignature = challenge.getContent(CRSIG);
+        remoteNonce = challenge.getContent(HSNONCE);
+        remoteSignature = challenge.getContent(HSSIG);
 
         verifyRemoteSignature();
     }
@@ -144,18 +144,18 @@ public class HandshakeChallenger extends Handshake {
             exceptionMessage += "version not set or unknown";
         } else if (response.getRecipient() == null) {
             exceptionMessage += "participant not set";
-        } else if (!response.containsContent(CRPHASE)
-                || response.getContent(CRPHASE) == null
-                || !RESPONSE.toString().equals(new String(response.getContent(CRPHASE)))) {
+        } else if (!response.containsContent(HSPHASE)
+                || response.getContent(HSPHASE) == null
+                || !RESPONSE.toString().equals(new String(response.getContent(HSPHASE)))) {
             exceptionMessage += "phase not set or an unexpected one";
-        } else if (!response.containsContent(CRNONCE)
-                || response.getContent(CRNONCE) == null
-                || response.getContent(CRNONCE).length != NONCE_LENGTH_IN_BYTES) {
+        } else if (!response.containsContent(HSNONCE)
+                || response.getContent(HSNONCE) == null
+                || response.getContent(HSNONCE).length != NONCE_LENGTH_IN_BYTES) {
             exceptionMessage += "responder nonce not set or has invalid length";
-        } else if (!response.containsContent(CRSIG)
-                || response.getContent(CRSIG) == null
-                || response.getContent(CRSIG).length > MAXIMAL_SIGNATURE_LENGTH_IN_BYTES
-                || response.getContent(CRSIG).length < MINIMAL_SIGNATURE_LENGTH_IN_BYTES) {
+        } else if (!response.containsContent(HSSIG)
+                || response.getContent(HSSIG) == null
+                || response.getContent(HSSIG).length > MAXIMAL_SIGNATURE_LENGTH_IN_BYTES
+                || response.getContent(HSSIG).length < MINIMAL_SIGNATURE_LENGTH_IN_BYTES) {
             exceptionMessage += "responder signature not set or has invalid length";
         } else {
             return;
@@ -199,8 +199,8 @@ public class HandshakeChallenger extends Handshake {
 
     private void assembleSuccessMessage() {
         success = new Message(remoteParticipant);
-        success.putContent(CRPHASE, SUCCESS.getBytes());
-        success.putContent(CRSIG, localSignature);
+        success.putContent(HSPHASE, SUCCESS.getBytes());
+        success.putContent(HSSIG, localSignature);
     }
 
     @Override

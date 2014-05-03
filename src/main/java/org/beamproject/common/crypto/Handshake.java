@@ -68,7 +68,7 @@ public abstract class Handshake {
          * who wants to establish an authenticated session.
          * <p>
          * {@code RESPONSE} tells the other side that the challenge was accepted
-         * and this side therefore is able to send a challenge to whichs the
+         * and this side therefore is able to send a challenge to which the
          * other side has to response to.
          * <p>
          * At this time, this side knows the other sides {@link PublicKey} since
@@ -216,8 +216,8 @@ public abstract class Handshake {
      * remoteNonce].
      *
      * @return The negotiated session key.
-     * @throws IllegalStateException If this method is invoked before
-     * {@link ChallengeResponse.authenticate()}.
+     * @throws IllegalStateException If this method is invoked before the
+     * handshake is completed.
      */
     public byte[] getSessionKey() {
         if (sessionKey == null) {
@@ -239,8 +239,8 @@ public abstract class Handshake {
     public static Message getInvalidate(Participant remoteParticipant, byte[] sessionKey) {
         Exceptions.verifyArgumentsNotNull(remoteParticipant, sessionKey);
         Message message = new Message(remoteParticipant);
-        message.putContent(CRPHASE, Phase.INVALIDATE);
-        message.putContent(CRKEY, sessionKey);
+        message.putContent(HSPHASE, Phase.INVALIDATE);
+        message.putContent(HSKEY, sessionKey);
         return message;
     }
 

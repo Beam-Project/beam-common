@@ -55,9 +55,9 @@ public class HandshakeChallengerTest extends HandshakeTest {
         assertTrue(challenger.wasProduceChallengeInvoked);
         assertEquals(VERSION, challenge.getVersion());
         assertEquals(remoteParticipant, challenge.getRecipient());
-        assertArrayEquals(CHALLENGE.getBytes(), challenge.getContent(CRPHASE));
-        assertArrayEquals(localParticipant.getPublicKeyAsBytes(), challenge.getContent(CRPUBKEY));
-        assertArrayEquals(challenger.localNonce, challenge.getContent(CRNONCE));
+        assertArrayEquals(CHALLENGE.getBytes(), challenge.getContent(HSPHASE));
+        assertArrayEquals(localParticipant.getPublicKeyAsBytes(), challenge.getContent(HSPUBKEY));
+        assertArrayEquals(challenger.localNonce, challenge.getContent(HSNONCE));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -82,9 +82,9 @@ public class HandshakeChallengerTest extends HandshakeTest {
 
         Message response = new Message(localParticipant);
         response.setVersion(VERSION);
-        response.putContent(CRPHASE, RESPONSE.getBytes());
-        response.putContent(CRNONCE, remoteNonce);
-        response.putContent(CRSIG, remoteSignature);
+        response.putContent(HSPHASE, RESPONSE.getBytes());
+        response.putContent(HSNONCE, remoteNonce);
+        response.putContent(HSSIG, remoteSignature);
         assertFalse(challenger.wasConsumeResponseInvoked);
 
         challenger.consumeResponse(response);
@@ -116,7 +116,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         testProduceChallenge(); // Set the challenger into needed state.
 
         Message response = getBasicResponse();
-        response.getContent().remove(CRPHASE.toString());
+        response.getContent().remove(HSPHASE.toString());
         challenger.consumeResponse(response);
     }
 
@@ -125,7 +125,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         testProduceChallenge(); // Set the challenger into needed state.
 
         Message response = getBasicResponse();
-        response.putContent(CRPHASE, SUCCESS.getBytes());
+        response.putContent(HSPHASE, SUCCESS.getBytes());
         challenger.consumeResponse(response);
     }
 
@@ -134,7 +134,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         testProduceChallenge(); // Set the challenger into needed state.
 
         Message response = getBasicResponse();
-        response.getContent().remove(CRNONCE.toString());
+        response.getContent().remove(HSNONCE.toString());
         challenger.consumeResponse(response);
     }
 
@@ -146,7 +146,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         ArrayList<Byte> nonce = new ArrayList<>();
 
         for (int length = 0; length < NONCE_LENGTH_IN_BYTES * 2; length++) {
-            challenge.putContent(CRNONCE, toBytes(nonce));
+            challenge.putContent(HSNONCE, toBytes(nonce));
 
             try {
                 challenger.wasConsumeResponseInvoked = false;
@@ -167,7 +167,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         testProduceChallenge(); // Set the challenger into needed state.
 
         Message response = getBasicResponse();
-        response.getContent().remove(CRSIG.toString());
+        response.getContent().remove(HSSIG.toString());
         challenger.consumeResponse(response);
     }
 
@@ -185,7 +185,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         ArrayList<Byte> signature = new ArrayList<>();
 
         for (int length = 0; length < MAXIMAL_SIGNATURE_LENGTH_IN_BYTES * 2; length++) {
-            response.putContent(CRSIG, toBytes(signature));
+            response.putContent(HSSIG, toBytes(signature));
 
             try {
                 challenger.wasConsumeResponseInvoked = false;
@@ -207,9 +207,9 @@ public class HandshakeChallengerTest extends HandshakeTest {
         calculateRemoteSignature();
 
         Message challenge = new Message(localParticipant);
-        challenge.putContent(CRPHASE, RESPONSE.getBytes());
-        challenge.putContent(CRSIG, remoteSignature);
-        challenge.putContent(CRNONCE, remoteNonce);
+        challenge.putContent(HSPHASE, RESPONSE.getBytes());
+        challenge.putContent(HSSIG, remoteSignature);
+        challenge.putContent(HSNONCE, remoteNonce);
 
         return challenge;
     }
@@ -228,11 +228,11 @@ public class HandshakeChallengerTest extends HandshakeTest {
 
         assertTrue(challenger.wasProduceSuccessInvoked);
         assertEquals(VERSION, success.getVersion());
-        assertEquals(SUCCESS.toString(), new String(success.getContent(CRPHASE)));
+        assertEquals(SUCCESS.toString(), new String(success.getContent(HSPHASE)));
         assertEquals(remoteParticipant, success.getRecipient());
 
         byte[] localDigest = digest(localParticipant, challenger.localNonce, remoteNonce);
-        assertTrue(signer.verify(localDigest, success.getContent(CRSIG), localParticipant.getPublicKey()));
+        assertTrue(signer.verify(localDigest, success.getContent(HSSIG), localParticipant.getPublicKey()));
 
         byte[] sessionKey = calculateSessionKey(challenger.localNonce, remoteNonce);
         assertArrayEquals(sessionKey, challenger.getSessionKey());
