@@ -63,7 +63,7 @@ public class CryptoPacker {
      * Packs and encrypts the given {@code plaintext} to a {@link MessagePack}
      * byte array.<p>
      * The field ContentField ({@code CNT}) will be encrypted.<p>
-     * The fields Version ({@code VRS}) and Participant ({@code PRT}) will
+     * The fields Version ({@code VRS}) and Participant ({@code RCP}) will
      * <b>not</b> be encrypted.
      *
      * @param plaintext The unencrypted {@link Message}. This may not be null.
@@ -104,7 +104,7 @@ public class CryptoPacker {
         Map<String, byte[]> map = new HashMap<>();
 
         map.put(VRS.toString(), plaintext.getVersion().getBytes());
-        map.put(PRT.toString(), plaintext.getRecipient().getPublicKeyAsBytes());
+        map.put(RCP.toString(), plaintext.getRecipient().getPublicKeyAsBytes());
         map.put(CNT.toString(), encryptedPacketContent);
 
         ciphertext = serializeMap(map);
