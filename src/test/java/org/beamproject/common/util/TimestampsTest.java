@@ -19,10 +19,20 @@
 package org.beamproject.common.util;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TimestampsTest {
+
+    @Test
+    public void testGetUtcTimestamp() {
+        DateTime timestamp = Timestamps.getUtcTimestamp();
+
+        double allowedDeltaInMilliseconds = 100d;
+        assertEquals((double) System.currentTimeMillis(), timestamp.getMillis(), allowedDeltaInMilliseconds);
+        assertEquals(DateTimeZone.UTC, timestamp.getZone());
+    }
 
     @Test
     public void testGetIso8601UtcTimestamp() {
