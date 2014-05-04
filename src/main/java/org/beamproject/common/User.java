@@ -42,7 +42,6 @@ public class User extends Participant {
 
     String username;
     Server server;
-    MessagePack pack;
 
     /**
      * Creates a new {@link User}, configured with the given username and key
@@ -59,7 +58,6 @@ public class User extends Participant {
         Exceptions.verifyArgumentsNotEmpty(username);
 
         this.username = username;
-        this.pack = new MessagePack();
     }
 
     /**
@@ -144,6 +142,7 @@ public class User extends Participant {
             throw new IllegalStateException("The server has to be set to create the user address.");
         }
 
+        MessagePack pack = new MessagePack();
         Map<String, byte[]> addressMap = new LinkedHashMap<>();
         addressMap.put(ADDRESS_PUBLIC_KEY_IDENTIFIER, getPublicKeyAsBytes());
         addressMap.put(ADDRESS_USERNAME_IDENTIFIER, username.getBytes());

@@ -87,7 +87,6 @@ public class UserTest {
         user = new User(USERNAME, KEY_PAIR);
         assertEquals(USERNAME, user.username);
         assertSame(KEY_PAIR, user.keyPair);
-        assertNotNull(user.pack);
     }
 
     @Test(expected = IllegalArgumentException.class)

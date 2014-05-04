@@ -84,7 +84,6 @@ public class ServerTest {
         server = new Server(url, keyPair);
         assertSame(url, server.url);
         assertSame(keyPair, server.keyPair);
-        assertNotNull(server.pack);
     }
 
     @Test(expected = IllegalArgumentException.class)

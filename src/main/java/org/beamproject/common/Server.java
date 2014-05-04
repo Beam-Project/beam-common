@@ -45,7 +45,6 @@ public class Server extends Participant {
     private static final int ADDRESS_SCHEMA_OFFSET = 5;
     public static final String ADDRESS_PUBLIC_KEY_IDENTIFIER = "SK";
     public static final String ADDRESS_URL_IDENTIFIER = "SU";
-    MessagePack pack;
     URL url;
 
     /**
@@ -64,7 +63,6 @@ public class Server extends Participant {
         Exceptions.verifyArgumentsNotNull(url, keyPair);
 
         this.url = url;
-        this.pack = new MessagePack();
     }
 
     /**
@@ -85,6 +83,7 @@ public class Server extends Participant {
     }
 
     public String getAddress() {
+        MessagePack pack = new MessagePack();
         Map<String, byte[]> addressMap = new LinkedHashMap<>();
         addressMap.put(ADDRESS_PUBLIC_KEY_IDENTIFIER, getPublicKeyAsBytes());
         addressMap.put(ADDRESS_URL_IDENTIFIER, getUrl().toString().getBytes());
