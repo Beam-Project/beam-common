@@ -162,7 +162,13 @@ public enum MessageField {
              * The heartbeat ensures that an already established {@link Session}
              * is kept alive.
              */
-            HEARTBEAT;
+            HEARTBEAT,
+            /**
+             * Tells the recipient, typically a {@link Server} that the message
+             * with this type contains another message, which should be
+             * forwarded to its recipient.
+             */
+            FORWARD;
 
             /**
              * @return The bytes of the string representation of this value.
