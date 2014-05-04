@@ -66,5 +66,5 @@ public class ExecutorTest {
 
         verify(service);
     }
-    
+
 }

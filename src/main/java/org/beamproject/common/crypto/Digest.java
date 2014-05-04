@@ -41,7 +41,7 @@ public class Digest {
      */
     public static byte[] digestWithSha256(byte[] payload) {
         Exceptions.verifyArgumentsNotNull(payload);
-        
+
         BouncyCastleIntegrator.initBouncyCastleProvider();
 
         try {
@@ -51,5 +51,5 @@ public class Digest {
             throw new IllegalStateException("The digest could not be computed: " + ex.getMessage());
         }
     }
-    
+
 }

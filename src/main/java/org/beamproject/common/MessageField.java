@@ -40,7 +40,8 @@ public enum MessageField {
 
     /**
      * Stands for "Version". This field contains the message format version.
-     *//**
+     */
+    /**
      * Stands for "Version". This field contains the message format version.
      */
     VRS,

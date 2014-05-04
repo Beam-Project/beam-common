@@ -22,16 +22,16 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ExecutorExceptionTest {
-    
+
     @Test
     public void testAssignment() {
         String message = "error";
-        
+
         try {
             throw new ExecutorException(message);
         } catch (ExecutorException ex) {
             assertEquals(message, ex.getMessage());
         }
     }
-    
+
 }

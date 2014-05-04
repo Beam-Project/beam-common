@@ -40,8 +40,8 @@ public class EccCipherTest {
     public void testConstructorOnCreatingCipher() {
         assertNotNull(cipher.engine);
         assertNotNull(cipher.parameterSpec);
-        assertEquals(EccCipher.MAC_KEY_SIZE_IN_BITS,cipher.parameterSpec.getMacKeySize());
-        assertEquals(EccCipher.AES_KEY_SIZE_IN_BITS,cipher.parameterSpec.getCipherKeySize());
+        assertEquals(EccCipher.MAC_KEY_SIZE_IN_BITS, cipher.parameterSpec.getMacKeySize());
+        assertEquals(EccCipher.AES_KEY_SIZE_IN_BITS, cipher.parameterSpec.getCipherKeySize());
     }
 
     @Test(expected = IllegalArgumentException.class)

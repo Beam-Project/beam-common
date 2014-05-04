@@ -19,7 +19,8 @@
 package org.beamproject.common.util;
 
 /**
- * This exception is thrown when an a {@link ConfigBase} file could not be stored.
+ * This exception is thrown when an a {@link ConfigBase} file could not be
+ * stored.
  */
 public class ConfigException extends RuntimeException {
 

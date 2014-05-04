@@ -21,7 +21,7 @@ package org.beamproject.common.util;
 /**
  * This exception is thrown when a problem occurs during a task, executed using
  * {@link Executor}.
- * 
+ *
  * @see Executor
  * @see Task
  * @see ReturningTask

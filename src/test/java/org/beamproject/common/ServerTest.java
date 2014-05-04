@@ -185,7 +185,6 @@ public class ServerTest {
     public void testGenerate() {
         addressMap.remove(Server.ADDRESS_URL_IDENTIFIER);
         packAddressMap();
-        System.out.println(address.length());
 
         server = Server.generate();
         assertEquals("http://example.com", server.url.toString());

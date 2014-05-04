@@ -27,10 +27,10 @@ public class MessageContentExceptionTest {
     @Test
     public void testAssertion() {
         String message = "hello";
-        
+
         try {
             throw new MessageTypeException(message);
-        } catch (MessageTypeException ex){
+        } catch (MessageTypeException ex) {
             assertEquals(message, ex.getMessage());
         }
     }
