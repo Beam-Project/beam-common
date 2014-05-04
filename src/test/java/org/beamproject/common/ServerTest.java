@@ -18,28 +18,50 @@
  */
 package org.beamproject.common;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyPair;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.util.Base58;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.msgpack.MessagePack;
 
 public class ServerTest {
 
+    private final MessagePack PACK = new MessagePack();
+    private Map<String, byte[]> addressMap;
+    private String address;
     private Server server;
     private URL url;
     private KeyPair keyPair;
-    private String urlAsBase58;
 
     @Before
-    public void setUp() throws MalformedURLException {
+    public void setUp() throws MalformedURLException, IOException {
         server = Server.generate();
         url = server.url;
         keyPair = server.keyPair;
-        urlAsBase58 = Base58.encode(url.toString().getBytes());
+        addressMap = new LinkedHashMap<>();
+
+        createAddress();
+    }
+
+    private void createAddress() throws IOException {
+        addressMap.put(Server.ADDRESS_PUBLIC_KEY_IDENTIFIER, server.getPublicKeyAsBytes());
+        addressMap.put(Server.ADDRESS_URL_IDENTIFIER, url.toString().getBytes());
+        packAddressMap();
+    }
+
+    private void packAddressMap() {
+        try {
+            address = "beam:" + Base58.encode(PACK.write(addressMap));
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not pack.");
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -62,6 +84,7 @@ public class ServerTest {
         server = new Server(url, keyPair);
         assertSame(url, server.url);
         assertSame(keyPair, server.keyPair);
+        assertNotNull(server.pack);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -86,24 +109,28 @@ public class ServerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testAddressContstructorOnMissingPublicKey() {
-        server = new Server("beam:?url=" + urlAsBase58);
+        addressMap.remove(Server.ADDRESS_PUBLIC_KEY_IDENTIFIER);
+        packAddressMap();
+        server = new Server(address);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testAddressContstructorOnMissingUrl() {
-        server = new Server("beam:" + server.getPublicKeyAsBase58());
+        addressMap.remove(Server.ADDRESS_URL_IDENTIFIER);
+        packAddressMap();
+        server = new Server(address);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testAddressContstructorOnMalformedPublicKey() {
-        String malformedPublicKey = server.getPublicKeyAsBase58().replaceAll("a", "X");
-        server = new Server("beam:" + malformedPublicKey + "?url=" + urlAsBase58);
+        address = address.substring(0, 20) + address.substring(30);
+        server = new Server(address);
     }
 
     @Test
     public void testAddressContstructor() {
-        Server created = new Server("beam:" + server.getPublicKeyAsBase58() + "?url=" + urlAsBase58);
-        assertEquals(server.getAddress(), created.getAddress());
+        server = new Server(address);
+        assertEquals(address, server.getAddress());
     }
 
     @Test
@@ -113,8 +140,9 @@ public class ServerTest {
 
     @Test
     public void testGetAddress() {
-        String address = server.getAddress();
-        assertTrue(address.matches("beam:[0-9a-zA-Z]{164}\\?url=[0-9a-zA-Z]{25}"));
+        String extractedAddress = server.getAddress();
+        assertTrue(extractedAddress.matches("beam:[0-9a-zA-Z]{204}"));
+        assertEquals(address, extractedAddress);
     }
 
     @Test
@@ -155,6 +183,10 @@ public class ServerTest {
 
     @Test
     public void testGenerate() {
+        addressMap.remove(Server.ADDRESS_URL_IDENTIFIER);
+        packAddressMap();
+        System.out.println(address.length());
+
         server = Server.generate();
         assertEquals("http://example.com", server.url.toString());
         assertNotNull(server.getPublicKey().getEncoded());
