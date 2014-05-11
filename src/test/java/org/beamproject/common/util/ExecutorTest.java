@@ -18,8 +18,13 @@
  */
 package org.beamproject.common.util;
 
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import org.easymock.EasyMock;
+import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
@@ -34,8 +39,8 @@ public class ExecutorTest {
 
     @Before
     public void setUp() {
-        service = createMock(ExecutorService.class);
         executor = new Executor();
+        service = createMock(ExecutorService.class);
         executor.service = service;
     }
 
@@ -60,6 +65,29 @@ public class ExecutorTest {
         };
         service.execute(task);
         expectLastCall();
+        replay(service);
+
+        executor.runAsync(task);
+
+        verify(service);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testRunAsyncAfterDelay() throws InterruptedException {
+        final long timeout = 250;
+        Task task = new DelayableTask() {
+
+            @Override
+            public void run() {
+            }
+
+            @Override
+            public long getTimeoutInMilliseconds() {
+                return timeout;
+            }
+        };
+        EasyMock.expect(service.invokeAll(anyObject(Collection.class), eq(timeout), eq(TimeUnit.MILLISECONDS))).andReturn(null);
         replay(service);
 
         executor.runAsync(task);
