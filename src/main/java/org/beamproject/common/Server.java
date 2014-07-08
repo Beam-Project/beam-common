@@ -69,7 +69,7 @@ public class Server extends Participant {
      * Constructs a new {@link Server} from the given address.
      * <p>
      * The address has to be like
-     * {@code beam:[Base58 public key]?url=[Base58 URL]}.
+     * {@code beam:[Base58 of messagepack bytes of public key, the url, and possibliy further information]}.
      *
      * @param address The address to use.
      * @throws IllegalArgumentException If the argument is not a valid address.
