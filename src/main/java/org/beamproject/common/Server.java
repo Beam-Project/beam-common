@@ -27,6 +27,7 @@ import java.security.PublicKey;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import lombok.Getter;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.util.Base58;
 import org.beamproject.common.util.Exceptions;
@@ -45,6 +46,7 @@ public class Server extends Participant {
     private static final int ADDRESS_SCHEMA_OFFSET = 5;
     public static final String ADDRESS_PUBLIC_KEY_IDENTIFIER = "SK";
     public static final String ADDRESS_URL_IDENTIFIER = "SU";
+    @Getter
     URL url;
 
     /**
@@ -76,10 +78,6 @@ public class Server extends Participant {
      */
     public Server(String address) {
         this(extractUrlFromAddress(address), extractKeyPairFromAddress(address));
-    }
-
-    public URL getUrl() {
-        return url;
     }
 
     public String getAddress() {
