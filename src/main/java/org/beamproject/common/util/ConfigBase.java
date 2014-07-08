@@ -23,8 +23,8 @@ import org.aeonbits.owner.ConfigFactory;
 import org.aeonbits.owner.Mutable;
 
 /**
- * This interface be extended in further interfaces and then be used to create
- * configuration objects using the OWNER library.
+ * This interface may be extended by further interfaces and then be used to
+ * create configuration objects using the OWNER library.
  * <p>
  * Further information can be found on the web site of OWNER:
  * <a href="http://owner.aeonbits.org/">http://owner.aeonbits.org/</a>.
