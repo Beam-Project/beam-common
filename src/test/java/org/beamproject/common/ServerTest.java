@@ -138,6 +138,15 @@ public class ServerTest {
         assertTrue(extractedAddress.matches("beam:[0-9a-zA-Z]{204}"));
         assertEquals(address, extractedAddress);
     }
+    
+    @Test
+    public void testGetAndUseAddress() {
+        String address = server.getAddress();
+        Server reconstruction = new Server(address);
+        
+        assertEquals(server.getUrl(), reconstruction.getUrl());
+        assertArrayEquals(server.getPublicKeyAsBytes(), reconstruction.getPublicKeyAsBytes());
+    }
 
     @Test
     public void testEquals() {
