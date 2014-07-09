@@ -157,7 +157,7 @@ public class Server extends Participant {
             Map<String, byte[]> addressValues = readAddressMap(address);
             return new URL(new String(addressValues.get(ADDRESS_URL_IDENTIFIER)));
         } catch (NullPointerException | IllegalArgumentException | IOException ex) {
-            throw new IllegalArgumentException("The URL of the address is invalid.");
+            throw new IllegalArgumentException("The URL of the address is invalid: " + ex.getMessage());
         }
     }
 
@@ -166,7 +166,7 @@ public class Server extends Participant {
             Map<String, byte[]> addressValues = readAddressMap(address);
             return EccKeyPairGenerator.fromPublicKey(addressValues.get(ADDRESS_PUBLIC_KEY_IDENTIFIER));
         } catch (IllegalStateException ex) {
-            throw new IllegalArgumentException("The public key of the address is invalid.");
+            throw new IllegalArgumentException("The public key of the address is invalid: " + ex.getMessage());
         }
     }
 
@@ -180,7 +180,7 @@ public class Server extends Participant {
             Value value = pack.read(addressBytes);
             return pack.convert(value, Templates.tMap(Templates.TString, Templates.TByteArray));
         } catch (MessageTypeException | IllegalArgumentException | IOException ex) {
-            throw new IllegalArgumentException("The message pack format of the address is invalid.");
+            throw new IllegalArgumentException("The message pack format of the address is invalid: " + ex.getMessage());
         }
     }
 
