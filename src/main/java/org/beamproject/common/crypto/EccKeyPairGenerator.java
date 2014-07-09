@@ -74,6 +74,7 @@ public abstract class EccKeyPairGenerator {
      */
     public static KeyPair fromPublicKey(byte[] publicKeyBytes) {
         Exceptions.verifyArgumentsNotNull(publicKeyBytes);
+        BouncyCastleIntegrator.initBouncyCastleProvider();
 
         try {
             KeyFactory fact = KeyFactory.getInstance(ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
@@ -98,6 +99,7 @@ public abstract class EccKeyPairGenerator {
      */
     public static KeyPair fromBothKeys(byte[] publicKeyBytes, byte[] privateKeyBytes) {
         Exceptions.verifyArgumentsNotNull(publicKeyBytes, privateKeyBytes);
+        BouncyCastleIntegrator.initBouncyCastleProvider();
 
         try {
             KeyFactory fact = KeyFactory.getInstance(ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
