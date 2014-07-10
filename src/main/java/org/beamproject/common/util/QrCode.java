@@ -51,7 +51,7 @@ public class QrCode {
 
         try {
             Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
-            hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+            hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
 
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
             BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, dimensionInPx, dimensionInPx, hints);
