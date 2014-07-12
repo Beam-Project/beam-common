@@ -24,6 +24,7 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -40,7 +41,7 @@ import org.beamproject.common.util.Exceptions;
 public class PasswordCryptor {
 
     public final static String PBKDF_ALGORITHM_NAME = "PBKDF2WithHmacSHA1";
-    public final static int NUMBER_OF_ITERATIONS = 50000;
+    public final static int NUMBER_OF_ITERATIONS = 25000;
     public final static String SALT_RANDOM_ALGORITHM_NAME = "SHA1PRNG";
     public final static int SALT_LENGTH_IN_BYTES = 16;
     public final static String SYMMETRIC_ALGORITHM_NAME = "AES";
@@ -93,7 +94,7 @@ public class PasswordCryptor {
      * @throws IllegalArgumentException If the argument is null.
      */
     public byte[] encrypt(byte[] plaintext) {
-        Exceptions.verifyArgumentsNotNull(plaintext);
+        Exceptions.verifyArgumentsNotNull((Object) plaintext);
 
         return cipher.encrypt(plaintext);
     }
@@ -106,9 +107,30 @@ public class PasswordCryptor {
      * @throws IllegalArgumentException If the argument is null.
      */
     public byte[] decrypt(byte[] ciphertext) {
-        Exceptions.verifyArgumentsNotNull(ciphertext);
+        Exceptions.verifyArgumentsNotNull((Object) ciphertext);
 
         return cipher.decrypt(ciphertext);
+    }
+
+    /**
+     * Changes the password of this {@link PasswordCryptor} instance. Therefore,
+     * the old password character array is being filled with zeros, and a
+     * reference to the given {@code newPassword} array is stored and from now
+     * on used for encryption/decryption.
+     *
+     * @param newPassword The new password to use.
+     * @throws IllegalArgumentException If the argument is null.
+     */
+    public void changePassword(char[] newPassword) {
+        Exceptions.verifyArgumentsNotNull((Object) newPassword);
+
+        fillOldPasswordWithZeros();
+
+        this.password = newPassword;
+    }
+
+    private void fillOldPasswordWithZeros() {
+        Arrays.fill(password, (char) 0);
     }
 
     /**

@@ -99,6 +99,28 @@ public class PasswordCryptorTest {
         plaintext = cryptor.decrypt(null);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testChangePasswordOnNull() {
+        cryptor.changePassword(null);
+    }
+
+    @Test
+    public void testChangePasswordOnZeroingOldPasswordInstance() {
+        char[] oldPasswordInstance = cryptor.password;
+        cryptor.changePassword("something new".toCharArray());
+        
+        for (char c : oldPasswordInstance) {
+            assertEquals(0, c);
+        }
+    }
+
+    @Test
+    public void testChangePassword() {
+        char[] newPassword = "new pass".toCharArray();
+        cryptor.changePassword(newPassword);
+        assertSame(newPassword, cryptor.password);
+    }
+
     @Test
     public void testGenrateSalt() {
         salt = PasswordCryptor.generateSalt();
