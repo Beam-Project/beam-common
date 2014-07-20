@@ -87,6 +87,16 @@ public class Participant implements Serializable {
     }
 
     /**
+     * Gets the private key of this {@link Participant}. The bytes of the
+     * private key, encoded as PKCS8, are {@link Base58} encoded to a String.
+     *
+     * @return The private key, {@link Base58} encoded.
+     */
+    public String getPrivateKeyAsBase58() {
+        return Base58.encode(getPrivateKeyAsBytes());
+    }
+
+    /**
      * @return The private key of this {@link Participant}, if available.
      * {@code null} otherwise.
      */
