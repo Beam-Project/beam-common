@@ -18,7 +18,9 @@
  */
 package org.beamproject.common.crypto;
 
+import java.security.Key;
 import java.security.Security;
+import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -116,9 +118,18 @@ public class PasswordCryptorTest {
 
     @Test
     public void testChangePassword() {
+        Key oldAesKey = cryptor.aesKey;
+        AesCbcCipher oldCipher = cryptor.cipher;
+        
         char[] newPassword = "new pass".toCharArray();
+        
         cryptor.changePassword(newPassword);
+        
         assertSame(newPassword, cryptor.password);
+        assertNotNull(cryptor.aesKey);
+        assertNotNull(cryptor.cipher);
+        assertThat(oldAesKey, not(sameInstance(cryptor.aesKey)));
+        assertThat(oldCipher, not(sameInstance(cryptor.cipher)));
     }
 
     @Test

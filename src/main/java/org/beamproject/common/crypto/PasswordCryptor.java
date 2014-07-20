@@ -116,7 +116,8 @@ public class PasswordCryptor {
      * Changes the password of this {@link PasswordCryptor} instance. Therefore,
      * the old password character array is being filled with zeros, and a
      * reference to the given {@code newPassword} array is stored and from now
-     * on used for encryption/decryption.
+     * on used for encryption/decryption. Hence, the password is being
+     * strengthened to an AES key and a new cipher is created.
      *
      * @param newPassword The new password to use.
      * @throws IllegalArgumentException If the argument is null.
@@ -126,7 +127,10 @@ public class PasswordCryptor {
 
         fillOldPasswordWithZeros();
 
-        this.password = newPassword;
+        password = newPassword;
+
+        strengthenPasswordToAesKey();
+        createCipher();
     }
 
     private void fillOldPasswordWithZeros() {
