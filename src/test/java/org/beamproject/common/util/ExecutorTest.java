@@ -22,12 +22,7 @@ import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.easymock.EasyMock;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -91,6 +86,29 @@ public class ExecutorTest {
         replay(service);
 
         executor.runAsync(task);
+
+        verify(service);
+    }
+    
+    
+    @Test
+    public void testShutdown() throws InterruptedException {
+        expect(service.awaitTermination(Executor.TERMINATION_TIMEOUT_IN_MILLISECONDS, TimeUnit.MILLISECONDS))
+                .andReturn(true);
+        replay(service);
+
+        executor.shutdown();
+
+        verify(service);
+    }
+    @Test
+    public void testShutdownHangingThreads() throws InterruptedException {
+        expect(service.awaitTermination(Executor.TERMINATION_TIMEOUT_IN_MILLISECONDS, TimeUnit.MILLISECONDS))
+                .andThrow(new InterruptedException("interrupted"));
+        expect(service.shutdownNow()).andReturn(null);
+        replay(service);
+
+        executor.shutdown();
 
         verify(service);
     }
