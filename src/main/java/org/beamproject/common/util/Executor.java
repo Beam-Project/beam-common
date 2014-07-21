@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Executor {
 
+    public final static int TERMINATION_TIMEOUT_IN_MILLISECONDS = 1500;
     ExecutorService service = Executors.newCachedThreadPool();
 
     /**
@@ -72,5 +73,19 @@ public class Executor {
         tasks.add(callable);
 
         return tasks;
+    }
+
+    /**
+     * Shuts this {@link Executor} down by completing all currently active
+     * {@link Task}s. If a thread hangs, it will be interrupted after
+     * {@link Executor.TERMINATION_TIMEOUT_IN_MILLISECONDS}.
+     */
+    public void shutdown() {
+        try {
+            service.awaitTermination(TERMINATION_TIMEOUT_IN_MILLISECONDS,
+                    TimeUnit.MILLISECONDS);
+        } catch (InterruptedException ex) {
+            service.shutdownNow();
+        }
     }
 }

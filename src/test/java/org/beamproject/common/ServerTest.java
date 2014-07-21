@@ -133,15 +133,19 @@ public class ServerTest {
     }
 
     @Test
-    public void testGetUrl() {
-        assertSame(url, server.url);
-    }
-
-    @Test
     public void testGetAddress() {
         String extractedAddress = server.getAddress();
         assertTrue(extractedAddress.matches("beam:[0-9a-zA-Z]{204}"));
         assertEquals(address, extractedAddress);
+    }
+    
+    @Test
+    public void testGetAndUseAddress() {
+        String address = server.getAddress();
+        Server reconstruction = new Server(address);
+        
+        assertEquals(server.getUrl(), reconstruction.getUrl());
+        assertArrayEquals(server.getPublicKeyAsBytes(), reconstruction.getPublicKeyAsBytes());
     }
 
     @Test

@@ -19,6 +19,7 @@
 package org.beamproject.common.crypto;
 
 import java.security.KeyPair;
+import java.security.Security;
 import org.beamproject.common.Participant;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -47,9 +48,13 @@ public class EccKeyPairGeneratorTest {
 
     @Test
     public void testFromPublicKey() {
+        Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
+
         restoredKeyPair = EccKeyPairGenerator.fromPublicKey(originalKeyPair.getPublic().getEncoded());
         publicOnlyRestored = new Participant(restoredKeyPair);
+
         assertEquals(publicOnlyOriginal, publicOnlyRestored);
+        assertTrue(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME) != null);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -83,12 +88,15 @@ public class EccKeyPairGeneratorTest {
 
     @Test
     public void testFromBothKeys() {
+        Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
         byte[] publicKey = originalKeyPair.getPublic().getEncoded();
         byte[] privateKey = originalKeyPair.getPrivate().getEncoded();
+
         restoredKeyPair = EccKeyPairGenerator.fromBothKeys(publicKey, privateKey);
         bothRestored = new Participant(restoredKeyPair);
 
         assertEquals(bothOriginal, bothRestored);
+        assertTrue(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME) != null);
     }
 
     @Test(expected = IllegalStateException.class)

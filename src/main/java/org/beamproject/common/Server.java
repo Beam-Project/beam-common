@@ -27,6 +27,7 @@ import java.security.PublicKey;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import lombok.Getter;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.util.Base58;
 import org.beamproject.common.util.Exceptions;
@@ -45,6 +46,7 @@ public class Server extends Participant {
     private static final int ADDRESS_SCHEMA_OFFSET = 5;
     public static final String ADDRESS_PUBLIC_KEY_IDENTIFIER = "SK";
     public static final String ADDRESS_URL_IDENTIFIER = "SU";
+    @Getter
     URL url;
 
     /**
@@ -69,17 +71,13 @@ public class Server extends Participant {
      * Constructs a new {@link Server} from the given address.
      * <p>
      * The address has to be like
-     * {@code beam:[Base58 public key]?url=[Base58 URL]}.
+     * {@code beam:[Base58 of messagepack bytes of public key, the url, and possibliy further information]}.
      *
      * @param address The address to use.
      * @throws IllegalArgumentException If the argument is not a valid address.
      */
     public Server(String address) {
         this(extractUrlFromAddress(address), extractKeyPairFromAddress(address));
-    }
-
-    public URL getUrl() {
-        return url;
     }
 
     public String getAddress() {
@@ -159,7 +157,7 @@ public class Server extends Participant {
             Map<String, byte[]> addressValues = readAddressMap(address);
             return new URL(new String(addressValues.get(ADDRESS_URL_IDENTIFIER)));
         } catch (NullPointerException | IllegalArgumentException | IOException ex) {
-            throw new IllegalArgumentException("The URL of the address is invalid.");
+            throw new IllegalArgumentException("The URL of the address is invalid: " + ex.getMessage());
         }
     }
 
@@ -168,7 +166,7 @@ public class Server extends Participant {
             Map<String, byte[]> addressValues = readAddressMap(address);
             return EccKeyPairGenerator.fromPublicKey(addressValues.get(ADDRESS_PUBLIC_KEY_IDENTIFIER));
         } catch (IllegalStateException ex) {
-            throw new IllegalArgumentException("The public key of the address is invalid.");
+            throw new IllegalArgumentException("The public key of the address is invalid: " + ex.getMessage());
         }
     }
 
@@ -182,7 +180,7 @@ public class Server extends Participant {
             Value value = pack.read(addressBytes);
             return pack.convert(value, Templates.tMap(Templates.TString, Templates.TByteArray));
         } catch (MessageTypeException | IllegalArgumentException | IOException ex) {
-            throw new IllegalArgumentException("The message pack format of the address is invalid.");
+            throw new IllegalArgumentException("The message pack format of the address is invalid: " + ex.getMessage());
         }
     }
 

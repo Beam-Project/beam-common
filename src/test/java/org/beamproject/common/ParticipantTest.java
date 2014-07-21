@@ -80,6 +80,17 @@ public class ParticipantTest {
     }
 
     @Test
+    public void testGetPrivateKeyAsBase58() {
+        participant.keyPair = keyPair;
+        String expected = Base58.encode(keyPair.getPrivate().getEncoded());
+        assertEquals(expected, participant.getPrivateKeyAsBase58());
+        
+        // ensure public and private key are not the same
+        assertNotEquals(participant.getPrivateKeyAsBase58(), 
+                participant.getPublicKeyAsBase58());
+    }
+
+    @Test
     public void testGetKeyPair() {
         participant.keyPair = keyPair;
         assertSame(keyPair, participant.getKeyPair());

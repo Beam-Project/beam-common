@@ -18,15 +18,28 @@
  */
 package org.beamproject.common.util;
 
-/**
- * This exception is thrown when an a {@link ConfigBase} file could not be
- * stored.
- */
-public class ConfigException extends RuntimeException {
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-    private static final long serialVersionUID = 1L;
+public class CharsTest {
 
-    public ConfigException(String message) {
-        super(message);
+    @Test
+    public void testCharsToBytesAndBytesToChars() {
+        assertMatching("");
+        assertMatching("asdf;lkjasdfqoweiruqpwoeiruzxm,.cvnz,x.cmvnasdklfjdgflkjsdqweoiruq");
+        assertMatching("234-iq345io1q234Q@W#$%^WE%YUE?RTYAsd.';gzsl'd;ll      a;sdklfj34-[po");
+        assertMatching("Äuröpäischi Umlüüüt");
+        assertMatching("!!@#$ASDF324354321");
+        assertMatching("-**++679/234q53");
     }
+
+    private void assertMatching(String text) {
+        char[] chars = text.toCharArray();
+
+        byte[] bytes = Chars.utfCharsToBytes(chars);
+        char[] restored = Chars.bytesToUtfChars(bytes);
+
+        assertArrayEquals(chars, restored);
+    }
+
 }
