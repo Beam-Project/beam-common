@@ -44,10 +44,24 @@ public class Server extends Participant {
 
     private static final long serialVersionUID = 1L;
     private static final int ADDRESS_SCHEMA_OFFSET = 5;
+    public static final int MQTT_DEFAULT_PORT = 3625;
     public static final String ADDRESS_PUBLIC_KEY_IDENTIFIER = "SK";
     public static final String ADDRESS_URL_IDENTIFIER = "SU";
+    public static final String MQTT_PORT_IDENTIFIER = "SMP";
+    /**
+     * The URL at which this server can be connected. The complete URL,
+     * including path, query and fragments is used to connect this server via
+     * HTTP.
+     * <p>
+     * Only the host part of the URL is used as MQTT host.
+     */
     @Getter
     URL url;
+    /**
+     * The MQTT port of this server, respectively its MQTT broker.
+     */
+    @Getter
+    int mqttPort;
 
     /**
      * Creates a new {@link Server}, configured with the given URL (HTTP URL,
@@ -56,15 +70,18 @@ public class Server extends Participant {
      *
      * @param url The URL under which the server is reachable.
      * @param keyPair The key pair of this server.
+     * @param mqttPort The MQTT port of this server, respectively its MQTT
+     * broker.
      * @throws IllegalArgumentException If at least one argument is null or the
      * arguments are not valid.
      */
-    public Server(URL url, KeyPair keyPair) {
+    public Server(URL url, KeyPair keyPair, int mqttPort) {
         super(keyPair);
 
         Exceptions.verifyArgumentsNotNull(url, keyPair);
 
         this.url = url;
+        this.mqttPort = mqttPort;
     }
 
     /**
@@ -77,7 +94,9 @@ public class Server extends Participant {
      * @throws IllegalArgumentException If the argument is not a valid address.
      */
     public Server(String address) {
-        this(extractUrlFromAddress(address), extractKeyPairFromAddress(address));
+        this(extractUrlFromAddress(address),
+                extractKeyPairFromAddress(address),
+                extractMqttPortFromAddressOrUseDefault(address));
     }
 
     public String getAddress() {
@@ -85,6 +104,7 @@ public class Server extends Participant {
         Map<String, byte[]> addressMap = new LinkedHashMap<>();
         addressMap.put(ADDRESS_PUBLIC_KEY_IDENTIFIER, getPublicKeyAsBytes());
         addressMap.put(ADDRESS_URL_IDENTIFIER, getUrl().toString().getBytes());
+        addressMap.put(MQTT_PORT_IDENTIFIER, ("" + mqttPort).getBytes());
 
         try {
             byte[] addressBytes = pack.write(addressMap);
@@ -146,7 +166,9 @@ public class Server extends Participant {
      */
     public static Server generate() {
         try {
-            return new Server(new URL("http://example.com"), EccKeyPairGenerator.generate());
+            return new Server(new URL("http://example.com"),
+                    EccKeyPairGenerator.generate(),
+                    MQTT_DEFAULT_PORT);
         } catch (MalformedURLException ex) {
             throw new IllegalStateException("Could not create a new server object: " + ex.getMessage());
         }
@@ -167,6 +189,18 @@ public class Server extends Participant {
             return EccKeyPairGenerator.fromPublicKey(addressValues.get(ADDRESS_PUBLIC_KEY_IDENTIFIER));
         } catch (IllegalStateException ex) {
             throw new IllegalArgumentException("The public key of the address is invalid: " + ex.getMessage());
+        }
+    }
+
+    static int extractMqttPortFromAddressOrUseDefault(String address) {
+        try {
+            Map<String, byte[]> addressValues = readAddressMap(address);
+            byte[] portAsBytes = addressValues.get(MQTT_PORT_IDENTIFIER);
+            String portAsString = new String(portAsBytes);
+
+            return Integer.parseInt(portAsString);
+        } catch (NumberFormatException ex) {
+            return MQTT_DEFAULT_PORT;
         }
     }
 

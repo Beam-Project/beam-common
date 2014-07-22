@@ -53,6 +53,7 @@ public class ServerTest {
     private void createAddress() throws IOException {
         addressMap.put(Server.ADDRESS_PUBLIC_KEY_IDENTIFIER, server.getPublicKeyAsBytes());
         addressMap.put(Server.ADDRESS_URL_IDENTIFIER, url.toString().getBytes());
+        addressMap.put(Server.MQTT_PORT_IDENTIFIER, ("" + Server.MQTT_DEFAULT_PORT).getBytes());
         packAddressMap();
     }
 
@@ -66,24 +67,25 @@ public class ServerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testUrlKeyPairConstructorOnNulls() {
-        server = new Server(null, null);
+        server = new Server(null, null, Server.MQTT_DEFAULT_PORT);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testUrlKeyPairConstructorOnNullUrl() {
-        server = new Server(null, keyPair);
+        server = new Server(null, keyPair, Server.MQTT_DEFAULT_PORT);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testUrlKeyPairConstructorOnNullKeyPair() {
-        server = new Server(url, null);
+        server = new Server(url, null, Server.MQTT_DEFAULT_PORT);
     }
 
     @Test
     public void testUrlKeyPairConstructor() {
-        server = new Server(url, keyPair);
+        server = new Server(url, keyPair, Server.MQTT_DEFAULT_PORT);
         assertSame(url, server.url);
         assertSame(keyPair, server.keyPair);
+        assertEquals(Server.MQTT_DEFAULT_PORT, server.getMqttPort());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -130,20 +132,21 @@ public class ServerTest {
     public void testAddressContstructor() {
         server = new Server(address);
         assertEquals(address, server.getAddress());
+        assertEquals(Server.MQTT_DEFAULT_PORT, server.getMqttPort());
     }
 
     @Test
     public void testGetAddress() {
         String extractedAddress = server.getAddress();
-        assertTrue(extractedAddress.matches("beam:[0-9a-zA-Z]{204}"));
+        assertTrue(extractedAddress.matches("beam:[0-9a-zA-Z]{200,240}")); // length may vary
         assertEquals(address, extractedAddress);
     }
-    
+
     @Test
     public void testGetAndUseAddress() {
         String address = server.getAddress();
         Server reconstruction = new Server(address);
-        
+
         assertEquals(server.getUrl(), reconstruction.getUrl());
         assertArrayEquals(server.getPublicKeyAsBytes(), reconstruction.getPublicKeyAsBytes());
     }
@@ -151,7 +154,7 @@ public class ServerTest {
     @Test
     public void testEquals() {
         Server other = null;
-        assertFalse(server.equals(null));
+        assertFalse(server.equals(null)); // this has to be tested this way
         assertFalse(server.equals(other));
 
         other = Server.generate();
@@ -167,7 +170,7 @@ public class ServerTest {
         other.keyPair = server.keyPair;
         assertTrue(server.equals(other));
 
-        other = new Server(server.url, keyPair);
+        other = new Server(server.url, keyPair, Server.MQTT_DEFAULT_PORT);
         assertTrue(server.equals(other));
 
         other.url = null;
