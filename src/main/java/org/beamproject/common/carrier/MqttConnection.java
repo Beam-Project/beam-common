@@ -18,7 +18,6 @@
  */
 package org.beamproject.common.carrier;
 
-import org.beamproject.common.carrier.ClientCarrier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.beamproject.common.util.Exceptions;
@@ -93,8 +92,7 @@ public class MqttConnection {
     }
 
     /**
-     * Subscribes the given {@link ClientCarrier} to the configured topic (see
-     * {@link Config}).
+     * Subscribes the given {@link ClientCarrier} to the configured topic.
      * <p>
      * Incoming messages will be delivered to
      * {@link ClientCarrier.receive(byte[])}.
