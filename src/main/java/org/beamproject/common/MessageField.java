@@ -158,14 +158,6 @@ public enum MessageField {
              */
             HANDSHAKE,
             /**
-             * Tells the recipient that the message with this type should be
-             * interpreted as heartbeat.
-             * <p>
-             * The heartbeat ensures that an already established {@link Session}
-             * is kept alive.
-             */
-            HEARTBEAT,
-            /**
              * Tells the recipient, typically a {@link Server} that the message
              * with this type contains another message, which should be
              * forwarded to its recipient.
