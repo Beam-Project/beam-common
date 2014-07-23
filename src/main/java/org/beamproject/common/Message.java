@@ -26,7 +26,7 @@ import static org.beamproject.common.MessageField.ContentField.*;
 import static org.beamproject.common.MessageField.ContentField.TypeValue;
 
 /**
- * A message contains all necessary information to encrypt the content to the
+ * A message contains all necessary information to encrypt the content for the
  * targeted recipient.
  */
 public class Message {
@@ -98,8 +98,12 @@ public class Message {
         putContent(TYPE, type);
     }
 
+    /**
+     * @return The {@link TypeValue} of this {@link Message}, stored in
+     * {@code CNT.TYPE}.
+     */
     public TypeValue getType() {
-        return TypeValue.valueOf(new String(getContent(TYPE)));
+        return TypeValue.valueOf(String.valueOf(getContent(TYPE)));
     }
 
     /**
