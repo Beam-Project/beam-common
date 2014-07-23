@@ -19,11 +19,17 @@
 package org.beamproject.common;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyPair;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import static org.beamproject.common.Server.ADDRESS_HTTP_URL_IDENTIFIER;
+import static org.beamproject.common.Server.ADDRESS_MQTT_HOST_IDENTIFIER;
+import static org.beamproject.common.Server.ADDRESS_MQTT_PORT_IDENTIFIER;
+import static org.beamproject.common.Server.ADDRESS_PUBLIC_KEY_IDENTIFIER;
+import static org.beamproject.common.Server.MQTT_DEFAULT_PORT;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.util.Base58;
 import org.junit.Test;
@@ -37,13 +43,15 @@ public class ServerTest {
     private Map<String, byte[]> addressMap;
     private String address;
     private Server server;
-    private URL url;
+    private InetSocketAddress mqttAddress;
+    private URL httpUrl;
     private KeyPair keyPair;
 
     @Before
     public void setUp() throws MalformedURLException, IOException {
         server = Server.generate();
-        url = server.url;
+        mqttAddress = server.getMqttAddress();
+        httpUrl = server.httpUrl;
         keyPair = server.keyPair;
         addressMap = new LinkedHashMap<>();
 
@@ -51,9 +59,10 @@ public class ServerTest {
     }
 
     private void createAddress() throws IOException {
-        addressMap.put(Server.ADDRESS_PUBLIC_KEY_IDENTIFIER, server.getPublicKeyAsBytes());
-        addressMap.put(Server.ADDRESS_URL_IDENTIFIER, url.toString().getBytes());
-        addressMap.put(Server.MQTT_PORT_IDENTIFIER, ("" + Server.MQTT_DEFAULT_PORT).getBytes());
+        addressMap.put(ADDRESS_PUBLIC_KEY_IDENTIFIER, server.getPublicKeyAsBytes());
+        addressMap.put(ADDRESS_HTTP_URL_IDENTIFIER, httpUrl.toString().getBytes());
+        addressMap.put(ADDRESS_MQTT_HOST_IDENTIFIER, mqttAddress.getHostString().getBytes());
+        addressMap.put(ADDRESS_MQTT_PORT_IDENTIFIER, String.valueOf(mqttAddress.getPort()).getBytes());
         packAddressMap();
     }
 
@@ -67,25 +76,30 @@ public class ServerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testUrlKeyPairConstructorOnNulls() {
-        server = new Server(null, null, Server.MQTT_DEFAULT_PORT);
+        server = new Server(null, null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testUrlKeyPairConstructorOnNullUrl() {
-        server = new Server(null, keyPair, Server.MQTT_DEFAULT_PORT);
+    public void testUrlKeyPairConstructorOnNullMqttAddress() {
+        server = new Server(null, httpUrl, keyPair);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUrlKeyPairConstructorOnNullHttpUrl() {
+        server = new Server(mqttAddress, null, keyPair);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testUrlKeyPairConstructorOnNullKeyPair() {
-        server = new Server(url, null, Server.MQTT_DEFAULT_PORT);
+        server = new Server(mqttAddress, httpUrl, null);
     }
 
     @Test
     public void testUrlKeyPairConstructor() {
-        server = new Server(url, keyPair, Server.MQTT_DEFAULT_PORT);
-        assertSame(url, server.url);
+        server = new Server(mqttAddress, httpUrl, keyPair);
+        assertSame(mqttAddress, server.mqttAddress);
+        assertSame(httpUrl, server.httpUrl);
         assertSame(keyPair, server.keyPair);
-        assertEquals(Server.MQTT_DEFAULT_PORT, server.getMqttPort());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -109,15 +123,29 @@ public class ServerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testAddressContstructorOnMissingPublicKey() {
-        addressMap.remove(Server.ADDRESS_PUBLIC_KEY_IDENTIFIER);
+    public void testAddressContstructorOnMissingMqttHost() {
+        addressMap.remove(ADDRESS_MQTT_HOST_IDENTIFIER);
         packAddressMap();
         server = new Server(address);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testAddressContstructorOnMissingUrl() {
-        addressMap.remove(Server.ADDRESS_URL_IDENTIFIER);
+    public void testAddressContstructorOnMissingMqttPort() {
+        addressMap.remove(ADDRESS_MQTT_PORT_IDENTIFIER);
+        packAddressMap();
+        server = new Server(address);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddressContstructorOnMissingHttpUrl() {
+        addressMap.remove(ADDRESS_HTTP_URL_IDENTIFIER);
+        packAddressMap();
+        server = new Server(address);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddressContstructorOnMissingPublicKey() {
+        addressMap.remove(ADDRESS_PUBLIC_KEY_IDENTIFIER);
         packAddressMap();
         server = new Server(address);
     }
@@ -132,7 +160,7 @@ public class ServerTest {
     public void testAddressContstructor() {
         server = new Server(address);
         assertEquals(address, server.getAddress());
-        assertEquals(Server.MQTT_DEFAULT_PORT, server.getMqttPort());
+        assertEquals(mqttAddress, server.getMqttAddress());
     }
 
     @Test
@@ -147,7 +175,7 @@ public class ServerTest {
         String address = server.getAddress();
         Server reconstruction = new Server(address);
 
-        assertEquals(server.getUrl(), reconstruction.getUrl());
+        assertEquals(server.getHttpUrl(), reconstruction.getHttpUrl());
         assertArrayEquals(server.getPublicKeyAsBytes(), reconstruction.getPublicKeyAsBytes());
     }
 
@@ -163,21 +191,21 @@ public class ServerTest {
         other.keyPair = EccKeyPairGenerator.fromPublicKey(server.getPublicKeyAsBytes());
         assertFalse(server.equals(other));
 
-        other.url = server.url;
+        other.httpUrl = server.httpUrl;
         other.keyPair = EccKeyPairGenerator.fromBothKeys(server.getPublicKeyAsBytes(), server.getPrivateKeyAsBytes());
         assertTrue(server.equals(other));
 
         other.keyPair = server.keyPair;
         assertTrue(server.equals(other));
 
-        other = new Server(server.url, keyPair, Server.MQTT_DEFAULT_PORT);
+        other = new Server(server.mqttAddress, server.httpUrl, keyPair);
         assertTrue(server.equals(other));
 
-        other.url = null;
+        other.httpUrl = null;
         assertFalse(server.equals(other));
 
         server.keyPair = EccKeyPairGenerator.fromPublicKey(keyPair.getPublic().getEncoded());
-        other.url = server.url;
+        other.httpUrl = server.httpUrl;
         other.keyPair = keyPair;
         assertFalse(server.equals(other));
 
@@ -189,11 +217,13 @@ public class ServerTest {
 
     @Test
     public void testGenerate() {
-        addressMap.remove(Server.ADDRESS_URL_IDENTIFIER);
+        addressMap.remove(ADDRESS_HTTP_URL_IDENTIFIER);
         packAddressMap();
 
         server = Server.generate();
-        assertEquals("http://example.com", server.url.toString());
+        assertEquals("example.com", server.mqttAddress.getHostString());
+        assertEquals(MQTT_DEFAULT_PORT, server.mqttAddress.getPort());
+        assertEquals("http://example.com", server.httpUrl.toString());
         assertNotNull(server.getPublicKey().getEncoded());
         assertNotNull(server.getPrivateKey().getEncoded());
     }
