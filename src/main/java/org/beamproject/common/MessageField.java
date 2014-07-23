@@ -26,21 +26,22 @@ import org.beamproject.common.crypto.HandshakeResponder;
 /**
  * Defines all typically used field identifier used in {@link Message}s.
  * <p>
- * Identifier for nested structures are grouped by a common prefix. For example,
- * all identifier that are used in the content field {@code CNT}, are named like
- * {@code CNT_<identifier>}.
- * <br />
- * The identifier <b>values</b> itself do not have any prefixes, i.e. an
- * identifier, say {@code CNT_MSG} (for the filed {@code CNT} and in that the
- * field {@code MSG}), returns the value {@code MSG}.
+ * The structure is nested, like a {@link Message}. On the first <i>layer</i>
+ * are the field identifiers that are also on the first layer in a message.
+ * <p>
+ * For example, the field {@code MessageField.VRS} is <i>directly</i> in a
+ * message. On the other hand, e.g. the field {@code TYPE} is nested:
+ * {@code MessageField.ContentField.TYPE}
+ * <p>
+ * The nested {@code enum}s represent therefore the <i>set of keys</i> for
+ * nested message fields.
  *
  * @see Message
+ * @see MessageField.ContentField
+ * @see MessageField.ContentField.TypeValue
  */
 public enum MessageField {
 
-    /**
-     * Stands for "Version". This field contains the message format version.
-     */
     /**
      * Stands for "Version". This field contains the message format version.
      */
@@ -56,8 +57,8 @@ public enum MessageField {
     CNT;
 
     /**
-     * These fields are for the content block, {@code CNT}, of a
-     * {@link Message}.
+     * These fields are for the identifiers used for sub-fields in the content
+     * block, {@code CNT}, of a {@link Message}.
      */
     public enum ContentField {
 
@@ -134,7 +135,8 @@ public enum MessageField {
         }
 
         /**
-         * Contains all needed values for the {@link ContentField} TYPE.
+         * These fields are for the identifiers used for sub-fields in the
+         * {@link ContentField} {@code TYPE}, of a {@link Message}.
          */
         public enum TypeValue {
 
