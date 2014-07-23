@@ -109,18 +109,18 @@ public class HandshakeChallenger extends Handshake {
      * {@link HandshakeChallenger} for security reasons since authentication is
      * critical.
      *
-     * @param challenge The response to consume.
+     * @param response The response to consume.
      * @throws IllegalStateException If the method {@code produceResponce} was
      * not invoked before or this method is invoked more than once.
      * @throws HandshakeException If the response is null, does not contain all
      * needed fields or if there are invalid fields.
      */
-    public void consumeResponse(Message challenge) {
+    public void consumeResponse(Message response) {
         verifyResponseCusumptionAuthorization();
-        verifyResponseValidity(challenge);
+        verifyResponseValidity(response);
 
-        remoteNonce = challenge.getContent(HSNONCE);
-        remoteSignature = challenge.getContent(HSSIG);
+        remoteNonce = response.getContent(HSNONCE);
+        remoteSignature = response.getContent(HSSIG);
 
         verifyRemoteSignature();
     }

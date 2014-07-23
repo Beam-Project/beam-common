@@ -21,7 +21,6 @@ package org.beamproject.common.carrier;
 import com.google.inject.Inject;
 import java.util.concurrent.ConcurrentHashMap;
 import org.beamproject.common.Participant;
-import org.beamproject.common.User;
 import org.beamproject.common.util.Executor;
 import org.beamproject.common.util.Task;
 
@@ -50,13 +49,13 @@ public class ClientCarrierImpl implements ClientCarrier {
     }
 
     @Override
-    public void bindUserToTopic(User user, String topic) {
-        topics.put(user, topic);
+    public void bindParticipantToTopic(Participant participant, String topic) {
+        topics.put(participant, topic);
     }
 
     @Override
-    public void unbindUser(User user) {
-        topics.remove(user);
+    public void unbindParticipant(Participant participant) {
+        topics.remove(participant);
     }
 
     /**

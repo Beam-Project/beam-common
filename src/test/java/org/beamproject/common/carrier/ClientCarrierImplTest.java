@@ -48,7 +48,7 @@ public class ClientCarrierImplTest {
 
     @Test
     public void testBindUserToTopic() {
-        carrier.bindUserToTopic(USER, TOPIC);
+        carrier.bindParticipantToTopic(USER, TOPIC);
 
         assertEquals(TOPIC, carrier.topics.get(USER));
     }
@@ -57,7 +57,7 @@ public class ClientCarrierImplTest {
     public void testUnbindUser() {
         carrier.topics.put(USER, TOPIC);
 
-        carrier.unbindUser(USER);
+        carrier.unbindParticipant(USER);
 
         assertFalse(carrier.topics.contains(USER));
     }
@@ -69,7 +69,7 @@ public class ClientCarrierImplTest {
 
     @Test
     public void testDeliverMessage() throws Exception {
-        carrier.bindUserToTopic(USER, TOPIC);
+        carrier.bindParticipantToTopic(USER, TOPIC);
         expect(connectionPool.borrowObject()).andReturn(connection);
         connection.publish(TOPIC, MESSAGE);
         expectLastCall();

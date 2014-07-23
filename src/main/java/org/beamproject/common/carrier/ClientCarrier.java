@@ -18,12 +18,13 @@
  */
 package org.beamproject.common.carrier;
 
-import org.beamproject.common.User;
+import org.beamproject.common.Participant;
 
 /**
  * A {@link ClientCarrier} is used to connect to clients (mobile devices,
- * desktop clients, etc.) in order to provide access to the {@link User}s
- * account, notify all devices about new messages, etc..
+ * desktop clients, etc.) with a server and vice versa in order to provide
+ * access to the recipient's account, notify all devices about new messages,
+ * deliver messages bidirectional, etc..
  *
  * @see Carrier
  * @see ClientCarrierModel
@@ -31,25 +32,26 @@ import org.beamproject.common.User;
 public interface ClientCarrier extends Carrier<ClientCarrierModel> {
 
     /**
-     * Binds the given {@link User} to the given {@code topic}. Messages, whose
-     * recipient is the given {@link User}, are then being published to this
-     * {@code topic}.
+     * Binds the given {@link Participant} to the given {@code topic}. Messages,
+     * whose recipient is the given {@link Participant}, are then being
+     * published to this {@code topic}.
      * <p>
      * The topic has to be known by all clients (mobile devices, desktop client,
-     * etc.) of this {@link User} in order to subscribe to it.
+     * etc.) of this {@link Participant} in order to subscribe to it. If the
+     * server is the recipient, it has also to know the given topic.
      * <p>
-     * If the user is already bound to a topic, that binding will be
+     * If the participant is already bound to a topic, that binding will be
      * overwritten.
      *
-     * @param user The user to bind.
+     * @param participant The participant to bind.
      * @param topic The topic to bind.
      */
-    public void bindUserToTopic(User user, String topic);
+    public void bindParticipantToTopic(Participant participant, String topic);
 
     /**
-     * Unbinds the given {@link User} from a possibly bound topic.
+     * Unbinds the given {@link Participant} from a possibly bound topic.
      *
-     * @param user The user to unbind.
+     * @param participant The participant to unbind.
      */
-    public void unbindUser(User user);
+    public void unbindParticipant(Participant participant);
 }
