@@ -106,15 +106,15 @@ public class MessageTest {
 
     @Test
     public void testSetType() {
-        message.setType(HEARTBEAT);
-        assertArrayEquals(HEARTBEAT.getBytes(), message.content.get(TYPE.toString()));
+        message.setType(FORWARD);
+        assertArrayEquals(FORWARD.getBytes(), message.content.get(TYPE.toString()));
     }
 
     @Test
     public void testGetType() {
-        assertArrayEquals(HANDSHAKE.getBytes(), message.content.get(TYPE.toString()));
-        message.setType(HEARTBEAT);
-        assertArrayEquals(HEARTBEAT.getBytes(), message.content.get(TYPE.toString()));
+        assertEquals(HANDSHAKE, message.getType());
+        message.setType(FORWARD);
+        assertEquals(FORWARD, message.getType());
     }
 
     @Test(expected = IllegalArgumentException.class)

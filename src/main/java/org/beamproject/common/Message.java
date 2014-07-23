@@ -103,7 +103,7 @@ public class Message {
      * {@code CNT.TYPE}.
      */
     public TypeValue getType() {
-        return TypeValue.valueOf(String.valueOf(getContent(TYPE)));
+        return TypeValue.valueOf(new String(getContent(TYPE)));
     }
 
     /**
