@@ -19,6 +19,7 @@
 package org.beamproject.common.carrier;
 
 import com.google.inject.Inject;
+import lombok.Getter;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
@@ -30,9 +31,13 @@ import org.fusesource.mqtt.client.MQTT;
  */
 public class MqttConnectionPoolFactory extends BasePooledObjectFactory<MqttConnection> {
 
+    @Getter
     private final String host;
+    @Getter
     private final String port;
+    @Getter
     private final String username;
+    @Getter
     private final String subscriberTopic;
 
     @Inject
@@ -47,7 +52,7 @@ public class MqttConnectionPoolFactory extends BasePooledObjectFactory<MqttConne
     public MqttConnection create() throws Exception {
         MqttConnection connection = new MqttConnection(new MQTT(),
                 host,
-                getPort(),
+                parsePort(),
                 username,
                 subscriberTopic);
 
@@ -56,7 +61,7 @@ public class MqttConnectionPoolFactory extends BasePooledObjectFactory<MqttConne
         return connection;
     }
 
-    private int getPort() {
+    private int parsePort() {
         try {
             return Integer.parseInt(port);
         } catch (NumberFormatException ex) {
