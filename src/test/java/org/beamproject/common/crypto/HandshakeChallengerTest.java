@@ -127,7 +127,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         testProduceChallenge(); // Set the challenger into needed state.
 
         Message response = getBasicResponse();
-        response.putContent(TYPE, HEARTBEAT.getBytes());
+        response.putContent(TYPE, FORWARD.getBytes());
         challenger.consumeResponse(response);
     }
 

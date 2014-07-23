@@ -41,7 +41,7 @@ public class CryptoPackerTest {
     public void setUp() {
         participantWithBothKeys = Participant.generate();
         participantWithPublicKey = new Participant(EccKeyPairGenerator.fromPublicKey(participantWithBothKeys.getPublicKeyAsBytes()));
-        plaintext = new Message(HEARTBEAT, participantWithPublicKey);
+        plaintext = new Message(FORWARD, participantWithPublicKey);
         plaintext.putContent(MSG, MESSAGE);
 
         localPacker = new CryptoPacker();

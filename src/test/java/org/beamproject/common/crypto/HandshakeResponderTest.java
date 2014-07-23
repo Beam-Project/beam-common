@@ -82,7 +82,7 @@ public class HandshakeResponderTest extends HandshakeTest {
     @Test(expected = HandshakeException.class)
     public void testConsumeChallengeOnWrongType() {
         Message challenge = getBasicChallenge();
-        challenge.putContent(TYPE, HEARTBEAT.getBytes());
+        challenge.putContent(TYPE, FORWARD.getBytes());
         responder.consumeChallenge(challenge);
     }
 
@@ -239,7 +239,7 @@ public class HandshakeResponderTest extends HandshakeTest {
         testProduceResponse(); // Set the responder into needed state
 
         Message success = getBasicSuccess();
-        success.putContent(TYPE, HEARTBEAT.getBytes());
+        success.putContent(TYPE, FORWARD.getBytes());
         responder.consumeSuccess(success);
     }
 
