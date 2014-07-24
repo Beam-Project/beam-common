@@ -20,6 +20,7 @@ package org.beamproject.common.crypto;
 
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import lombok.Getter;
 import org.beamproject.common.Message;
 import static org.beamproject.common.MessageField.ContentField.*;
 import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
@@ -161,7 +162,9 @@ public abstract class Handshake {
      * randomness in, a spectrum has to be defined.
      */
     final static int MAXIMAL_SIGNATURE_LENGTH_IN_BYTES = 128;
+    @Getter
     Participant localParticipant;
+    @Getter
     Participant remoteParticipant;
     byte[] localNonce;
     byte[] remoteNonce;
