@@ -34,14 +34,14 @@ public class MqttConnectionPoolFactory extends BasePooledObjectFactory<MqttConne
     @Getter
     private final String host;
     @Getter
-    private final String port;
+    private final int port;
     @Getter
     private final String username;
     @Getter
     private final String subscriberTopic;
 
     @Inject
-    public MqttConnectionPoolFactory(String host, String port, String username, String subscriberTopic) {
+    public MqttConnectionPoolFactory(String host, int port, String username, String subscriberTopic) {
         this.host = host;
         this.port = port;
         this.username = username;
@@ -52,21 +52,13 @@ public class MqttConnectionPoolFactory extends BasePooledObjectFactory<MqttConne
     public MqttConnection create() throws Exception {
         MqttConnection connection = new MqttConnection(new MQTT(),
                 host,
-                parsePort(),
+                port,
                 username,
                 subscriberTopic);
 
         connection.connect();
 
         return connection;
-    }
-
-    private int parsePort() {
-        try {
-            return Integer.parseInt(port);
-        } catch (NumberFormatException ex) {
-            throw new CarrierException("The port number is invalid: " + ex.getMessage());
-        }
     }
 
     @Override
