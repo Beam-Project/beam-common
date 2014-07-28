@@ -23,15 +23,15 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Arrays;
-import java.util.Objects;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.util.Base58;
+import org.beamproject.common.util.ComparableBytes;
 import org.beamproject.common.util.Exceptions;
 
 /**
  * Represents a instance in the network that does something with messages. For
  * example, a {@link Participant} could be a user or a server.
- * 
+ *
  * @see Server
  * @see User
  */
@@ -174,15 +174,28 @@ public class Participant implements Serializable {
     }
 
     /**
-     * Calculates the hash code for this {@link Participant} using the hash code
-     * of the keyPair.
+     * Calculates the hash code for this {@link Participant} by calculating a
+     * hash of the public key (if set) and the private key (if set), whereby the
+     * hash codes of the keys depend on their byte values, not the
+     * {@link KeyPair} objects.
      *
-     * @return
+     * @return the hash code
      */
     @Override
     public int hashCode() {
+        int publicKeyHashCode = 0;
+        int privateKeyHashCode = 0;
+
+        if (keyPair.getPublic() != null) {
+            publicKeyHashCode = (new ComparableBytes(getPublicKeyAsBytes())).hashCode();
+        }
+
+        if (keyPair.getPrivate() != null) {
+            privateKeyHashCode = (new ComparableBytes(getPrivateKeyAsBytes())).hashCode();
+        }
+
         int hash = 5;
-        hash = 37 * hash + Objects.hashCode(this.keyPair);
+        hash = 37 * hash + publicKeyHashCode + privateKeyHashCode;
         return hash;
     }
 

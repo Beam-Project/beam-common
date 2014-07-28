@@ -84,9 +84,9 @@ public class ParticipantTest {
         participant.keyPair = keyPair;
         String expected = Base58.encode(keyPair.getPrivate().getEncoded());
         assertEquals(expected, participant.getPrivateKeyAsBase58());
-        
+
         // ensure public and private key are not the same
-        assertNotEquals(participant.getPrivateKeyAsBase58(), 
+        assertNotEquals(participant.getPrivateKeyAsBase58(),
                 participant.getPublicKeyAsBase58());
     }
 
@@ -162,15 +162,46 @@ public class ParticipantTest {
     }
 
     @Test
-    public void testHashCode() {
+    public void testHashCodeOnDifferentKeyPairs() {
         int hashCode = participant.hashCode();
         Participant other = Participant.generate();
 
         assertFalse(hashCode == other.hashCode());
+    }
 
+    @Test
+    public void testHashCodeOnSameKeyPairs() {
+        int hashCode = participant.hashCode();
+        Participant other = Participant.generate();
         other.keyPair = participant.keyPair;
+
         assertTrue(hashCode == other.hashCode());
-        assertTrue(hashCode == participant.hashCode());
+    }
+
+    /**
+     * The first participant holds public and private keys, the second only the
+     * public key.
+     */
+    @Test
+    public void testHashCodeOnPartiallyEqualKeyPairs() {
+        int hashCode = participant.hashCode();
+        Participant other = new Participant(EccKeyPairGenerator.fromPublicKey(
+                participant.getPublicKeyAsBytes()));
+
+        assertFalse(hashCode == other.hashCode());
+    }
+
+    /**
+     * Both, public and private key are equal.
+     */
+    @Test
+    public void testHashCodeOnEqualKeyPairs() {
+        int hashCode = participant.hashCode();
+        Participant other = new Participant(EccKeyPairGenerator.fromBothKeys(
+                participant.getPublicKeyAsBytes(),
+                participant.getPrivateKeyAsBytes()));
+
+        assertTrue(hashCode == other.hashCode());
     }
 
 }
