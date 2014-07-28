@@ -20,7 +20,6 @@ package org.beamproject.common.crypto;
 
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.beamproject.common.crypto.CryptoPacker;
 
 /**
  * Represents a connection pool of {@link CryptoPacker}.
