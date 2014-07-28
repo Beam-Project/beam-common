@@ -32,8 +32,7 @@ public class Arrays {
      * @return The merged array.
      * @throws IllegalArgumentException If at least one argument is null.
      */
-    public static byte[] mergeArrays(byte[]  
-        ...  arguments) {
+    public static byte[] mergeArrays(byte[] ...  arguments) {
         Exceptions.verifyArgumentsNotNull(arguments);
 
         int totalLength = 0;
