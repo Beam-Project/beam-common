@@ -157,6 +157,7 @@ public class HandshakeResponder extends Handshake {
     private void assembleResponseMessage() {
         response = new Message(HANDSHAKE, remoteParticipant);
         response.putContent(HSPHASE, RESPONSE);
+        response.putContent(HSPUBKEY, localParticipant.getPublicKeyAsBytes());
         response.putContent(HSNONCE, localNonce);
         response.putContent(HSSIG, localSignature);
     }
@@ -212,6 +213,10 @@ public class HandshakeResponder extends Handshake {
                 || success.getContent(HSPHASE) == null
                 || !SUCCESS.toString().equals(new String(success.getContent(HSPHASE)))) {
             exceptionMessage += "phase not set or an unexpected one";
+        } else if (!success.containsContent(HSPUBKEY)
+                || success.getContent(HSPUBKEY) == null
+                || success.getContent(HSPUBKEY).length == 0) {
+            exceptionMessage += "challenger public key not set";
         } else if (!success.containsContent(HSSIG)
                 || success.getContent(HSSIG) == null
                 || success.getContent(HSSIG).length > MAXIMAL_SIGNATURE_LENGTH_IN_BYTES
@@ -238,6 +243,7 @@ public class HandshakeResponder extends Handshake {
      * @throws IllegalStateException If the {@link Participant} is not available
      * at the time of invocation.
      */
+    @Override
     public Participant getRemoteParticipant() {
         if (remoteParticipant == null) {
             throw new IllegalStateException("The remote participant is not available at this moment.");

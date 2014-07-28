@@ -85,6 +85,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         Message response = new Message(HANDSHAKE, localParticipant);
         response.setVersion(VERSION);
         response.putContent(HSPHASE, RESPONSE.getBytes());
+        response.putContent(HSPUBKEY, localParticipant.getPublicKeyAsBytes());
         response.putContent(HSNONCE, remoteNonce);
         response.putContent(HSSIG, remoteSignature);
         assertFalse(challenger.wasConsumeResponseInvoked);
@@ -155,6 +156,15 @@ public class HandshakeChallengerTest extends HandshakeTest {
 
         Message response = getBasicResponse();
         response.getContent().remove(HSNONCE.toString());
+        challenger.consumeResponse(response);
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeResponseOnMissingPublicKey() {
+        testProduceChallenge(); // Set the challenger into needed state.
+
+        Message response = getBasicResponse();
+        response.getContent().remove(HSPUBKEY.toString());
         challenger.consumeResponse(response);
     }
 
@@ -250,6 +260,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         assertEquals(VERSION, success.getVersion());
         assertArrayEquals(HANDSHAKE.getBytes(), success.getContent(TYPE));
         assertArrayEquals(SUCCESS.getBytes(), success.getContent(HSPHASE));
+        assertArrayEquals(localParticipant.getPublicKeyAsBytes(), success.getContent(HSPUBKEY));
         assertEquals(remoteParticipant, success.getRecipient());
 
         byte[] localDigest = digest(localParticipant, challenger.localNonce, remoteNonce);

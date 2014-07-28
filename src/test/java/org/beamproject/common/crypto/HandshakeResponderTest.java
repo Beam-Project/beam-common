@@ -172,6 +172,7 @@ public class HandshakeResponderTest extends HandshakeTest {
         assertEquals(remoteParticipant, response.getRecipient());
         assertArrayEquals(HANDSHAKE.getBytes(), response.getContent(TYPE));
         assertArrayEquals(RESPONSE.getBytes(), response.getContent(HSPHASE));
+        assertArrayEquals(localParticipant.getPublicKeyAsBytes(), response.getContent(HSPUBKEY));
         assertEquals(NONCE_LENGTH_IN_BYTES, responder.localNonce.length);
         assertTrue(responder.localSignature.length >= MINIMAL_SIGNATURE_LENGTH_IN_BYTES);
         assertTrue(responder.localSignature.length <= MAXIMAL_SIGNATURE_LENGTH_IN_BYTES);
@@ -262,6 +263,24 @@ public class HandshakeResponderTest extends HandshakeTest {
     }
 
     @Test(expected = HandshakeException.class)
+    public void testConsumeSuccessOnMissingPublicKey() {
+        testProduceResponse(); // Set the responder into needed state
+
+        Message success = getBasicSuccess();
+        success.getContent().remove(HSPUBKEY.toString());
+        responder.consumeSuccess(success);
+    }
+
+    @Test(expected = HandshakeException.class)
+    public void testConsumeSuccessOnEmptyPublicKey() {
+        testProduceResponse(); // Set the responder into needed state
+
+        Message success = getBasicSuccess();
+        success.putContent(HSPUBKEY, new byte[]{});
+        responder.consumeSuccess(success);
+    }
+
+    @Test(expected = HandshakeException.class)
     public void testConsumeSuccessOnMissingSignature() {
         testProduceResponse(); // Set the responder into needed state.
 
@@ -331,6 +350,7 @@ public class HandshakeResponderTest extends HandshakeTest {
     private Message getBasicSuccess() {
         Message success = new Message(HANDSHAKE, localParticipant);
         success.putContent(HSPHASE, SUCCESS.getBytes());
+        success.putContent(HSPUBKEY, localParticipant.getPublicKeyAsBytes());
         success.putContent(HSSIG, new byte[MINIMAL_SIGNATURE_LENGTH_IN_BYTES]);
 
         return success;

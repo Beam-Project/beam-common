@@ -153,6 +153,10 @@ public class HandshakeChallenger extends Handshake {
                 || response.getContent(HSPHASE) == null
                 || !RESPONSE.toString().equals(new String(response.getContent(HSPHASE)))) {
             exceptionMessage += "phase not set or an unexpected one";
+        } else if (!response.containsContent(HSPUBKEY)
+                || response.getContent(HSPUBKEY) == null
+                || response.getContent(HSPUBKEY).length == 0) {
+            exceptionMessage += "responder public key not set";
         } else if (!response.containsContent(HSNONCE)
                 || response.getContent(HSNONCE) == null
                 || response.getContent(HSNONCE).length != NONCE_LENGTH_IN_BYTES) {
@@ -205,6 +209,7 @@ public class HandshakeChallenger extends Handshake {
     private void assembleSuccessMessage() {
         success = new Message(HANDSHAKE, remoteParticipant);
         success.putContent(HSPHASE, SUCCESS);
+        success.putContent(HSPUBKEY, localParticipant.getPublicKeyAsBytes());
         success.putContent(HSSIG, localSignature);
     }
 
