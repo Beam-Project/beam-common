@@ -31,6 +31,9 @@ import org.beamproject.common.util.Exceptions;
 /**
  * Represents a instance in the network that does something with messages. For
  * example, a {@link Participant} could be a user or a server.
+ * 
+ * @see Server
+ * @see User
  */
 public class Participant implements Serializable {
 
