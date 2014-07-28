@@ -64,7 +64,7 @@ public abstract class EccKeyPairGenerator {
 
     /**
      * Restores a {@link KeyPair} with the given {@link PublicKey} bytes. The
-     * {@link PrivateKey} is not set.
+     * {@link PrivateKey} will not be set.
      *
      * @param publicKeyBytes The public key bytes, X509 encoded.
      * @return The key pair.
