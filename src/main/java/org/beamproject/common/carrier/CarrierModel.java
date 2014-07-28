@@ -18,6 +18,8 @@
  */
 package org.beamproject.common.carrier;
 
+import org.beamproject.common.Message;
+
 /**
  * The {@link CarrierModel}s contain the business logic of the {@link Carrier}s.
  *
@@ -49,6 +51,14 @@ public interface CarrierModel<T extends Carrier> {
      * @param message The message as byte array.
      */
     public void consumeMessage(byte[] message);
+
+    /**
+     * Encrypts the given message for its recipient and sends it to that via the
+     * {@link Carrier} of the {@link CarrierModel}.
+     *
+     * @param message The message to encrypt and sen.d
+     */
+    public void encryptAndSend(Message message);
 
     /**
      * Shuts the {@link Carrier} of this model down and closes all connections.
