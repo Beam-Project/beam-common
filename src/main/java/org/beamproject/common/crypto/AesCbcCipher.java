@@ -69,13 +69,12 @@ public class AesCbcCipher {
 
     /**
      * Encrypts the given {@code plaintext}.
-     *     
-* @param plaintext May not be null.
+     *
+     * @param plaintext May not be null.
      * @return The ciphertext. The length is a multiple of 16 bytes.
      * @throws IllegalArgumentException If the argument is null.
      * @throws CryptoException If anything goes wrong during encryption.
-     *     
-*/
+     */
     public byte[] encrypt(byte[] plaintext) {
         if (plaintext == null) {
             throw new IllegalArgumentException("The argument may not be null.");
@@ -99,13 +98,12 @@ public class AesCbcCipher {
 
     /**
      * Decrypts the given {@code ciphertext}.
-     *     
-* @param ciphertext May not be null.
+     *
+     * @param ciphertext May not be null.
      * @return The plaintext.
      * @throws IllegalArgumentException If the argument is null.
      * @throws CryptoException If anything goes wrong during decryption.
-     *     
-*/
+     */
     public byte[] decrypt(byte[] ciphertext) {
         if (ciphertext == null) {
             throw new IllegalArgumentException("The argument may not be null.");
