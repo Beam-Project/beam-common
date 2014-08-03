@@ -98,9 +98,9 @@ public class HandshakeResponder extends Handshake {
             exceptionMessage += "version not set or unknown";
         } else if (challenge.getRecipient() == null) {
             exceptionMessage += "participant not set";
-        } else if (!challenge.containsContent(TYPE)
-                || challenge.getContent(TYPE) == null
-                || !HANDSHAKE.toString().equals(new String(challenge.getContent(TYPE)))) {
+        } else if (!challenge.containsContent(TYP)
+                || challenge.getContent(TYP) == null
+                || !HANDSHAKE.toString().equals(new String(challenge.getContent(TYP)))) {
             exceptionMessage += "phase not set or an unexpected one";
         } else if (!challenge.containsContent(HSPHASE)
                 || challenge.getContent(HSPHASE) == null

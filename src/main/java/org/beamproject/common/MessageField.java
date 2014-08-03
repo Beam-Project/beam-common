@@ -30,8 +30,8 @@ import org.beamproject.common.crypto.HandshakeResponder;
  * are the field identifiers that are also on the first layer in a message.
  * <p>
  * For example, the field {@code MessageField.VRS} is <i>directly</i> in a
- * message. On the other hand, e.g. the field {@code TYPE} is nested:
- * {@code MessageField.ContentField.TYPE}
+ * message. On the other hand, e.g. the field {@code TYP} is nested:
+ * {@code MessageField.ContentField.TYP}
  * <p>
  * The nested {@code enum}s represent therefore the <i>set of keys</i> for
  * nested message fields.
@@ -65,7 +65,7 @@ public enum MessageField {
         /**
          * Defines the type of this message, e.g. HANDSHAKE, HEARTBEAT, etc..
          */
-        TYPE,
+        TYP,
         /**
          * This field is a part of the handshake protocol. This protocol allows
          * to establish a long-time session.
@@ -136,7 +136,7 @@ public enum MessageField {
 
         /**
          * These fields are for the identifiers used for sub-fields in the
-         * {@link ContentField} {@code TYPE}, of a {@link Message}.
+         * {@link ContentField} {@code TYP}, of a {@link Message}.
          */
         public enum TypeValue {
 

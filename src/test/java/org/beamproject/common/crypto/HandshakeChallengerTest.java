@@ -56,7 +56,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         assertTrue(challenger.wasProduceChallengeInvoked);
         assertEquals(VERSION, challenge.getVersion());
         assertEquals(remoteParticipant, challenge.getRecipient());
-        assertArrayEquals(HANDSHAKE.getBytes(), challenge.getContent(TYPE));
+        assertArrayEquals(HANDSHAKE.getBytes(), challenge.getContent(TYP));
         assertArrayEquals(CHALLENGE.getBytes(), challenge.getContent(HSPHASE));
         assertArrayEquals(localParticipant.getPublicKeyAsBytes(), challenge.getContent(HSPUBKEY));
         assertArrayEquals(challenger.localNonce, challenge.getContent(HSNONCE));
@@ -119,7 +119,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         testProduceChallenge(); // Set the challenger into needed state.
 
         Message response = getBasicResponse();
-        response.getContent().remove(TYPE.toString());
+        response.getContent().remove(TYP.toString());
         challenger.consumeResponse(response);
     }
 
@@ -128,7 +128,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         testProduceChallenge(); // Set the challenger into needed state.
 
         Message response = getBasicResponse();
-        response.putContent(TYPE, FORWARD.getBytes());
+        response.putContent(TYP, FORWARD.getBytes());
         challenger.consumeResponse(response);
     }
 
@@ -258,7 +258,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
 
         assertTrue(challenger.wasProduceSuccessInvoked);
         assertEquals(VERSION, success.getVersion());
-        assertArrayEquals(HANDSHAKE.getBytes(), success.getContent(TYPE));
+        assertArrayEquals(HANDSHAKE.getBytes(), success.getContent(TYP));
         assertArrayEquals(SUCCESS.getBytes(), success.getContent(HSPHASE));
         assertArrayEquals(localParticipant.getPublicKeyAsBytes(), success.getContent(HSPUBKEY));
         assertEquals(remoteParticipant, success.getRecipient());

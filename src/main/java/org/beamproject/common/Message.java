@@ -48,7 +48,7 @@ public class Message {
     public Message(TypeValue type, Participant recipient) {
         Exceptions.verifyArgumentsNotNull(type, recipient);
 
-        this.content.put(TYPE.toString(), type.getBytes());
+        this.content.put(TYP.toString(), type.getBytes());
         this.recipient = recipient;
     }
 
@@ -95,15 +95,15 @@ public class Message {
     public void setType(TypeValue type) {
         Exceptions.verifyArgumentsNotNull(type);
 
-        putContent(TYPE, type);
+        putContent(TYP, type);
     }
 
     /**
      * @return The {@link TypeValue} of this {@link Message}, stored in
-     * {@code CNT.TYPE}.
+     * {@code CNT.TYP}.
      */
     public TypeValue getType() {
-        return TypeValue.valueOf(new String(getContent(TYPE)));
+        return TypeValue.valueOf(new String(getContent(TYP)));
     }
 
     /**

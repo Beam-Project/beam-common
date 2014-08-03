@@ -61,7 +61,7 @@ public class MessageTest {
         assertEquals(Message.VERSION, message.version);
         assertSame(recipient, message.recipient);
         assertNotNull(message.content);
-        assertTrue(message.content.containsKey(TYPE.toString()));
+        assertTrue(message.content.containsKey(TYP.toString()));
         assertEquals(1, message.content.size());
     }
 
@@ -107,7 +107,7 @@ public class MessageTest {
     @Test
     public void testSetType() {
         message.setType(FORWARD);
-        assertArrayEquals(FORWARD.getBytes(), message.content.get(TYPE.toString()));
+        assertArrayEquals(FORWARD.getBytes(), message.content.get(TYP.toString()));
     }
 
     @Test

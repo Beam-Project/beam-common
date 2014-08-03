@@ -145,9 +145,9 @@ public class HandshakeChallenger extends Handshake {
             exceptionMessage += "version not set or unknown";
         } else if (response.getRecipient() == null) {
             exceptionMessage += "participant not set";
-        } else if (!response.containsContent(TYPE)
-                || response.getContent(TYPE) == null
-                || !HANDSHAKE.toString().equals(new String(response.getContent(TYPE)))) {
+        } else if (!response.containsContent(TYP)
+                || response.getContent(TYP) == null
+                || !HANDSHAKE.toString().equals(new String(response.getContent(TYP)))) {
             exceptionMessage += "type not set or an unexpected one";
         } else if (!response.containsContent(HSPHASE)
                 || response.getContent(HSPHASE) == null

@@ -75,14 +75,14 @@ public class HandshakeResponderTest extends HandshakeTest {
     @Test(expected = HandshakeException.class)
     public void testConsumeChallengeOnMissingType() {
         Message challenge = getBasicChallenge();
-        challenge.getContent().remove(TYPE.toString());
+        challenge.getContent().remove(TYP.toString());
         responder.consumeChallenge(challenge);
     }
 
     @Test(expected = HandshakeException.class)
     public void testConsumeChallengeOnWrongType() {
         Message challenge = getBasicChallenge();
-        challenge.putContent(TYPE, FORWARD.getBytes());
+        challenge.putContent(TYP, FORWARD.getBytes());
         responder.consumeChallenge(challenge);
     }
 
@@ -170,7 +170,7 @@ public class HandshakeResponderTest extends HandshakeTest {
 
         assertEquals(VERSION, response.getVersion());
         assertEquals(remoteParticipant, response.getRecipient());
-        assertArrayEquals(HANDSHAKE.getBytes(), response.getContent(TYPE));
+        assertArrayEquals(HANDSHAKE.getBytes(), response.getContent(TYP));
         assertArrayEquals(RESPONSE.getBytes(), response.getContent(HSPHASE));
         assertArrayEquals(localParticipant.getPublicKeyAsBytes(), response.getContent(HSPUBKEY));
         assertEquals(NONCE_LENGTH_IN_BYTES, responder.localNonce.length);
@@ -231,7 +231,7 @@ public class HandshakeResponderTest extends HandshakeTest {
         testProduceResponse(); // Set the responder into needed state
 
         Message success = getBasicSuccess();
-        success.getContent().remove(TYPE.toString());
+        success.getContent().remove(TYP.toString());
         responder.consumeSuccess(success);
     }
 
@@ -240,7 +240,7 @@ public class HandshakeResponderTest extends HandshakeTest {
         testProduceResponse(); // Set the responder into needed state
 
         Message success = getBasicSuccess();
-        success.putContent(TYPE, FORWARD.getBytes());
+        success.putContent(TYP, FORWARD.getBytes());
         responder.consumeSuccess(success);
     }
 
