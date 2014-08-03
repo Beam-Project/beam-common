@@ -107,22 +107,6 @@ public enum MessageField {
          */
         HSKEY,
         /**
-         * This field is a part of the heartbeat protocol. This protocol allows
-         * to keep long-time sessions alive.
-         * <p>
-         * {@code HBKEY} stands for "Heartbeat Key" and contains the already
-         * established session key.
-         */
-        HBKEY,
-        /**
-         * This field is a part of the heartbeat protocol. This protocol allows
-         * to keep long-time sessions alive.
-         * <p>
-         * {@code HBTS} stands for "Heartbeat Timestamp" and contains the
-         * current timestamp in ISO8601 format.
-         */
-        HBTS,
-        /**
          * Stands for "Message" and contains the message text itself.
          */
         MSG;
