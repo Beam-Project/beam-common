@@ -63,7 +63,7 @@ public enum MessageField {
     public enum ContentField {
 
         /**
-         * Defines the type of this message, e.g. HANDSHAKE, HEARTBEAT, etc..
+         * Defines the type of this message, e.g. HANDSHAKE, FORWARD, etc..
          */
         TYP,
         /**
