@@ -30,12 +30,12 @@ import org.junit.Before;
 public class ContentFieldMessageValidatorTest {
 
     private ContentFieldMessageValidator validator;
-    private Message messsage;
+    private Message message;
 
     @Before
     public void setUp() {
-        messsage = new Message(BLANK, Participant.generate());
-        messsage.getContent().clear();
+        message = new Message(BLANK, Participant.generate());
+        message.getContent().clear();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -57,49 +57,49 @@ public class ContentFieldMessageValidatorTest {
     public void testIsValidOnMissingField() {
         testValidator(false, TYP);
 
-        messsage.getContent().put(TYP.toString(), new byte[]{12});
+        message.getContent().put(TYP.toString(), new byte[]{12});
         testValidator(true, TYP);
     }
 
     @Test
     public void testIsValidOnNullContent() {
-        messsage.getContent().put(TYP.toString(), null);
+        message.getContent().put(TYP.toString(), null);
         testValidator(false, TYP);
 
-        messsage.getContent().put(TYP.toString(), "FORWARD".getBytes());
+        message.getContent().put(TYP.toString(), "FORWARD".getBytes());
         testValidator(true, TYP);
     }
 
     @Test
     public void testIsValidOnEmptyContent() {
-        messsage.getContent().put(TYP.toString(), new byte[0]);
+        message.getContent().put(TYP.toString(), new byte[0]);
         testValidator(false, TYP);
 
-        messsage.getContent().put(TYP.toString(), new byte[]{17});
+        message.getContent().put(TYP.toString(), new byte[]{17});
         testValidator(true, TYP);
     }
 
     @Test
     public void testIsValidOnTooManyFields() {
-        messsage.getContent().put(TYP.toString(), "type".getBytes());
+        message.getContent().put(TYP.toString(), "type".getBytes());
         testValidator(true, TYP);
 
-        messsage.getContent().put(HSKEY.toString(), "mykey".getBytes());
+        message.getContent().put(HSKEY.toString(), "mykey".getBytes());
         testValidator(false, TYP);
     }
 
     @Test
     public void testIsValidOnSeveralFields() {
-        messsage.getContent().put(TYP.toString(), "type".getBytes());
-        messsage.getContent().put(HSKEY.toString(), "mykey".getBytes());
-        messsage.getContent().put(HSPUBKEY.toString(), "mypubkey".getBytes());
-        messsage.getContent().put(HSNONCE.toString(), "213j0-NONCE-ldkjfsd".getBytes());
+        message.getContent().put(TYP.toString(), "type".getBytes());
+        message.getContent().put(HSKEY.toString(), "mykey".getBytes());
+        message.getContent().put(HSPUBKEY.toString(), "mypubkey".getBytes());
+        message.getContent().put(HSNONCE.toString(), "213j0-NONCE-ldkjfsd".getBytes());
         testValidator(true, TYP, HSKEY, HSPUBKEY, HSNONCE);
     }
 
     private void testValidator(boolean exptected, MessageField.ContentField... fields) {
         validator = new ContentFieldMessageValidator(fields);
-        assertEquals(exptected, validator.isValid(messsage));
+        assertEquals(exptected, validator.isValid(message));
     }
 
 }
