@@ -21,8 +21,6 @@ package org.beamproject.common.message;
 import org.beamproject.common.Message;
 import org.beamproject.common.MessageField;
 import static org.beamproject.common.MessageField.ContentField.*;
-import static org.beamproject.common.MessageField.ContentField.TypeValue.BLANK;
-import org.beamproject.common.Participant;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -34,8 +32,7 @@ public class ContentFieldMessageValidatorTest {
 
     @Before
     public void setUp() {
-        message = new Message(BLANK, Participant.generate());
-        message.getContent().clear();
+        message = new Message();
     }
 
     @Test(expected = IllegalArgumentException.class)
