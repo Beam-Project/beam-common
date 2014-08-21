@@ -20,8 +20,6 @@ package org.beamproject.common.message;
 
 import org.beamproject.common.Message;
 import static org.beamproject.common.MessageField.ContentField.HSPUBKEY;
-import static org.beamproject.common.MessageField.ContentField.TypeValue.BLANK;
-import org.beamproject.common.Participant;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -34,8 +32,7 @@ public class HandshakePublicKeyMessageValidatorTest {
 
     @Before
     public void setUp() {
-        message = new Message(BLANK, Participant.generate());
-        message.getContent().clear();
+        message = new Message();
     }
 
     @Test
