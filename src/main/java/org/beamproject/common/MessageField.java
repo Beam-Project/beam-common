@@ -20,8 +20,6 @@ package org.beamproject.common;
 
 import java.security.PublicKey;
 import org.beamproject.common.crypto.Handshake;
-import org.beamproject.common.crypto.HandshakeChallenger;
-import org.beamproject.common.crypto.HandshakeResponder;
 
 /**
  * Defines all typically used field identifier used in {@link Message}s.
@@ -70,14 +68,6 @@ public enum MessageField {
          * This field is a part of the handshake protocol. This protocol allows
          * to establish a long-time session.
          * <p>
-         * {@code HSPHASE} stands for "Handshake Phase" and informs the
-         * recipient of the message about the current phase in the protocol.
-         */
-        HSPHASE,
-        /**
-         * This field is a part of the handshake protocol. This protocol allows
-         * to establish a long-time session.
-         * <p>
          * {@code HSPUBKEY} stands for "Handshake Public Key" and contains the
          * senders {@link PublicKey} as byte array.
          */
@@ -121,26 +111,102 @@ public enum MessageField {
         /**
          * These fields are for the identifiers used for sub-fields in the
          * {@link ContentField} {@code TYP}, of a {@link Message}.
+         * <p>
+         * The type of a message denotes what the next
+         * {@link Participant} ({@link Server} or {@link User} respectively its
+         * client) should do with the message.
          */
         public enum TypeValue {
 
             /**
-             * This type can be used when the type of a {@link Message} is not
-             * clear yet, e.g. before it's been decrypted.
+             * Handshake_Challenge. A message of this type is part of a
+             * {@link Handshake}.
              * <p>
-             * This is not a valid value when sending messages around.
+             * Phase 1 of 3: The following is described from the point of view
+             * of the participant who wants to establish an authenticated
+             * session.
+             * <p>
+             * {@code CHALLENGE} tells the other side that an authenticated
+             * session should be established.
+             * <p>
+             * At this time, this side knows the other sides {@link PublicKey}
+             * and therefore already can encrypt the first message.
+             * <p>
+             * This side has to send: The own {@link PublicKey} as bytes (for
+             * identification and encryption when the the other side responds)
+             * and as challenge a nonce as bytes of the length of
+             * {@link Handshake.NONCE_LENGTH_IN_BYTES}.
              */
-            BLANK,
+            HS_CHALLENGE,
             /**
-             * Tells the recipient that the message with this type should be
-             * interpreted as part of the handshake, which is used to establish
-             * authenticity.
-             *
-             * @see Handshake
-             * @see HandshakeChallenger
-             * @see HandshakeResponder
+             * Handshake_Response. A message of this type is part of a
+             * {@link Handshake}.
+             * <p>
+             * PHASE 2 OF 3: The following is described from the point of view
+             * of the participant who has been contacted by an unidentified
+             * participant who wants to establish an authenticated session.
+             * <p>
+             * {@code RESPONSE} tells the other side that the challenge was
+             * accepted and this side therefore is able to send a challenge to
+             * which the other side has to response to.
+             * <p>
+             * At this time, this side knows the other sides {@link PublicKey}
+             * since it was sent as part of phase 1, {@code CHALLENGE}. Also,
+             * this side knows the challenge sent by the other side as a part of
+             * phase 1.
+             * <p>
+             * This side has to send: An own challenge (nonce as bytes) of the
+             * length of {@link Handshake.NONCE_LENGTH_IN_BYTES}. Further, this
+             * side has to calculate a digest of [the own public key + the own
+             * nonce + the other sides nonce], so the own public key followed by
+             * the own nonce followed by the other sides nonce have to be
+             * concatenated to one large array of bytes. This large array is
+             * then used to calculate the digest. This digest has to be signed
+             * with this sides private key. The resulting signature has to be
+             * sent with the own nonce.
              */
-            HANDSHAKE,
+            HS_RESPONSE,
+            /**
+             * Handshake_Success. A message of this type is part of a
+             * {@link Handshake}.
+             * <p>
+             * PHASE 3 OF 3: The following is described from the point of view
+             * of the participant who wants to establish an authenticated
+             * session.
+             * <p>
+             * {@code SUCCESS} tells the other side that its during phase 1 sent
+             * challenge is verified and the challenge, sent by the other side
+             * as part of phase 2, is accepted and this side therefore is able
+             * to respond.
+             * <p>
+             * At this time, this side knows the other sides {@link PublicKey},
+             * the own nonce (generated in phase 1) and the other sides nonce
+             * since it was sent in phase 2. This side also knows the other
+             * sides signature, created and sent in phase 2.
+             * <p>
+             * This side has to send: The response to the challenge from phase
+             * 2. Therefore, this side has to calculate a digest of [the own
+             * public key + the own nonce + the other sides nonce], so the own
+             * public key followed by the own nonce followed by the other sides
+             * nonce have to be concatenated to one large array of bytes. This
+             * large array is then used to calculate the digest. (This sides
+             * nonce was generated in phase 1.) This digest has to be signed
+             * with this sides private key. The resulting signature has to be
+             * sent.
+             */
+            HS_SUCCESS,
+            /**
+             * Handshake_Invalidate. A message of this type is part of a
+             * {@link Handshake}.
+             * <p>
+             * {@code INVALIDATE} tells the other side that an already
+             * established session has to be invalidated and that it will no
+             * longer be valid. Further, this may be used anytime to abort the
+             * handshake procedure.
+             * <p>
+             * This side has to send the session key to the other side.
+             */
+            HS_INVALIDATE,
             /**
              * Tells the recipient, typically a {@link Server} that the message
              * with this type contains another message, which should be
