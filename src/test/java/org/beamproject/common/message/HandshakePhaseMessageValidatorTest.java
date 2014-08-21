@@ -19,23 +19,22 @@
 package org.beamproject.common.message;
 
 import org.beamproject.common.Message;
-import static org.beamproject.common.MessageField.ContentField.HSPHASE;
-import static org.beamproject.common.MessageField.ContentField.TypeValue.BLANK;
-import org.beamproject.common.Participant;
-import static org.beamproject.common.crypto.Handshake.Phase.*;
+import static org.beamproject.common.MessageField.ContentField.TYP;
+import static org.beamproject.common.MessageField.ContentField.TypeValue;
+import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 
 public class HandshakePhaseMessageValidatorTest {
 
+    private final TypeValue[] VALID_TYPES = {HS_CHALLENGE, HS_RESPONSE, HS_SUCCESS, HS_INVALIDATE};
     private HandshakePhaseMessageValidator validator;
     private Message message;
 
     @Before
     public void setUp() {
-        message = new Message(BLANK, Participant.generate());
-        message.getContent().clear();
+        message = new Message();
     }
 
     @Test
@@ -44,23 +43,28 @@ public class HandshakePhaseMessageValidatorTest {
     }
 
     @Test
-    public void testIsValidOnInvalidPhase() {
-        message.putContent(HSPHASE, new byte[0]);
+    public void testIsValidOnInvalidType() {
+        message.putContent(TYP, FORWARD);
         testValidator(false);
 
-        message.putContent(HSPHASE, "something but not a phase".getBytes());
+        message.putContent(TYP, new byte[0]);
         testValidator(false);
 
-        byte[] challengeBytes = CHALLENGE.getBytes();
+        message.putContent(TYP, "something but not a phase".getBytes());
+        testValidator(false);
+
+        byte[] challengeBytes = HS_CHALLENGE.getBytes();
         challengeBytes[2]++;
-        message.putContent(HSPHASE, challengeBytes);
+        message.putContent(TYP, challengeBytes);
         testValidator(false);
     }
 
     @Test
     public void testIsValid() {
-        message.putContent(HSPHASE, CHALLENGE);
-        testValidator(true);
+        for (TypeValue value : VALID_TYPES) {
+            message.putContent(TYP, value);
+            testValidator(true);
+        }
     }
 
     private void testValidator(boolean exptected) {

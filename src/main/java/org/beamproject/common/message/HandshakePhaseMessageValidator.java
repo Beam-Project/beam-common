@@ -19,12 +19,15 @@
 package org.beamproject.common.message;
 
 import org.beamproject.common.Message;
-import static org.beamproject.common.MessageField.ContentField.HSPHASE;
+import static org.beamproject.common.MessageField.ContentField.TYP;
+import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
+import static org.beamproject.common.MessageField.ContentField.TypeValue;
 import org.beamproject.common.crypto.Handshake;
 
 /**
- * Validates if a {@link Message} is part of a {@link Handshake} and if the
- * {@link Handshake.Phase} is set and valid.
+ * Checks if the given message is a {@link Handshake} message and therefore is
+ * of the type {@link HS_CHALLENGE}, {@link HS_RESPONSE}, {@link HS_SUCCESS}, or
+ * {@link HS_INVALIDATE}.
  *
  * @see Handshake
  * @see Handshake.Phase
@@ -32,22 +35,27 @@ import org.beamproject.common.crypto.Handshake;
 public class HandshakePhaseMessageValidator implements MessageValidator {
 
     /**
-     * Checks if the given message is of a {@link Handshake} and contains a
-     * valid {@link Handshake.Phase}.
+     * Checks if the given message is a {@link Handshake} message and therefore
+     * is of the type
+     * {@link HS_CHALLENGE}, {@link HS_RESPONSE}, {@link HS_SUCCESS}, or
+     * {@link HS_INVALIDATE}.
      *
      * @param message The message to validate.
-     * @return true, if the phase is set and valid, false otherwise.
+     * @return true, an expected is set and valid, false otherwise.
      */
     @Override
     public boolean isValid(Message message) {
-        if (!message.containsContent(HSPHASE)) {
+        if (!message.containsContent(TYP)) {
             return false;
         }
 
         try {
-            Handshake.Phase phase = Handshake.Phase.valueOf(message.getContent(HSPHASE));
-            return phase != null;
-        } catch (IllegalArgumentException ex) {
+            TypeValue phase = TypeValue.valueOf(new String(message.getContent(TYP)));
+            return phase == HS_CHALLENGE
+                    || phase == HS_RESPONSE
+                    || phase == HS_SUCCESS
+                    || phase == HS_INVALIDATE;
+        } catch (IllegalArgumentException | NullPointerException ex) {
             return false;
         }
     }
