@@ -22,9 +22,9 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import org.beamproject.common.Message;
 import static org.beamproject.common.MessageField.ContentField.*;
+import static org.beamproject.common.MessageField.ContentField.TypeValue.HS_INVALIDATE;
 import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
-import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.beamproject.common.util.Arrays;
 import static org.junit.Assert.assertArrayEquals;
 import org.junit.Before;
@@ -99,7 +99,7 @@ public class HandshakeTest {
     @Test
     public void testGetInvalidate() {
         Message message = Handshake.getInvalidate(remoteParticipant, sessionKey);
-        assertArrayEquals(INVALIDATE.getBytes(), message.getContent(HSPHASE));
+        assertArrayEquals(HS_INVALIDATE.getBytes(), message.getContent(TYP));
         assertArrayEquals(sessionKey, message.getContent(HSKEY));
     }
 
