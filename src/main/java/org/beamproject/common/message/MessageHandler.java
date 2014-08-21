@@ -32,6 +32,7 @@ import org.beamproject.common.carrier.MessageException;
 abstract public class MessageHandler {
 
     private final MessageValidator[] validators;
+    protected Message message;
 
     public MessageHandler(MessageValidator... validators) {
         this.validators = validators;
@@ -49,9 +50,11 @@ abstract public class MessageHandler {
      * message.
      */
     public Message handle(Message message) throws MessageException {
+        this.message = message;
+
         validateMessage(message);
 
-        return handleValidMessage(message);
+        return handleValidMessage();
     }
 
     private void validateMessage(Message message) {
@@ -64,14 +67,13 @@ abstract public class MessageHandler {
     }
 
     /**
-     * Handles the given {@link Message}. It can be expected that the message is
-     * valid.
+     * Handles the {@code message}, as given by the superclass
+     * {@link MessageHandler}. It can be expected that the message is valid.
      *
-     * @param message The message to process.
      * @return Returns a response message that has to be sent to its recipient,
      * or {@code null} if there is no response.
      * @throws MessageException If anything goes wrong during handling the
      * message.
      */
-    protected abstract Message handleValidMessage(Message message) throws MessageException;
+    protected abstract Message handleValidMessage() throws MessageException;
 }

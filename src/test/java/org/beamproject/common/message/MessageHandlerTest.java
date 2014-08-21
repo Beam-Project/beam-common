@@ -64,7 +64,7 @@ public class MessageHandlerTest {
     private void setUpHandlerWithValidators() {
         handler = new MessageHandler(validator1, validator2, validator3) {
             @Override
-            protected Message handleValidMessage(Message message) throws MessageException {
+            protected Message handleValidMessage() throws MessageException {
                 return message;
             }
         };
