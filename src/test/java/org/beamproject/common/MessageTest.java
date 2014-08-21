@@ -25,7 +25,6 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import static org.beamproject.common.MessageField.ContentField.*;
 import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
-import org.beamproject.common.crypto.Handshake;
 
 public class MessageTest {
 
@@ -37,7 +36,7 @@ public class MessageTest {
     @Before
     public void setUp() {
         recipient = Participant.generate();
-        message = new Message(HANDSHAKE, recipient);
+        message = new Message();
         content = new HashMap<>();
     }
 
@@ -53,15 +52,16 @@ public class MessageTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNullRecipient() {
-        message = new Message(HANDSHAKE, null);
+        message = new Message(HS_CHALLENGE, null);
     }
 
     @Test
     public void testConstructor() {
+        message = new Message(HS_CHALLENGE, recipient);
         assertEquals(Message.VERSION, message.version);
         assertSame(recipient, message.recipient);
         assertNotNull(message.content);
-        assertTrue(message.content.containsKey(TYP.toString()));
+        assertArrayEquals(HS_CHALLENGE.getBytes(), message.content.get(TYP.toString()));
         assertEquals(1, message.content.size());
     }
 
@@ -112,7 +112,6 @@ public class MessageTest {
 
     @Test
     public void testGetType() {
-        assertEquals(HANDSHAKE, message.getType());
         message.setType(FORWARD);
         assertEquals(FORWARD, message.getType());
     }
@@ -142,10 +141,10 @@ public class MessageTest {
 
     @Test
     public void testPutContentAsEnum() {
-        message.putContent(HSPHASE, Handshake.Phase.INVALIDATE);
+        message.putContent(TYP, HS_INVALIDATE);
 
-        assertTrue(message.content.containsKey(HSPHASE.toString()));
-        assertArrayEquals(Handshake.Phase.INVALIDATE.getBytes(), message.content.get(HSPHASE.toString()));
+        assertTrue(message.content.containsKey(TYP.toString()));
+        assertArrayEquals(HS_INVALIDATE.getBytes(), message.content.get(TYP.toString()));
     }
 
     @Test
