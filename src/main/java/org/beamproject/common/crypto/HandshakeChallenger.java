@@ -24,7 +24,6 @@ import org.beamproject.common.Message;
 import static org.beamproject.common.Message.VERSION;
 import static org.beamproject.common.MessageField.ContentField.*;
 import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
-import static org.beamproject.common.crypto.Handshake.Phase.*;
 import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.HandshakeResponder.*;
 import org.beamproject.common.util.Arrays;
@@ -94,8 +93,7 @@ public class HandshakeChallenger extends Handshake {
     }
 
     private void assembleChallengeMessage() {
-        challenge = new Message(HANDSHAKE, remoteParticipant);
-        challenge.putContent(HSPHASE, CHALLENGE);
+        challenge = new Message(HS_CHALLENGE, remoteParticipant);
         challenge.putContent(HSPUBKEY, localParticipant.getPublicKeyAsBytes());
         challenge.putContent(HSNONCE, localNonce);
     }
@@ -147,12 +145,8 @@ public class HandshakeChallenger extends Handshake {
             exceptionMessage += "participant not set";
         } else if (!response.containsContent(TYP)
                 || response.getContent(TYP) == null
-                || !HANDSHAKE.toString().equals(new String(response.getContent(TYP)))) {
+                || !HS_RESPONSE.toString().equals(new String(response.getContent(TYP)))) {
             exceptionMessage += "type not set or an unexpected one";
-        } else if (!response.containsContent(HSPHASE)
-                || response.getContent(HSPHASE) == null
-                || !RESPONSE.toString().equals(new String(response.getContent(HSPHASE)))) {
-            exceptionMessage += "phase not set or an unexpected one";
         } else if (!response.containsContent(HSPUBKEY)
                 || response.getContent(HSPUBKEY) == null
                 || response.getContent(HSPUBKEY).length == 0) {
@@ -207,8 +201,7 @@ public class HandshakeChallenger extends Handshake {
     }
 
     private void assembleSuccessMessage() {
-        success = new Message(HANDSHAKE, remoteParticipant);
-        success.putContent(HSPHASE, SUCCESS);
+        success = new Message(HS_SUCCESS, remoteParticipant);
         success.putContent(HSPUBKEY, localParticipant.getPublicKeyAsBytes());
         success.putContent(HSSIG, localSignature);
     }
