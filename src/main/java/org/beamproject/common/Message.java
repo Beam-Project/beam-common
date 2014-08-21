@@ -37,6 +37,17 @@ public class Message {
     Map<String, byte[]> content = new HashMap<>();
 
     /**
+     * Creates an empty message.
+     * <p>
+     * Note: You may prefer the constructor
+     * <code>Message({@link TypeValue}, {@link Participant})</code> if you
+     * intend to send the message. The version is set to the default value, if
+     * not specified differently.
+     */
+    public Message() {
+    }
+
+    /**
      * Creates a new message for the given recipient.
      * <p>
      * The version is set to the default value, if not specified differently.
