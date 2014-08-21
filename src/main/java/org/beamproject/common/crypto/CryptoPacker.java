@@ -25,7 +25,6 @@ import java.util.Map;
 import org.beamproject.common.Message;
 import static org.beamproject.common.MessageField.*;
 import org.beamproject.common.MessageField.ContentField;
-import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
 import org.beamproject.common.Participant;
 import org.beamproject.common.util.Exceptions;
 import org.msgpack.MessagePack;
@@ -63,12 +62,11 @@ public class CryptoPacker {
      * Packs and encrypts the given {@code plaintext} to a {@link MessagePack}
      * byte array.<p>
      * The field ContentField ({@code CNT}) will be encrypted.<p>
-     * The fields Version ({@code VRS}) and Participant ({@code RCP}) will
-     * <b>not</b> be encrypted.
+     * The field Version ({@code VRS}) will <b>not</b> be encrypted.
      *
-     * @param plaintext The unencrypted {@link Message}. This may not be null.
+     * @param plaintext The unencrypted {@link Message}.
      * @return The messagePacked and encrypted message.
-     * @throws IllegalArgumentException If at least one argument is null.
+     * @throws IllegalArgumentException If the argument is null.
      * @throws PackerException If anything goes wrong during
      * packing/serializing.
      */
@@ -104,7 +102,6 @@ public class CryptoPacker {
         Map<String, byte[]> map = new HashMap<>();
 
         map.put(VRS.toString(), plaintext.getVersion().getBytes());
-        map.put(RCP.toString(), plaintext.getRecipient().getPublicKeyAsBytes());
         map.put(CNT.toString(), encryptedPacketContent);
 
         ciphertext = serializeMap(map);
@@ -122,9 +119,9 @@ public class CryptoPacker {
      * Decrypts and unpacks the given {@code ciphertext} to a {@link Message}.
      *
      * @param ciphertext The encrypted message, serialized using
-     * {@link MessagePack}. This may not be null.
+     * {@link MessagePack}.
      * @param participant The {@link Participant} with the needed key, in this
-     * case the private key of the local side. This may not be null.
+     * case the private key of the local side.
      * @return The plaintext message.
      * @throws IllegalArgumentException If at lest one argument is null.
      * @throws PackerException If anything goes wrong during
@@ -158,7 +155,7 @@ public class CryptoPacker {
     private void unpackAllPartsFromCiphertext() {
         Map<String, byte[]> map = buildMapFromBytes(ciphertext);
 
-        plaintext = new Message(BLANK, participant);
+        plaintext = new Message();
         plaintext.setVersion(readStringFromMap(map, VRS));
         encryptedPacketContent = readByteArrayFromMap(map, CNT);
     }

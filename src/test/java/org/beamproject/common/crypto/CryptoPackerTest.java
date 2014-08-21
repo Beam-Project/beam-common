@@ -29,7 +29,7 @@ import org.junit.Before;
 public class CryptoPackerTest {
 
     private final byte[] MESSAGE = "hello world".getBytes();
-    private final int EXPECTED_CPHERTEXT_LENGTH_IN_BYTES = 304;
+    private final int EXPECTED_CPHERTEXT_LENGTH_IN_BYTES = 177;
     private CryptoPacker localPacker;
     private CryptoPacker remotePacker;
     private Participant participantWithBothKeys;
