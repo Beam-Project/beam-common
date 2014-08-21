@@ -19,8 +19,6 @@
 package org.beamproject.common.message;
 
 import org.beamproject.common.Message;
-import static org.beamproject.common.MessageField.ContentField.TypeValue.BLANK;
-import org.beamproject.common.Participant;
 import org.beamproject.common.carrier.MessageException;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -37,7 +35,7 @@ public class MessageHandlerTest {
         validator1 = new Validator();
         validator2 = new Validator();
         validator3 = new Validator();
-        message = new Message(BLANK, Participant.generate());
+        message = new Message();
     }
 
     @Test
