@@ -73,6 +73,7 @@ public class CryptoPackerTest {
         Message decryptedCiphertext = remotePacker.decryptAndUnpack(ciphertext, participantWithBothKeys);
         assertEquals(plaintext.getVersion(), decryptedCiphertext.getVersion());
         assertEquals(plaintext.getType(), decryptedCiphertext.getType());
+        assertSame(participantWithBothKeys, decryptedCiphertext.getRecipient());
         assertArrayEquals(plaintext.getContent(MSG), decryptedCiphertext.getContent(MSG));
     }
 

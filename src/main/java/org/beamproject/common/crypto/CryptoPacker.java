@@ -121,7 +121,9 @@ public class CryptoPacker {
      * @param ciphertext The encrypted message, serialized using
      * {@link MessagePack}.
      * @param participant The {@link Participant} with the needed key, in this
-     * case the private key of the local side.
+     * case the private key of the local side. This object will be set as
+     * recipient once the message has been decrypted (since the given
+     * participant was able to decrypt the message).
      * @return The plaintext message.
      * @throws IllegalArgumentException If at lest one argument is null.
      * @throws PackerException If anything goes wrong during
@@ -135,6 +137,7 @@ public class CryptoPacker {
         unpackAllPartsFromCiphertext();
 
         decyptContent();
+        updateRecipient();
         unpackContent();
 
         return plaintext;
@@ -162,6 +165,10 @@ public class CryptoPacker {
 
     private void decyptContent() {
         packedContent = eccCipher.decrypt(encryptedPacketContent, participant.getPrivateKey());
+    }
+
+    private void updateRecipient() {
+        plaintext.setRecipient(participant);
     }
 
     private void unpackContent() {
