@@ -49,7 +49,7 @@ public class PasswordCryptor {
     char[] password;
     byte[] salt;
     Key aesKey;
-    AesCbcCipher cipher;
+    AesCipher cipher;
 
     /**
      * Creates a new instance of {@link PasswordCryptor}, initialized with the
@@ -83,7 +83,7 @@ public class PasswordCryptor {
     }
 
     private void createCipher() {
-        cipher = new AesCbcCipher(aesKey.getEncoded());
+        cipher = new AesCipher(aesKey.getEncoded());
     }
 
     /**

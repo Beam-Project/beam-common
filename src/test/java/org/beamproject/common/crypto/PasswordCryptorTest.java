@@ -119,7 +119,7 @@ public class PasswordCryptorTest {
     @Test
     public void testChangePassword() {
         Key oldAesKey = cryptor.aesKey;
-        AesCbcCipher oldCipher = cryptor.cipher;
+        AesCipher oldCipher = cryptor.cipher;
         
         char[] newPassword = "new pass".toCharArray();
         

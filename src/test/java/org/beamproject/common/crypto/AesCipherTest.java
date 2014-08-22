@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
 
-public class AesCbcCipherTest {
+public class AesCipherTest {
 
     private final byte[] CIPHERTEXT = new byte[]{(byte) -30, (byte) 79,
         (byte) 98, (byte) 5, (byte) 79, (byte) 94, (byte) -75, (byte) -8,
@@ -31,8 +31,8 @@ public class AesCbcCipherTest {
         (byte) 89, (byte) 38, (byte) 94, (byte) -104, (byte) 94, (byte) 50,
         (byte) -110, (byte) 93, (byte) -98, (byte) -36, (byte) 109, (byte) -79,
         (byte) 40, (byte) 72, (byte) -50, (byte) 52, (byte) -92, (byte) 25};
-    private AesCbcCipher cipher;
-    private AesCbcCipher initializedCipher;
+    private AesCipher cipher;
+    private AesCipher initializedCipher;
     private final byte[] plaintext = "this is the plaintext".getBytes();
     private byte[] key;
     private byte[] output;
@@ -40,7 +40,7 @@ public class AesCbcCipherTest {
     @Before
     public void setUp() {
         key = fillByteArray(32);
-        initializedCipher = new AesCbcCipher(key);
+        initializedCipher = new AesCipher(key);
     }
 
     private byte[] fillByteArray(int length) {
@@ -55,7 +55,7 @@ public class AesCbcCipherTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNull() {
-        cipher = new AesCbcCipher(null);
+        cipher = new AesCipher(null);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class AesCbcCipherTest {
 
         for (int i = 0; i < 50; i++) {
             try {
-                cipher = new AesCbcCipher(fillByteArray(i));
+                cipher = new AesCipher(fillByteArray(i));
 
                 for (int length : correctKeyLengths) {
                     if (i == length) {
@@ -80,7 +80,7 @@ public class AesCbcCipherTest {
 
     @Test
     public void testConstructorOnAssignments() {
-        cipher = new AesCbcCipher(key);
+        cipher = new AesCipher(key);
         assertNotNull(cipher.parameters);
     }
 
@@ -89,7 +89,7 @@ public class AesCbcCipherTest {
         // The Bouncy Caste Provider should not be known now.
         assertNull(Security.getProperty(BouncyCastleIntegrator.PROVIDER_NAME));
 
-        cipher = new AesCbcCipher(key);
+        cipher = new AesCipher(key);
 
         // Now, the Bouncy Castle Provider should be installed.
         assertNotNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));

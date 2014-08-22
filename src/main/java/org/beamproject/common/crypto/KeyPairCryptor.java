@@ -100,7 +100,7 @@ public class KeyPairCryptor {
     }
 
     private static EncryptedKeyPair encryptKeys(Key aesKey, KeyPair keyPair, byte[] salt) {
-        AesCbcCipher cipher = new AesCbcCipher(aesKey.getEncoded());
+        AesCipher cipher = new AesCipher(aesKey.getEncoded());
         byte[] encryptedPublicKey = null;
         byte[] encryptedPrivateKey = null;
 
@@ -140,7 +140,7 @@ public class KeyPairCryptor {
     }
 
     private static KeyPair decryptKeys(Key aesKey, EncryptedKeyPair encryptedKeyPair) {
-        AesCbcCipher cipher = new AesCbcCipher(aesKey.getEncoded());
+        AesCipher cipher = new AesCipher(aesKey.getEncoded());
         byte[] decryptedPublicKey = null;
         byte[] decryptedPrivateKey = null;
 

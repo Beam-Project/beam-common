@@ -29,7 +29,7 @@ import org.bouncycastle.crypto.params.KeyParameter;
 /**
  * This encrypts and decrypts AES in CBC mode.
  */
-public class AesCbcCipher {
+public class AesCipher {
 
     private final int[] VALID_KEY_LENGTHS_IN_BYTES = {16, 24, 32};
     PaddedBufferedBlockCipher cipher;
@@ -43,7 +43,7 @@ public class AesCbcCipher {
      * @throws IllegalArgumentException If the argument is null or not as long
      * as required.
      */
-    public AesCbcCipher(byte[] key) {
+    public AesCipher(byte[] key) {
         if (!isKeyValid(key)) {
             throw new IllegalArgumentException("The key has to be 16, 24 or 32 bytes long.");
         }
