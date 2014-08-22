@@ -16,23 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beamproject.common;
+package org.beamproject.common.message;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.msgpack.MessageTypeException;
+/**
+ * This message is thrown when a requested {@link MessageField} could not be
+ * found in a {@link Message}.
+ */
+public class MessageContentException extends RuntimeException {
 
-public class MessageContentExceptionTest {
+    private static final long serialVersionUID = 1L;
 
-    @Test
-    public void testAssertion() {
-        String message = "hello";
-
-        try {
-            throw new MessageTypeException(message);
-        } catch (MessageTypeException ex) {
-            assertEquals(message, ex.getMessage());
-        }
+    public MessageContentException(String message) {
+        super(message);
     }
 
 }

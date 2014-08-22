@@ -18,7 +18,6 @@
  */
 package org.beamproject.common.message;
 
-import org.beamproject.common.Message;
 import org.beamproject.common.carrier.MessageException;
 import org.junit.Test;
 import static org.junit.Assert.*;

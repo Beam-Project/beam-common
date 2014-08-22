@@ -18,7 +18,7 @@
  */
 package org.beamproject.common.carrier;
 
-import org.beamproject.common.Message;
+import org.beamproject.common.message.Message;
 
 /**
  * The {@link CarrierModel}s contain the business logic of the {@link Carrier}s.

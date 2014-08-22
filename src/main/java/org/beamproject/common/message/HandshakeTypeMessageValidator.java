@@ -18,10 +18,9 @@
  */
 package org.beamproject.common.message;
 
-import org.beamproject.common.Message;
-import static org.beamproject.common.MessageField.ContentField.TYP;
-import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
-import static org.beamproject.common.MessageField.ContentField.TypeValue;
+import static org.beamproject.common.message.MessageField.ContentField.TYP;
+import static org.beamproject.common.message.MessageField.ContentField.TypeValue.*;
+import static org.beamproject.common.message.MessageField.ContentField.TypeValue;
 import org.beamproject.common.crypto.Handshake;
 
 /**

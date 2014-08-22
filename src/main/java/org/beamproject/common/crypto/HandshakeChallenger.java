@@ -20,10 +20,10 @@ package org.beamproject.common.crypto;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import org.beamproject.common.Message;
-import static org.beamproject.common.Message.VERSION;
-import static org.beamproject.common.MessageField.ContentField.*;
-import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
+import org.beamproject.common.message.Message;
+import static org.beamproject.common.message.Message.VERSION;
+import static org.beamproject.common.message.MessageField.ContentField.*;
+import static org.beamproject.common.message.MessageField.ContentField.TypeValue.*;
 import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.HandshakeResponder.*;
 import org.beamproject.common.util.Arrays;

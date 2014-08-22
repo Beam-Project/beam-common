@@ -19,10 +19,10 @@
 package org.beamproject.common.crypto;
 
 import java.util.ArrayList;
-import org.beamproject.common.Message;
-import static org.beamproject.common.Message.VERSION;
-import static org.beamproject.common.MessageField.ContentField.*;
-import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
+import org.beamproject.common.message.Message;
+import static org.beamproject.common.message.Message.VERSION;
+import static org.beamproject.common.message.MessageField.ContentField.*;
+import static org.beamproject.common.message.MessageField.ContentField.TypeValue.*;
 import static org.beamproject.common.crypto.HandshakeResponder.*;
 import org.junit.Test;
 import static org.junit.Assert.*;

@@ -20,9 +20,7 @@ package org.beamproject.common.message;
 
 import java.security.KeyPair;
 import java.security.PublicKey;
-import org.beamproject.common.Message;
-import org.beamproject.common.MessageField;
-import static org.beamproject.common.MessageField.ContentField.HSPUBKEY;
+import static org.beamproject.common.message.MessageField.ContentField.HSPUBKEY;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.crypto.Handshake;
 

@@ -16,14 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.beamproject.common;
+package org.beamproject.common.message;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.beamproject.common.Participant;
 import org.beamproject.common.util.Exceptions;
-import static org.beamproject.common.MessageField.ContentField;
-import static org.beamproject.common.MessageField.ContentField.*;
-import static org.beamproject.common.MessageField.ContentField.TypeValue;
+import static org.beamproject.common.message.MessageField.ContentField;
+import static org.beamproject.common.message.MessageField.ContentField.*;
+import static org.beamproject.common.message.MessageField.ContentField.TypeValue;
 
 /**
  * A message contains all necessary information to encrypt the content for the

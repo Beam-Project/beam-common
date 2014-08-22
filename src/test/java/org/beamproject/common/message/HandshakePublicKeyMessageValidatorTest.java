@@ -18,8 +18,7 @@
  */
 package org.beamproject.common.message;
 
-import org.beamproject.common.Message;
-import static org.beamproject.common.MessageField.ContentField.HSPUBKEY;
+import static org.beamproject.common.message.MessageField.ContentField.HSPUBKEY;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -46,7 +45,7 @@ public class HandshakePublicKeyMessageValidatorTest {
         testValidator(false);
 
         message.putContent(HSPUBKEY, "something but not a public key".getBytes());
-        testValidator(false);;
+        testValidator(false);
     }
 
     @Test

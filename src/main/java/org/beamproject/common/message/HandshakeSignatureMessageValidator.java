@@ -18,9 +18,7 @@
  */
 package org.beamproject.common.message;
 
-import org.beamproject.common.Message;
-import org.beamproject.common.MessageField;
-import static org.beamproject.common.MessageField.ContentField.HSSIG;
+import static org.beamproject.common.message.MessageField.ContentField.HSSIG;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.crypto.Handshake;
 

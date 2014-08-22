@@ -18,9 +18,7 @@
  */
 package org.beamproject.common.message;
 
-import org.beamproject.common.Message;
-import org.beamproject.common.MessageField;
-import static org.beamproject.common.MessageField.ContentField.*;
+import static org.beamproject.common.message.MessageField.ContentField.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;

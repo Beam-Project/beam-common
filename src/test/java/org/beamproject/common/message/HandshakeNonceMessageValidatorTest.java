@@ -18,8 +18,7 @@
  */
 package org.beamproject.common.message;
 
-import org.beamproject.common.Message;
-import static org.beamproject.common.MessageField.ContentField.HSNONCE;
+import static org.beamproject.common.message.MessageField.ContentField.HSNONCE;
 import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
 import org.junit.Test;
 import static org.junit.Assert.*;

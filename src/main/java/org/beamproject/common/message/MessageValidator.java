@@ -18,8 +18,6 @@
  */
 package org.beamproject.common.message;
 
-import org.beamproject.common.Message;
-
 /**
  * A {@link MessageValidator} is used to validate messages against different
  * rules they have to fulfill.

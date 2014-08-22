@@ -18,8 +18,6 @@
  */
 package org.beamproject.common.message;
 
-import org.beamproject.common.Message;
-import org.beamproject.common.MessageField;
 import org.beamproject.common.carrier.MessageException;
 
 /**

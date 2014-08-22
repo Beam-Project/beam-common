@@ -20,9 +20,9 @@ package org.beamproject.common.crypto;
 
 import java.security.SecureRandom;
 import lombok.Getter;
-import org.beamproject.common.Message;
-import static org.beamproject.common.MessageField.ContentField.*;
-import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
+import org.beamproject.common.message.Message;
+import static org.beamproject.common.message.MessageField.ContentField.*;
+import static org.beamproject.common.message.MessageField.ContentField.TypeValue.*;
 import org.beamproject.common.Participant;
 import org.beamproject.common.util.Arrays;
 import org.beamproject.common.util.Exceptions;

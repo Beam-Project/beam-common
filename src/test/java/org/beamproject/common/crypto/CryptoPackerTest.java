@@ -18,9 +18,9 @@
  */
 package org.beamproject.common.crypto;
 
-import org.beamproject.common.Message;
-import static org.beamproject.common.MessageField.ContentField.*;
-import static org.beamproject.common.MessageField.ContentField.TypeValue.*;
+import org.beamproject.common.message.Message;
+import static org.beamproject.common.message.MessageField.ContentField.*;
+import static org.beamproject.common.message.MessageField.ContentField.TypeValue.*;
 import org.beamproject.common.Participant;
 import org.junit.Test;
 import static org.junit.Assert.*;
