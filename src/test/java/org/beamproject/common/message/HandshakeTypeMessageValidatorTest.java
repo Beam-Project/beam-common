@@ -18,16 +18,16 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.MessageField.ContentField.TYP;
-import static org.beamproject.common.message.MessageField.ContentField.TypeValue;
-import static org.beamproject.common.message.MessageField.ContentField.TypeValue.*;
+import static org.beamproject.common.message.Field.Cnt.TYP;
+import static org.beamproject.common.message.Field.Cnt.Typ;
+import static org.beamproject.common.message.Field.Cnt.Typ.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 
 public class HandshakeTypeMessageValidatorTest {
 
-    private final TypeValue[] VALID_TYPES = {HS_CHALLENGE, HS_RESPONSE, HS_SUCCESS, HS_INVALIDATE};
+    private final Typ[] VALID_TYPES = {HS_CHALLENGE, HS_RESPONSE, HS_SUCCESS, HS_INVALIDATE};
     private HandshakeTypeMessageValidator validator;
     private Message message;
 
@@ -60,7 +60,7 @@ public class HandshakeTypeMessageValidatorTest {
 
     @Test
     public void testIsValid() {
-        for (TypeValue value : VALID_TYPES) {
+        for (Typ value : VALID_TYPES) {
             message.putContent(TYP, value);
             testValidator(true);
         }

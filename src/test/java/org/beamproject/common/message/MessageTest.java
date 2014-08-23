@@ -24,8 +24,8 @@ import org.beamproject.common.Participant;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
-import static org.beamproject.common.message.MessageField.ContentField.*;
-import static org.beamproject.common.message.MessageField.ContentField.TypeValue.*;
+import static org.beamproject.common.message.Field.Cnt.*;
+import static org.beamproject.common.message.Field.Cnt.Typ.*;
 
 public class MessageTest {
 

@@ -18,9 +18,9 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.MessageField.ContentField.TYP;
-import static org.beamproject.common.message.MessageField.ContentField.TypeValue.*;
-import static org.beamproject.common.message.MessageField.ContentField.TypeValue;
+import static org.beamproject.common.message.Field.Cnt.TYP;
+import static org.beamproject.common.message.Field.Cnt.Typ.*;
+import static org.beamproject.common.message.Field.Cnt.Typ;
 import org.beamproject.common.crypto.Handshake;
 
 /**
@@ -49,7 +49,7 @@ public class HandshakeTypeMessageValidator implements MessageValidator {
         }
 
         try {
-            TypeValue phase = TypeValue.valueOf(new String(message.getContent(TYP)));
+            Typ phase = Typ.valueOf(new String(message.getContent(TYP)));
             return phase == HS_CHALLENGE
                     || phase == HS_RESPONSE
                     || phase == HS_SUCCESS

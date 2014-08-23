@@ -18,7 +18,7 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.MessageField.ContentField.HSSIG;
+import static org.beamproject.common.message.Field.Cnt.HS_SIG;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.crypto.Handshake;
 
@@ -50,10 +50,10 @@ public class HandshakeSignatureMessageValidator implements MessageValidator {
      */
     @Override
     public boolean isValid(Message message) {
-        return message.containsContent(HSSIG)
-                && message.getContent(HSSIG) != null
-                && message.getContent(HSSIG).length >= MINIMAL_SIGNATURE_LENGTH_IN_BYTES
-                && message.getContent(HSSIG).length <= MAXIMAL_SIGNATURE_LENGTH_IN_BYTES;
+        return message.containsContent(HS_SIG)
+                && message.getContent(HS_SIG) != null
+                && message.getContent(HS_SIG).length >= MINIMAL_SIGNATURE_LENGTH_IN_BYTES
+                && message.getContent(HS_SIG).length <= MAXIMAL_SIGNATURE_LENGTH_IN_BYTES;
     }
 
 }

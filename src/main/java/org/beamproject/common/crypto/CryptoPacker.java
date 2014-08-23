@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.beamproject.common.message.Message;
-import static org.beamproject.common.message.MessageField.*;
-import org.beamproject.common.message.MessageField.ContentField;
+import static org.beamproject.common.message.Field.*;
+import org.beamproject.common.message.Field.Cnt;
 import org.beamproject.common.Participant;
 import org.beamproject.common.util.Exceptions;
 import org.msgpack.MessagePack;
@@ -61,7 +61,7 @@ public class CryptoPacker {
     /**
      * Packs and encrypts the given {@code plaintext} to a {@link MessagePack}
      * byte array.<p>
-     * The field ContentField ({@code CNT}) will be encrypted.<p>
+     * The field Cnt ({@code CNT}) will be encrypted.<p>
      * The field Version ({@code VRS}) will <b>not</b> be encrypted.
      *
      * @param plaintext The unencrypted {@link Message}.
@@ -174,7 +174,7 @@ public class CryptoPacker {
     private void unpackContent() {
         Map<String, byte[]> map = buildMapFromBytes(packedContent);
 
-        for (ContentField field : ContentField.values()) {
+        for (Cnt field : Cnt.values()) {
             if (map.containsKey(field.toString())) {
                 plaintext.putContent(field, readByteArrayFromMap(map, field));
             }

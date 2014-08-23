@@ -18,7 +18,7 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.MessageField.ContentField.HSNONCE;
+import static org.beamproject.common.message.Field.Cnt.HS_NONCE;
 import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -42,14 +42,14 @@ public class HandshakeNonceMessageValidatorTest {
 
     @Test
     public void testIsValidOnNullNonce() {
-        message.getContent().put(HSNONCE.toString(), null);
+        message.getContent().put(HS_NONCE.toString(), null);
         assertFalse(validator.isValid(message));
     }
 
     @Test
     public void testIsValidOnLength() {
         for (int i = 0; i < NONCE_LENGTH_IN_BYTES * 2; i++) {
-            message.getContent().put(HSNONCE.toString(), getArrayOfLengt(i));
+            message.getContent().put(HS_NONCE.toString(), getArrayOfLengt(i));
 
             if (i == NONCE_LENGTH_IN_BYTES) {
                 assertTrue(validator.isValid(message));

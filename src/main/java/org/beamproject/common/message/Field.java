@@ -27,77 +27,96 @@ import org.beamproject.common.crypto.Handshake;
  * The structure is nested, like a {@link Message}. On the first <i>layer</i>
  * are the field identifiers that are also on the first layer in a message.
  * <p>
- * For example, the field {@code MessageField.VRS} is <i>directly</i> in a
- * message. On the other hand, e.g. the field {@code TYP} is nested:
- * {@code MessageField.ContentField.TYP}
+ * For example, the field {@link Field#VRS} is <i>directly</i> in a message. On
+ * the other hand, e.g. the field {@code TYP} is nested: {@link Field#Cnt#TYP}
  * <p>
  * The nested {@code enum}s represent therefore the <i>set of keys</i> for
  * nested message fields.
  *
  * @see Message
- * @see MessageField.ContentField
- * @see MessageField.ContentField.TypeValue
+ * @see Field.Cnt
+ * @see Field.Cnt.Typ
  */
-public enum MessageField {
+public enum Field {
 
     /**
-     * Stands for "Version". This field contains the message format version.
+     * Stands for "version". This field contains the message format version.
+     * <p>
+     * <b>Usage:</b> as key of a key/value pair, directly in message.
      */
     VRS,
     /**
-     * Stands for "Recipient" and is the public key (X.509 encoded) of the
-     * target {@link Participant} of this message.
-     */
-    RCP,
-    /**
-     * Stands for "ContentField" and contains the message as several sub fields.
+     * Stands for "content" and contains the message as several sub fields.
+     * <p>
+     * <b>Usage:</b> as key of a key/value pair, directly in message.
      */
     CNT;
 
     /**
-     * These fields are for the identifiers used for sub-fields in the content
-     * block, {@code CNT}, of a {@link Message}.
+     * This enumeration provides all <b>keys</b> for the key/value pairs, used
+     * in the content block {@link Field#CNT}.
      */
-    public enum ContentField {
+    public enum Cnt {
 
         /**
-         * Defines the type of this message, e.g. HANDSHAKE, FORWARD, etc..
+         * This content field defines the type of this message, e.g.
+         * HS_CHALLENGE, FORWARD, etc..
+         * <p>
+         * <b>Usage:</b> as key of a key/value pair, nested in
+         * {@link Field#CNT}.
+         *
+         * @see Typ
          */
         TYP,
         /**
-         * This field is a part of the handshake protocol. This protocol allows
-         * to establish a long-time session.
+         * This content field is a part of the handshake protocol. This protocol
+         * allows to establish a long-time session.
          * <p>
-         * {@code HSPUBKEY} stands for "Handshake Public Key" and contains the
+         * {@code HS_PUBKEY} stands for "Handshake Public Key" and contains the
          * senders {@link PublicKey} as byte array.
-         */
-        HSPUBKEY,
-        /**
-         * This field is a part of the handshake protocol. This protocol allows
-         * to establish a long-time session.
          * <p>
-         * {@code HSNONCE} stands for "Handshake Nonce" and a nonce, generated
+         * <b>Usage:</b> as key of a key/value pair, nested in
+         * {@link Field#CNT}.
+         */
+        HS_PUBKEY,
+        /**
+         * This content field is a part of the handshake protocol. This protocol
+         * allows to establish a long-time session.
+         * <p>
+         * {@code HS_NONCE} stands for "Handshake Nonce" and a nonce, generated
          * by the sender.
-         */
-        HSNONCE,
-        /**
-         * This field is a part of the handshake protocol. This protocol allows
-         * to establish a long-time session.
          * <p>
-         * {@code HSSIG} stands for "Handshake Signature" and contains the
+         * <b>Usage:</b> as key of a key/value pair, nested in
+         * {@link Field#CNT}.
+         */
+        HS_NONCE,
+        /**
+         * This content field is a part of the handshake protocol. This protocol
+         * allows to establish a long-time session.
+         * <p>
+         * {@code HS_SIG} stands for "Handshake Signature" and contains the
          * signature, created with the other sides private key.
-         */
-        HSSIG,
-        /**
-         * This field is a part of the handshake protocol. This protocol allows
-         * to establish a long-time session.
          * <p>
-         * {@code HSKEY} stands for "Handshake Key" and contains the session key
-         * that was established earlier.
+         * <b>Usage:</b> as key of a key/value pair, nested in
+         * {@link Field#CNT}.
          */
-        HSKEY,
+        HS_SIG,
+        /**
+         * This content field is a part of the handshake protocol. This protocol
+         * allows to establish a long-time session.
+         * <p>
+         * {@code HS_KEY} stands for "Handshake Key" and contains the session
+         * key that was established earlier.
+         * <p>
+         * <b>Usage:</b> as key of a key/value pair, nested in
+         * {@link Field#CNT}.
+         */
+        HS_KEY,
         /**
          * Stands for "Message" and contains the message text itself.
+         * <p>
+         * <b>Usage:</b> as key of a key/value pair, nested in
+         * {@link Field#CNT}.
          */
         MSG;
 
@@ -109,14 +128,14 @@ public enum MessageField {
         }
 
         /**
-         * These fields are for the identifiers used for sub-fields in the
-         * {@link ContentField} {@code TYP}, of a {@link Message}.
+         * This enumeration provides all allowed <b>values</b> for the key/value
+         * pair {@link Field.Cnt#TYP}, what represents the type of a message.
          * <p>
          * The type of a message denotes what the next
          * {@link Participant} ({@link Server} or {@link User} respectively its
          * client) should do with the message.
          */
-        public enum TypeValue {
+        public enum Typ {
 
             /**
              * Handshake_Challenge. A message of this type is part of a
@@ -126,7 +145,7 @@ public enum MessageField {
              * of the participant who wants to establish an authenticated
              * session.
              * <p>
-             * {@code CHALLENGE} tells the other side that an authenticated
+             * {@code HS_CHALLENG} tells the other side that an authenticated
              * session should be established.
              * <p>
              * At this time, this side knows the other sides {@link PublicKey}
@@ -135,7 +154,10 @@ public enum MessageField {
              * This side has to send: The own {@link PublicKey} as bytes (for
              * identification and encryption when the the other side responds)
              * and as challenge a nonce as bytes of the length of
-             * {@link Handshake.NONCE_LENGTH_IN_BYTES}.
+             * {@link Handshake#NONCE_LENGTH_IN_BYTES}.
+             * <p>
+             * <b>Usage:</b> as value of the key/value pair
+             * {@link Field.Cnt#TYP}.
              */
             HS_CHALLENGE,
             /**
@@ -146,17 +168,17 @@ public enum MessageField {
              * of the participant who has been contacted by an unidentified
              * participant who wants to establish an authenticated session.
              * <p>
-             * {@code RESPONSE} tells the other side that the challenge was
+             * {@code HS_RESPONSE} tells the other side that the challenge was
              * accepted and this side therefore is able to send a challenge to
              * which the other side has to response to.
              * <p>
              * At this time, this side knows the other sides {@link PublicKey}
-             * since it was sent as part of phase 1, {@code CHALLENGE}. Also,
+             * since it was sent as part of phase 1, {@code HS_CHALLENGE}. Also,
              * this side knows the challenge sent by the other side as a part of
              * phase 1.
              * <p>
              * This side has to send: An own challenge (nonce as bytes) of the
-             * length of {@link Handshake.NONCE_LENGTH_IN_BYTES}. Further, this
+             * length of {@link Handshake#NONCE_LENGTH_IN_BYTES}. Further, this
              * side has to calculate a digest of [the own public key + the own
              * nonce + the other sides nonce], so the own public key followed by
              * the own nonce followed by the other sides nonce have to be
@@ -164,6 +186,9 @@ public enum MessageField {
              * then used to calculate the digest. This digest has to be signed
              * with this sides private key. The resulting signature has to be
              * sent with the own nonce.
+             * <p>
+             * <b>Usage:</b> as value of the key/value pair
+             * {@link Field.Cnt#TYP}.
              */
             HS_RESPONSE,
             /**
@@ -174,10 +199,10 @@ public enum MessageField {
              * of the participant who wants to establish an authenticated
              * session.
              * <p>
-             * {@code SUCCESS} tells the other side that its during phase 1 sent
-             * challenge is verified and the challenge, sent by the other side
-             * as part of phase 2, is accepted and this side therefore is able
-             * to respond.
+             * {@code HS_SUCCESS} tells the other side that its during phase 1
+             * sent challenge is verified and the challenge, sent by the other
+             * side as part of phase 2, is accepted and this side therefore is
+             * able to respond.
              * <p>
              * At this time, this side knows the other sides {@link PublicKey},
              * the own nonce (generated in phase 1) and the other sides nonce
@@ -193,24 +218,33 @@ public enum MessageField {
              * nonce was generated in phase 1.) This digest has to be signed
              * with this sides private key. The resulting signature has to be
              * sent.
+             * <p>
+             * <b>Usage:</b> as value of the key/value pair
+             * {@link Field.Cnt#TYP}.
              */
             HS_SUCCESS,
             /**
              * Handshake_Invalidate. A message of this type is part of a
              * {@link Handshake}.
              * <p>
-             * {@code INVALIDATE} tells the other side that an already
+             * {@code HS_INVALIDATE} tells the other side that an already
              * established session has to be invalidated and that it will no
              * longer be valid. Further, this may be used anytime to abort the
              * handshake procedure.
              * <p>
              * This side has to send the session key to the other side.
+             * <p>
+             * <b>Usage:</b> as value of the key/value pair
+             * {@link Field.Cnt#TYP}.
              */
             HS_INVALIDATE,
             /**
              * Tells the recipient, typically a {@link Server} that the message
              * with this type contains another message, which should be
              * forwarded to its recipient.
+             * <p>
+             * <b>Usage:</b> as value of the key/value pair
+             * {@link Field.Cnt#TYP}.
              */
             FORWARD;
 

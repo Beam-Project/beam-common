@@ -18,7 +18,7 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.MessageField.ContentField.HSSIG;
+import static org.beamproject.common.message.Field.Cnt.HS_SIG;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.crypto.EccSigner;
 import static org.beamproject.common.message.HandshakeSignatureMessageValidator.MAXIMAL_SIGNATURE_LENGTH_IN_BYTES;
@@ -45,7 +45,7 @@ public class HandshakeSignatureMessageValidatorTest {
 
     @Test
     public void testIsValidOnNullSignature() {
-        message.getContent().put(HSSIG.toString(), null);
+        message.getContent().put(HS_SIG.toString(), null);
         assertFalse(validator.isValid(message));
     }
 
@@ -54,14 +54,14 @@ public class HandshakeSignatureMessageValidatorTest {
         EccSigner signer = new EccSigner();
         byte[] sig = signer.sign("sign me".getBytes(), EccKeyPairGenerator.generate().getPrivate());
 
-        message.putContent(HSSIG, sig);
+        message.putContent(HS_SIG, sig);
         assertTrue(validator.isValid(message));
     }
 
     @Test
     public void testIsValidOnLength() {
         for (int i = 0; i < MAXIMAL_SIGNATURE_LENGTH_IN_BYTES * 2; i++) {
-            message.getContent().put(HSSIG.toString(), getArrayOfLengt(i));
+            message.getContent().put(HS_SIG.toString(), getArrayOfLengt(i));
 
             if (i >= MINIMAL_SIGNATURE_LENGTH_IN_BYTES
                     && i <= MAXIMAL_SIGNATURE_LENGTH_IN_BYTES) {

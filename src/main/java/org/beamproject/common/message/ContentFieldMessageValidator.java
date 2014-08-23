@@ -23,11 +23,11 @@ import org.beamproject.common.util.Exceptions;
 /**
  * Validates if a given {@link Message} has certain fields.
  *
- * @see MessageField
+ * @see Field
  */
 public class ContentFieldMessageValidator implements MessageValidator {
 
-    private final MessageField.ContentField[] requiredFields;
+    private final Field.Cnt[] requiredFields;
 
     /**
      * Creates a new validator that checks against all given content fields.
@@ -35,9 +35,9 @@ public class ContentFieldMessageValidator implements MessageValidator {
      * @param requiredFields The required fields to pass this validator tests.
      * @throws IllegalArgumentException If at least one argument is null.
      */
-    public ContentFieldMessageValidator(MessageField.ContentField... requiredFields) {
+    public ContentFieldMessageValidator(Field.Cnt... requiredFields) {
         Exceptions.verifyArgumentsNotNull((Object[]) requiredFields);
-        
+
         this.requiredFields = requiredFields;
     }
 
@@ -55,7 +55,7 @@ public class ContentFieldMessageValidator implements MessageValidator {
      */
     @Override
     public boolean isValid(Message message) {
-        for (MessageField.ContentField field : requiredFields) {
+        for (Field.Cnt field : requiredFields) {
             if (!message.containsContent(field)
                     || message.getContent(field) == null
                     || message.getContent(field).length == 0) {

@@ -22,9 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.beamproject.common.Participant;
 import org.beamproject.common.util.Exceptions;
-import static org.beamproject.common.message.MessageField.ContentField;
-import static org.beamproject.common.message.MessageField.ContentField.*;
-import static org.beamproject.common.message.MessageField.ContentField.TypeValue;
+import static org.beamproject.common.message.Field.Cnt;
+import static org.beamproject.common.message.Field.Cnt.*;
+import static org.beamproject.common.message.Field.Cnt.Typ;
 
 /**
  * A message contains all necessary information to encrypt the content for the
@@ -41,9 +41,9 @@ public class Message {
      * Creates an empty message.
      * <p>
      * Note: You may prefer the constructor
-     * <code>Message({@link TypeValue}, {@link Participant})</code> if you
-     * intend to send the message. The version is set to the default value, if
-     * not specified differently.
+     * <code>Message({@link Typ}, {@link Participant})</code> if you intend to
+     * send the message. The version is set to the default value, if not
+     * specified differently.
      */
     public Message() {
     }
@@ -53,11 +53,11 @@ public class Message {
      * <p>
      * The version is set to the default value, if not specified differently.
      *
-     * @param type The {@link TypeValue} of this message.
+     * @param type The {@link Typ} of this message.
      * @param recipient The recipient to which this message should be sent.
      * @throws IllegalArgumentException If the argument is null.
      */
-    public Message(TypeValue type, Participant recipient) {
+    public Message(Typ type, Participant recipient) {
         Exceptions.verifyArgumentsNotNull(type, recipient);
 
         this.content.put(TYP.toString(), type.getBytes());
@@ -104,31 +104,31 @@ public class Message {
      * @param type The type to set.
      * @throws IllegalArgumentException If the argument is null.
      */
-    public void setType(TypeValue type) {
+    public void setType(Typ type) {
         Exceptions.verifyArgumentsNotNull(type);
 
         putContent(TYP, type);
     }
 
     /**
-     * @return The {@link TypeValue} of this {@link Message}, stored in
+     * @return The {@link Typ} of this {@link Message}, stored in
      * {@code CNT.TYP}.
      */
-    public TypeValue getType() {
-        return TypeValue.valueOf(new String(getContent(TYP)));
+    public Typ getType() {
+        return Typ.valueOf(new String(getContent(TYP)));
     }
 
     /**
      * Puts the content to this {@link Message}. The array is not copied, just
      * referenced.
      * <p>
-     * ContentField can be overwritten using equal {@code key}s.
+     * Cnt can be overwritten using equal {@code key}s.
      *
      * @param key The key of the field.
      * @param content The content bytes.
      * @throws IllegalArgumentException If at least one argument is null.
      */
-    public void putContent(ContentField key, byte[] content) {
+    public void putContent(Cnt key, byte[] content) {
         Exceptions.verifyArgumentsNotNull(key, content);
 
         this.content.put(key.toString(), content);
@@ -137,13 +137,13 @@ public class Message {
     /**
      * Puts the content to this {@link Message}.
      * <p>
-     * ContentField can be overwritten using equal {@code key}s.
+     * Cnt can be overwritten using equal {@code key}s.
      *
      * @param key The key of the field.
      * @param content The content.
      * @throws IllegalArgumentException If at least one argument is null.
      */
-    public void putContent(ContentField key, String content) {
+    public void putContent(Cnt key, String content) {
         Exceptions.verifyArgumentsNotNull(key, content);
 
         this.content.put(key.toString(), content.getBytes());
@@ -152,13 +152,13 @@ public class Message {
     /**
      * Puts the content to this {@link Message}.
      * <p>
-     * ContentField can be overwritten using equal {@code key}s.
+     * Cnt can be overwritten using equal {@code key}s.
      *
      * @param key The key of the field.
      * @param content The content.
      * @throws IllegalArgumentException If at least one argument is null.
      */
-    public void putContent(ContentField key, Enum content) {
+    public void putContent(Cnt key, Enum content) {
         Exceptions.verifyArgumentsNotNull(key, content);
 
         this.content.put(key.toString(), content.toString().getBytes());
@@ -181,7 +181,7 @@ public class Message {
      * @throws MessageContentException If the key could not be found.
      * @throws IllegalArgumentException If the argument is null.
      */
-    public byte[] getContent(ContentField key) {
+    public byte[] getContent(Cnt key) {
         Exceptions.verifyArgumentsNotNull(key);
 
         return content.get(key.toString());
@@ -194,7 +194,7 @@ public class Message {
      * @return True, if the field exists, otherwise false.
      * @throws IllegalArgumentException If the argument is null.
      */
-    public boolean containsContent(ContentField key) {
+    public boolean containsContent(Cnt key) {
         Exceptions.verifyArgumentsNotNull(key);
 
         return content.containsKey(key.toString());

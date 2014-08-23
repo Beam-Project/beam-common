@@ -89,8 +89,7 @@ public class ExecutorTest {
 
         verify(service);
     }
-    
-    
+
     @Test
     public void testShutdown() throws InterruptedException {
         expect(service.awaitTermination(Executor.TERMINATION_TIMEOUT_IN_MILLISECONDS, TimeUnit.MILLISECONDS))
@@ -101,6 +100,7 @@ public class ExecutorTest {
 
         verify(service);
     }
+
     @Test
     public void testShutdownHangingThreads() throws InterruptedException {
         expect(service.awaitTermination(Executor.TERMINATION_TIMEOUT_IN_MILLISECONDS, TimeUnit.MILLISECONDS))

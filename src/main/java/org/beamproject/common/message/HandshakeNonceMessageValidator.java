@@ -18,7 +18,7 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.MessageField.ContentField.*;
+import static org.beamproject.common.message.Field.Cnt.*;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.crypto.Handshake;
 import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
@@ -41,9 +41,9 @@ public class HandshakeNonceMessageValidator implements MessageValidator {
      */
     @Override
     public boolean isValid(Message message) {
-        return message.containsContent(HSNONCE)
-                && message.getContent(HSNONCE) != null
-                && message.getContent(HSNONCE).length == NONCE_LENGTH_IN_BYTES;
+        return message.containsContent(HS_NONCE)
+                && message.getContent(HS_NONCE) != null
+                && message.getContent(HS_NONCE).length == NONCE_LENGTH_IN_BYTES;
     }
 
 }

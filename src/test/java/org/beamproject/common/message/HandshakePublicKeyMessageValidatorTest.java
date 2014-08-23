@@ -18,7 +18,7 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.MessageField.ContentField.HSPUBKEY;
+import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -41,17 +41,17 @@ public class HandshakePublicKeyMessageValidatorTest {
 
     @Test
     public void testIsValidOnInvalidPublicKey() {
-        message.putContent(HSPUBKEY, new byte[0]);
+        message.putContent(HS_PUBKEY, new byte[0]);
         testValidator(false);
 
-        message.putContent(HSPUBKEY, "something but not a public key".getBytes());
+        message.putContent(HS_PUBKEY, "something but not a public key".getBytes());
         testValidator(false);
     }
 
     @Test
     public void testIsValid() {
         byte[] bytes = EccKeyPairGenerator.generate().getPublic().getEncoded();
-        message.putContent(HSPUBKEY, bytes);
+        message.putContent(HS_PUBKEY, bytes);
         testValidator(true);
     }
 

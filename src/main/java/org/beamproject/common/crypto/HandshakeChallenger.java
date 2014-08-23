@@ -22,8 +22,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import org.beamproject.common.message.Message;
 import static org.beamproject.common.message.Message.VERSION;
-import static org.beamproject.common.message.MessageField.ContentField.*;
-import static org.beamproject.common.message.MessageField.ContentField.TypeValue.*;
+import static org.beamproject.common.message.Field.Cnt.*;
+import static org.beamproject.common.message.Field.Cnt.Typ.*;
 import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.HandshakeResponder.*;
 import org.beamproject.common.util.Arrays;
@@ -94,8 +94,8 @@ public class HandshakeChallenger extends Handshake {
 
     private void assembleChallengeMessage() {
         challenge = new Message(HS_CHALLENGE, remoteParticipant);
-        challenge.putContent(HSPUBKEY, localParticipant.getPublicKeyAsBytes());
-        challenge.putContent(HSNONCE, localNonce);
+        challenge.putContent(HS_PUBKEY, localParticipant.getPublicKeyAsBytes());
+        challenge.putContent(HS_NONCE, localNonce);
     }
 
     /**
@@ -117,8 +117,8 @@ public class HandshakeChallenger extends Handshake {
         verifyResponseCusumptionAuthorization();
         verifyResponseValidity(response);
 
-        remoteNonce = response.getContent(HSNONCE);
-        remoteSignature = response.getContent(HSSIG);
+        remoteNonce = response.getContent(HS_NONCE);
+        remoteSignature = response.getContent(HS_SIG);
 
         verifyRemoteSignature();
     }
@@ -147,18 +147,18 @@ public class HandshakeChallenger extends Handshake {
                 || response.getContent(TYP) == null
                 || !HS_RESPONSE.toString().equals(new String(response.getContent(TYP)))) {
             exceptionMessage += "type not set or an unexpected one";
-        } else if (!response.containsContent(HSPUBKEY)
-                || response.getContent(HSPUBKEY) == null
-                || response.getContent(HSPUBKEY).length == 0) {
+        } else if (!response.containsContent(HS_PUBKEY)
+                || response.getContent(HS_PUBKEY) == null
+                || response.getContent(HS_PUBKEY).length == 0) {
             exceptionMessage += "responder public key not set";
-        } else if (!response.containsContent(HSNONCE)
-                || response.getContent(HSNONCE) == null
-                || response.getContent(HSNONCE).length != NONCE_LENGTH_IN_BYTES) {
+        } else if (!response.containsContent(HS_NONCE)
+                || response.getContent(HS_NONCE) == null
+                || response.getContent(HS_NONCE).length != NONCE_LENGTH_IN_BYTES) {
             exceptionMessage += "responder nonce not set or has invalid length";
-        } else if (!response.containsContent(HSSIG)
-                || response.getContent(HSSIG) == null
-                || response.getContent(HSSIG).length > MAXIMAL_SIGNATURE_LENGTH_IN_BYTES
-                || response.getContent(HSSIG).length < MINIMAL_SIGNATURE_LENGTH_IN_BYTES) {
+        } else if (!response.containsContent(HS_SIG)
+                || response.getContent(HS_SIG) == null
+                || response.getContent(HS_SIG).length > MAXIMAL_SIGNATURE_LENGTH_IN_BYTES
+                || response.getContent(HS_SIG).length < MINIMAL_SIGNATURE_LENGTH_IN_BYTES) {
             exceptionMessage += "responder signature not set or has invalid length";
         } else {
             return;
@@ -202,8 +202,8 @@ public class HandshakeChallenger extends Handshake {
 
     private void assembleSuccessMessage() {
         success = new Message(HS_SUCCESS, remoteParticipant);
-        success.putContent(HSPUBKEY, localParticipant.getPublicKeyAsBytes());
-        success.putContent(HSSIG, localSignature);
+        success.putContent(HS_PUBKEY, localParticipant.getPublicKeyAsBytes());
+        success.putContent(HS_SIG, localSignature);
     }
 
     @Override

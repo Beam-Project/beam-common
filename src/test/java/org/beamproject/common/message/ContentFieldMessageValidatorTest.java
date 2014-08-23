@@ -18,7 +18,7 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.MessageField.ContentField.*;
+import static org.beamproject.common.message.Field.Cnt.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -35,17 +35,17 @@ public class ContentFieldMessageValidatorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNull() {
-        validator = new ContentFieldMessageValidator((MessageField.ContentField) null);
+        validator = new ContentFieldMessageValidator((Field.Cnt) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNulls() {
-        validator = new ContentFieldMessageValidator((MessageField.ContentField[]) null);
+        validator = new ContentFieldMessageValidator((Field.Cnt[]) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnSingleNull() {
-        validator = new ContentFieldMessageValidator(HSKEY, null);
+        validator = new ContentFieldMessageValidator(HS_KEY, null);
     }
 
     @Test
@@ -79,20 +79,20 @@ public class ContentFieldMessageValidatorTest {
         message.getContent().put(TYP.toString(), "type".getBytes());
         testValidator(true, TYP);
 
-        message.getContent().put(HSKEY.toString(), "mykey".getBytes());
+        message.getContent().put(HS_KEY.toString(), "mykey".getBytes());
         testValidator(false, TYP);
     }
 
     @Test
     public void testIsValidOnSeveralFields() {
         message.getContent().put(TYP.toString(), "type".getBytes());
-        message.getContent().put(HSKEY.toString(), "mykey".getBytes());
-        message.getContent().put(HSPUBKEY.toString(), "mypubkey".getBytes());
-        message.getContent().put(HSNONCE.toString(), "213j0-NONCE-ldkjfsd".getBytes());
-        testValidator(true, TYP, HSKEY, HSPUBKEY, HSNONCE);
+        message.getContent().put(HS_KEY.toString(), "mykey".getBytes());
+        message.getContent().put(HS_PUBKEY.toString(), "mypubkey".getBytes());
+        message.getContent().put(HS_NONCE.toString(), "213j0-NONCE-ldkjfsd".getBytes());
+        testValidator(true, TYP, HS_KEY, HS_PUBKEY, HS_NONCE);
     }
 
-    private void testValidator(boolean exptected, MessageField.ContentField... fields) {
+    private void testValidator(boolean exptected, Field.Cnt... fields) {
         validator = new ContentFieldMessageValidator(fields);
         assertEquals(exptected, validator.isValid(message));
     }

@@ -21,8 +21,8 @@ package org.beamproject.common.crypto;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import org.beamproject.common.message.Message;
-import static org.beamproject.common.message.MessageField.ContentField.*;
-import static org.beamproject.common.message.MessageField.ContentField.TypeValue.HS_INVALIDATE;
+import static org.beamproject.common.message.Field.Cnt.*;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_INVALIDATE;
 import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
 import org.beamproject.common.util.Arrays;
@@ -100,7 +100,7 @@ public class HandshakeTest {
     public void testGetInvalidate() {
         Message message = Handshake.getInvalidate(remoteParticipant, sessionKey);
         assertArrayEquals(HS_INVALIDATE.getBytes(), message.getContent(TYP));
-        assertArrayEquals(sessionKey, message.getContent(HSKEY));
+        assertArrayEquals(sessionKey, message.getContent(HS_KEY));
     }
 
 }

@@ -21,8 +21,8 @@ package org.beamproject.common.crypto;
 import java.util.ArrayList;
 import org.beamproject.common.message.Message;
 import static org.beamproject.common.message.Message.VERSION;
-import static org.beamproject.common.message.MessageField.ContentField.*;
-import static org.beamproject.common.message.MessageField.ContentField.TypeValue.*;
+import static org.beamproject.common.message.Field.Cnt.*;
+import static org.beamproject.common.message.Field.Cnt.Typ.*;
 import static org.beamproject.common.crypto.HandshakeResponder.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -56,8 +56,8 @@ public class HandshakeChallengerTest extends HandshakeTest {
         assertEquals(VERSION, challenge.getVersion());
         assertEquals(remoteParticipant, challenge.getRecipient());
         assertArrayEquals(HS_CHALLENGE.getBytes(), challenge.getContent(TYP));
-        assertArrayEquals(localParticipant.getPublicKeyAsBytes(), challenge.getContent(HSPUBKEY));
-        assertArrayEquals(challenger.localNonce, challenge.getContent(HSNONCE));
+        assertArrayEquals(localParticipant.getPublicKeyAsBytes(), challenge.getContent(HS_PUBKEY));
+        assertArrayEquals(challenger.localNonce, challenge.getContent(HS_NONCE));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -82,9 +82,9 @@ public class HandshakeChallengerTest extends HandshakeTest {
 
         Message response = new Message(HS_RESPONSE, localParticipant);
         response.setVersion(VERSION);
-        response.putContent(HSPUBKEY, localParticipant.getPublicKeyAsBytes());
-        response.putContent(HSNONCE, remoteNonce);
-        response.putContent(HSSIG, remoteSignature);
+        response.putContent(HS_PUBKEY, localParticipant.getPublicKeyAsBytes());
+        response.putContent(HS_NONCE, remoteNonce);
+        response.putContent(HS_SIG, remoteSignature);
         assertFalse(challenger.wasConsumeResponseInvoked);
 
         challenger.consumeResponse(response);
@@ -152,7 +152,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         testProduceChallenge(); // Set the challenger into needed state.
 
         Message response = getBasicResponse();
-        response.getContent().remove(HSNONCE.toString());
+        response.getContent().remove(HS_NONCE.toString());
         challenger.consumeResponse(response);
     }
 
@@ -161,7 +161,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         testProduceChallenge(); // Set the challenger into needed state.
 
         Message response = getBasicResponse();
-        response.getContent().remove(HSPUBKEY.toString());
+        response.getContent().remove(HS_PUBKEY.toString());
         challenger.consumeResponse(response);
     }
 
@@ -173,7 +173,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         ArrayList<Byte> nonce = new ArrayList<>();
 
         for (int length = 0; length < NONCE_LENGTH_IN_BYTES * 2; length++) {
-            challenge.putContent(HSNONCE, toBytes(nonce));
+            challenge.putContent(HS_NONCE, toBytes(nonce));
 
             try {
                 challenger.wasConsumeResponseInvoked = false;
@@ -194,7 +194,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         testProduceChallenge(); // Set the challenger into needed state.
 
         Message response = getBasicResponse();
-        response.getContent().remove(HSSIG.toString());
+        response.getContent().remove(HS_SIG.toString());
         challenger.consumeResponse(response);
     }
 
@@ -212,7 +212,7 @@ public class HandshakeChallengerTest extends HandshakeTest {
         ArrayList<Byte> signature = new ArrayList<>();
 
         for (int length = 0; length < MAXIMAL_SIGNATURE_LENGTH_IN_BYTES * 2; length++) {
-            response.putContent(HSSIG, toBytes(signature));
+            response.putContent(HS_SIG, toBytes(signature));
 
             try {
                 challenger.wasConsumeResponseInvoked = false;
@@ -234,8 +234,8 @@ public class HandshakeChallengerTest extends HandshakeTest {
         calculateRemoteSignature();
 
         Message challenge = new Message(HS_RESPONSE, localParticipant);
-        challenge.putContent(HSSIG, remoteSignature);
-        challenge.putContent(HSNONCE, remoteNonce);
+        challenge.putContent(HS_SIG, remoteSignature);
+        challenge.putContent(HS_NONCE, remoteNonce);
 
         return challenge;
     }
@@ -255,11 +255,11 @@ public class HandshakeChallengerTest extends HandshakeTest {
         assertTrue(challenger.wasProduceSuccessInvoked);
         assertEquals(VERSION, success.getVersion());
         assertArrayEquals(HS_SUCCESS.getBytes(), success.getContent(TYP));
-        assertArrayEquals(localParticipant.getPublicKeyAsBytes(), success.getContent(HSPUBKEY));
+        assertArrayEquals(localParticipant.getPublicKeyAsBytes(), success.getContent(HS_PUBKEY));
         assertEquals(remoteParticipant, success.getRecipient());
 
         byte[] localDigest = digest(localParticipant, challenger.localNonce, remoteNonce);
-        assertTrue(signer.verify(localDigest, success.getContent(HSSIG), localParticipant.getPublicKey()));
+        assertTrue(signer.verify(localDigest, success.getContent(HS_SIG), localParticipant.getPublicKey()));
 
         byte[] sessionKey = calculateSessionKey(challenger.localNonce, remoteNonce);
         assertArrayEquals(sessionKey, challenger.getSessionKey());

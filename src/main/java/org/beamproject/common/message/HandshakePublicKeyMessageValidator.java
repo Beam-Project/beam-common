@@ -20,7 +20,7 @@ package org.beamproject.common.message;
 
 import java.security.KeyPair;
 import java.security.PublicKey;
-import static org.beamproject.common.message.MessageField.ContentField.HSPUBKEY;
+import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.crypto.Handshake;
 
@@ -42,14 +42,14 @@ public class HandshakePublicKeyMessageValidator implements MessageValidator {
      */
     @Override
     public boolean isValid(Message message) {
-        if (!message.containsContent(HSPUBKEY)
-                || message.getContent(HSPUBKEY) == null
-                || message.getContent(HSPUBKEY).length == 0) {
+        if (!message.containsContent(HS_PUBKEY)
+                || message.getContent(HS_PUBKEY) == null
+                || message.getContent(HS_PUBKEY).length == 0) {
             return false;
         }
 
         try {
-            byte[] remotePublicKey = message.getContent(HSPUBKEY);
+            byte[] remotePublicKey = message.getContent(HS_PUBKEY);
             KeyPair remoteKeyPair = EccKeyPairGenerator.fromPublicKey(remotePublicKey);
             return remoteKeyPair != null;
         } catch (IllegalArgumentException | IllegalStateException ex) {

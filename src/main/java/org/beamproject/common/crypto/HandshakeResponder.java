@@ -23,8 +23,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import org.beamproject.common.message.Message;
 import static org.beamproject.common.message.Message.VERSION;
-import static org.beamproject.common.message.MessageField.ContentField.*;
-import static org.beamproject.common.message.MessageField.ContentField.TypeValue.*;
+import static org.beamproject.common.message.Field.Cnt.*;
+import static org.beamproject.common.message.Field.Cnt.Typ.*;
 import org.beamproject.common.Participant;
 import org.beamproject.common.util.Arrays;
 
@@ -74,9 +74,9 @@ public class HandshakeResponder extends Handshake {
         verifyChallengeCusumptionAuthorization();
         verifyChallengeValidity(challenge);
 
-        KeyPair remoteKeyPair = EccKeyPairGenerator.fromPublicKey(challenge.getContent(HSPUBKEY));
+        KeyPair remoteKeyPair = EccKeyPairGenerator.fromPublicKey(challenge.getContent(HS_PUBKEY));
         remoteParticipant = new Participant(remoteKeyPair);
-        remoteNonce = challenge.getContent(HSNONCE);
+        remoteNonce = challenge.getContent(HS_NONCE);
     }
 
     private void verifyChallengeCusumptionAuthorization() {
@@ -101,13 +101,13 @@ public class HandshakeResponder extends Handshake {
                 || challenge.getContent(TYP) == null
                 || !HS_CHALLENGE.toString().equals(new String(challenge.getContent(TYP)))) {
             exceptionMessage += "phase not set or an unexpected one";
-        } else if (!challenge.containsContent(HSPUBKEY)
-                || challenge.getContent(HSPUBKEY) == null
-                || challenge.getContent(HSPUBKEY).length == 0) {
+        } else if (!challenge.containsContent(HS_PUBKEY)
+                || challenge.getContent(HS_PUBKEY) == null
+                || challenge.getContent(HS_PUBKEY).length == 0) {
             exceptionMessage += "challenger public key not set";
-        } else if (!challenge.containsContent(HSNONCE)
-                || challenge.getContent(HSNONCE) == null
-                || challenge.getContent(HSNONCE).length != NONCE_LENGTH_IN_BYTES) {
+        } else if (!challenge.containsContent(HS_NONCE)
+                || challenge.getContent(HS_NONCE) == null
+                || challenge.getContent(HS_NONCE).length != NONCE_LENGTH_IN_BYTES) {
             exceptionMessage += "challenger nonce not set or has invalid length";
         } else {
             return;
@@ -151,9 +151,9 @@ public class HandshakeResponder extends Handshake {
 
     private void assembleResponseMessage() {
         response = new Message(HS_RESPONSE, remoteParticipant);
-        response.putContent(HSPUBKEY, localParticipant.getPublicKeyAsBytes());
-        response.putContent(HSNONCE, localNonce);
-        response.putContent(HSSIG, localSignature);
+        response.putContent(HS_PUBKEY, localParticipant.getPublicKeyAsBytes());
+        response.putContent(HS_NONCE, localNonce);
+        response.putContent(HS_SIG, localSignature);
     }
 
     /**
@@ -176,7 +176,7 @@ public class HandshakeResponder extends Handshake {
         verifySuccessCusumptionAuthorization();
         verifySuccessValidity(success);
 
-        remoteSignature = success.getContent(HSSIG);
+        remoteSignature = success.getContent(HS_SIG);
         verifyRemoteSignature();
         calculateSessionKey();
     }
@@ -207,14 +207,14 @@ public class HandshakeResponder extends Handshake {
                 || success.getContent(TYP) == null
                 || !HS_SUCCESS.toString().equals(new String(success.getContent(TYP)))) {
             exceptionMessage += "phase not set or an unexpected one";
-        } else if (!success.containsContent(HSPUBKEY)
-                || success.getContent(HSPUBKEY) == null
-                || success.getContent(HSPUBKEY).length == 0) {
+        } else if (!success.containsContent(HS_PUBKEY)
+                || success.getContent(HS_PUBKEY) == null
+                || success.getContent(HS_PUBKEY).length == 0) {
             exceptionMessage += "challenger public key not set";
-        } else if (!success.containsContent(HSSIG)
-                || success.getContent(HSSIG) == null
-                || success.getContent(HSSIG).length > MAXIMAL_SIGNATURE_LENGTH_IN_BYTES
-                || success.getContent(HSSIG).length < MINIMAL_SIGNATURE_LENGTH_IN_BYTES) {
+        } else if (!success.containsContent(HS_SIG)
+                || success.getContent(HS_SIG) == null
+                || success.getContent(HS_SIG).length > MAXIMAL_SIGNATURE_LENGTH_IN_BYTES
+                || success.getContent(HS_SIG).length < MINIMAL_SIGNATURE_LENGTH_IN_BYTES) {
             exceptionMessage += "challenger signature not set or has invalid length";
         } else {
             return;

@@ -110,7 +110,7 @@ public class PasswordCryptorTest {
     public void testChangePasswordOnZeroingOldPasswordInstance() {
         char[] oldPasswordInstance = cryptor.password;
         cryptor.changePassword("something new".toCharArray());
-        
+
         for (char c : oldPasswordInstance) {
             assertEquals(0, c);
         }
@@ -120,11 +120,11 @@ public class PasswordCryptorTest {
     public void testChangePassword() {
         Key oldAesKey = cryptor.aesKey;
         AesCipher oldCipher = cryptor.cipher;
-        
+
         char[] newPassword = "new pass".toCharArray();
-        
+
         cryptor.changePassword(newPassword);
-        
+
         assertSame(newPassword, cryptor.password);
         assertNotNull(cryptor.aesKey);
         assertNotNull(cryptor.cipher);
