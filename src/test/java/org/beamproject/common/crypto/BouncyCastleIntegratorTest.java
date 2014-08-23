@@ -19,6 +19,8 @@
 package org.beamproject.common.crypto;
 
 import java.security.Security;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.initBouncyCastleProvider;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -27,17 +29,17 @@ public class BouncyCastleIntegratorTest {
 
     @Test
     public void testProviderName() {
-        assertEquals(BouncyCastleProvider.PROVIDER_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
+        assertEquals(BouncyCastleProvider.PROVIDER_NAME, PROVIDER_NAME);
     }
 
     @Test
     public void testInitBouncyCasteProvider() {
-        if (Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME) != null) {
-            Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
+        if (Security.getProvider(PROVIDER_NAME) != null) {
+            Security.removeProvider(PROVIDER_NAME);
         }
 
-        assertNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));
-        BouncyCastleIntegrator.initBouncyCastleProvider();
-        assertNotNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));
+        assertNull(Security.getProvider(PROVIDER_NAME));
+        initBouncyCastleProvider();
+        assertNotNull(Security.getProvider(PROVIDER_NAME));
     }
 }

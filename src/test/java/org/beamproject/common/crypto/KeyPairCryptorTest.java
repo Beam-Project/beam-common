@@ -20,6 +20,8 @@ package org.beamproject.common.crypto;
 
 import java.security.KeyPair;
 import java.security.Security;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -52,7 +54,7 @@ public class KeyPairCryptorTest {
 
     @Test
     public void testEncryptAndDecryptWithEmptyPrivateKey() {
-        KeyPair publicKeyOnly = EccKeyPairGenerator.fromPublicKey(keyPair.getPublic().getEncoded());
+        KeyPair publicKeyOnly = fromPublicKey(keyPair.getPublic().getEncoded());
         encryptedKeyPair = KeyPairCryptor.encrypt(PASSWORD, publicKeyOnly);
 
         assertFalse(encryptedKeyPair.getEncryptedPublicKey().isEmpty());
@@ -66,18 +68,18 @@ public class KeyPairCryptorTest {
 
     @Test
     public void testEncryptAndDecrypt() {
-        Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
+        Security.removeProvider(PROVIDER_NAME);
         encryptedKeyPair = KeyPairCryptor.encrypt(PASSWORD, keyPair);
 
-        assertNotNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));
+        assertNotNull(Security.getProvider(PROVIDER_NAME));
         assertTrue(encryptedKeyPair.getEncryptedPublicKey().length() > 173);
         assertTrue(encryptedKeyPair.getEncryptedPrivateKey().length() > 282);
         assertTrue(encryptedKeyPair.getSalt().length() > 20);
 
-        Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
+        Security.removeProvider(PROVIDER_NAME);
         KeyPair decryptedKeyPair = KeyPairCryptor.decrypt(PASSWORD, encryptedKeyPair);
 
-        assertNotNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));
+        assertNotNull(Security.getProvider(PROVIDER_NAME));
         assertArrayEquals(keyPair.getPublic().getEncoded(), decryptedKeyPair.getPublic().getEncoded());
         assertArrayEquals(keyPair.getPrivate().getEncoded(), decryptedKeyPair.getPrivate().getEncoded());
     }

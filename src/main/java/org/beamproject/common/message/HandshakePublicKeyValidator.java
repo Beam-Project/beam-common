@@ -22,6 +22,7 @@ import java.security.KeyPair;
 import java.security.PublicKey;
 import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import org.beamproject.common.crypto.Handshake;
 
 /**
@@ -50,7 +51,7 @@ public class HandshakePublicKeyValidator implements MessageValidator {
 
         try {
             byte[] remotePublicKey = message.getContent(HS_PUBKEY);
-            KeyPair remoteKeyPair = EccKeyPairGenerator.fromPublicKey(remotePublicKey);
+            KeyPair remoteKeyPair = fromPublicKey(remotePublicKey);
             return remoteKeyPair != null;
         } catch (IllegalArgumentException | IllegalStateException ex) {
             return false;

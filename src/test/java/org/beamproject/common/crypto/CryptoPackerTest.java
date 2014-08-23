@@ -22,6 +22,7 @@ import org.beamproject.common.message.Message;
 import static org.beamproject.common.message.Field.Cnt.*;
 import static org.beamproject.common.message.Field.Cnt.Typ.*;
 import org.beamproject.common.Participant;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -40,7 +41,7 @@ public class CryptoPackerTest {
     @Before
     public void setUp() {
         participantWithBothKeys = Participant.generate();
-        participantWithPublicKey = new Participant(EccKeyPairGenerator.fromPublicKey(participantWithBothKeys.getPublicKeyAsBytes()));
+        participantWithPublicKey = new Participant(fromPublicKey(participantWithBothKeys.getPublicKeyAsBytes()));
         plaintext = new Message(FORWARD, participantWithPublicKey);
         plaintext.putContent(MSG, MESSAGE);
 

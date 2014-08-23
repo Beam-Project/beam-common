@@ -23,6 +23,8 @@ import java.security.KeyPair;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromBothKeys;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import org.beamproject.common.util.Base58;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -253,11 +255,11 @@ public class UserTest {
         other = User.generate();
         assertFalse(user.equals(other));
 
-        other.keyPair = EccKeyPairGenerator.fromPublicKey(user.getPublicKeyAsBytes());
+        other.keyPair = fromPublicKey(user.getPublicKeyAsBytes());
         assertFalse(user.equals(other));
 
         other.username = user.username;
-        other.keyPair = EccKeyPairGenerator.fromBothKeys(user.getPublicKeyAsBytes(), user.getPrivateKeyAsBytes());
+        other.keyPair = fromBothKeys(user.getPublicKeyAsBytes(), user.getPrivateKeyAsBytes());
         assertTrue(user.equals(other));
 
         other.keyPair = user.keyPair;
@@ -275,12 +277,12 @@ public class UserTest {
         other.username = USERNAME.toLowerCase();
         assertFalse(user.equals(other));
 
-        user.keyPair = EccKeyPairGenerator.fromPublicKey(KEY_PAIR.getPublic().getEncoded());
+        user.keyPair = fromPublicKey(KEY_PAIR.getPublic().getEncoded());
         other.username = user.username;
         other.keyPair = KEY_PAIR;
         assertFalse(user.equals(other));
 
-        other.keyPair = EccKeyPairGenerator.fromPublicKey(KEY_PAIR.getPublic().getEncoded());
+        other.keyPair = fromPublicKey(KEY_PAIR.getPublic().getEncoded());
         assertTrue(user.equals(other));
 
         assertTrue(user.equals(user));

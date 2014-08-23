@@ -21,6 +21,7 @@ package org.beamproject.common.crypto;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
 import org.beamproject.common.util.Exceptions;
 
 /**
@@ -45,7 +46,7 @@ public class Digest {
         BouncyCastleIntegrator.initBouncyCastleProvider();
 
         try {
-            MessageDigest messageDigest = MessageDigest.getInstance(SHA256_DIGEST_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
+            MessageDigest messageDigest = MessageDigest.getInstance(SHA256_DIGEST_NAME, PROVIDER_NAME);
             return messageDigest.digest(payload);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             throw new IllegalStateException("The digest could not be computed: " + ex.getMessage());

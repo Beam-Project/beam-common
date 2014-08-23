@@ -22,6 +22,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Security;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -51,11 +52,11 @@ public class DigestTest {
 
     @Test
     public void testDigestWithSha256OnBouncyCastleSetUp() {
-        Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
+        Security.removeProvider(PROVIDER_NAME);
 
         output = Digest.digestWithSha256(bytePayload);
 
-        assertNotNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));
+        assertNotNull(Security.getProvider(PROVIDER_NAME));
     }
 
     @Test

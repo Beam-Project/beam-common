@@ -25,6 +25,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.initBouncyCastleProvider;
 import org.beamproject.common.util.Exceptions;
 
 /**
@@ -50,8 +52,8 @@ public class EccSigner {
 
     private void initSignature() {
         try {
-            BouncyCastleIntegrator.initBouncyCastleProvider();
-            signature = Signature.getInstance(ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
+            initBouncyCastleProvider();
+            signature = Signature.getInstance(ALGORITHM_NAME, PROVIDER_NAME);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             throw new IllegalStateException("Could not get a Signature instance: " + ex.getMessage());
         }

@@ -21,6 +21,8 @@ package org.beamproject.common;
 import java.security.KeyPair;
 import java.util.LinkedList;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromBothKeys;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import org.beamproject.common.util.Base58;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -124,10 +126,10 @@ public class ParticipantTest {
         other = Participant.generate();
         assertFalse(participant.equals(other));
 
-        other.keyPair = EccKeyPairGenerator.fromPublicKey(participant.getPublicKeyAsBytes());
+        other.keyPair = fromPublicKey(participant.getPublicKeyAsBytes());
         assertFalse(participant.equals(other));
 
-        other.keyPair = EccKeyPairGenerator.fromBothKeys(participant.getPublicKeyAsBytes(), participant.getPrivateKeyAsBytes());
+        other.keyPair = fromBothKeys(participant.getPublicKeyAsBytes(), participant.getPrivateKeyAsBytes());
         assertTrue(participant.equals(other));
 
         other.keyPair = participant.keyPair;
@@ -136,11 +138,11 @@ public class ParticipantTest {
         other = new Participant(keyPair);
         assertTrue(participant.equals(other));
 
-        participant.keyPair = EccKeyPairGenerator.fromPublicKey(keyPair.getPublic().getEncoded());
+        participant.keyPair = fromPublicKey(keyPair.getPublic().getEncoded());
         other.keyPair = keyPair;
         assertFalse(participant.equals(other));
 
-        other.keyPair = EccKeyPairGenerator.fromPublicKey(keyPair.getPublic().getEncoded());
+        other.keyPair = fromPublicKey(keyPair.getPublic().getEncoded());
         assertTrue(participant.equals(other));
 
         assertTrue(participant.equals(participant));
@@ -185,7 +187,7 @@ public class ParticipantTest {
     @Test
     public void testHashCodeOnPartiallyEqualKeyPairs() {
         int hashCode = participant.hashCode();
-        Participant other = new Participant(EccKeyPairGenerator.fromPublicKey(
+        Participant other = new Participant(fromPublicKey(
                 participant.getPublicKeyAsBytes()));
 
         assertFalse(hashCode == other.hashCode());
@@ -197,7 +199,7 @@ public class ParticipantTest {
     @Test
     public void testHashCodeOnEqualKeyPairs() {
         int hashCode = participant.hashCode();
-        Participant other = new Participant(EccKeyPairGenerator.fromBothKeys(
+        Participant other = new Participant(fromBothKeys(
                 participant.getPublicKeyAsBytes(),
                 participant.getPrivateKeyAsBytes()));
 

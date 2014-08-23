@@ -19,6 +19,7 @@
 package org.beamproject.common.crypto;
 
 import java.security.Security;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
@@ -87,12 +88,12 @@ public class AesCipherTest {
     @Test
     public void testConstructorOnCipherInit() {
         // The Bouncy Caste Provider should not be known now.
-        assertNull(Security.getProperty(BouncyCastleIntegrator.PROVIDER_NAME));
+        assertNull(Security.getProperty(PROVIDER_NAME));
 
         cipher = new AesCipher(key);
 
         // Now, the Bouncy Castle Provider should be installed.
-        assertNotNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));
+        assertNotNull(Security.getProvider(PROVIDER_NAME));
         assertNotNull(cipher.cipher);
     }
 

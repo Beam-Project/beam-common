@@ -21,6 +21,7 @@ package org.beamproject.common.crypto;
 import java.security.KeyPair;
 import java.security.Security;
 import java.util.HashSet;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
 import org.beamproject.common.util.Base58;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -42,9 +43,9 @@ public class EccSignerTest {
 
     @Test
     public void testConstructorOnBouncyCastleIntegration() {
-        Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
+        Security.removeProvider(PROVIDER_NAME);
         signer = new EccSigner();
-        assertNotNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));
+        assertNotNull(Security.getProvider(PROVIDER_NAME));
     }
 
     @Test

@@ -24,6 +24,7 @@ import org.beamproject.common.message.Message;
 import static org.beamproject.common.message.Field.Cnt.*;
 import static org.beamproject.common.message.Field.Cnt.Typ.HS_INVALIDATE;
 import org.beamproject.common.Participant;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
 import org.beamproject.common.util.Arrays;
 import static org.junit.Assert.assertArrayEquals;
@@ -44,7 +45,7 @@ public class HandshakeTest {
     public void setUp() {
         localParticipant = Participant.generate();
         fullRemoteParticipant = Participant.generate();
-        remoteParticipant = new Participant(EccKeyPairGenerator.fromPublicKey(fullRemoteParticipant.getPublicKeyAsBytes()));
+        remoteParticipant = new Participant(fromPublicKey(fullRemoteParticipant.getPublicKeyAsBytes()));
         signer = new EccSigner();
 
         sessionKey = "hello".getBytes();

@@ -30,7 +30,8 @@ import static org.beamproject.common.Server.ADDRESS_MQTT_HOST_IDENTIFIER;
 import static org.beamproject.common.Server.ADDRESS_MQTT_PORT_IDENTIFIER;
 import static org.beamproject.common.Server.ADDRESS_PUBLIC_KEY_IDENTIFIER;
 import static org.beamproject.common.Server.MQTT_DEFAULT_PORT;
-import org.beamproject.common.crypto.EccKeyPairGenerator;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromBothKeys;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import org.beamproject.common.util.Base58;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -188,11 +189,11 @@ public class ServerTest {
         other = Server.generate();
         assertFalse(server.equals(other));
 
-        other.keyPair = EccKeyPairGenerator.fromPublicKey(server.getPublicKeyAsBytes());
+        other.keyPair = fromPublicKey(server.getPublicKeyAsBytes());
         assertFalse(server.equals(other));
 
         other.httpUrl = server.httpUrl;
-        other.keyPair = EccKeyPairGenerator.fromBothKeys(server.getPublicKeyAsBytes(), server.getPrivateKeyAsBytes());
+        other.keyPair = fromBothKeys(server.getPublicKeyAsBytes(), server.getPrivateKeyAsBytes());
         assertTrue(server.equals(other));
 
         other.keyPair = server.keyPair;
@@ -204,12 +205,12 @@ public class ServerTest {
         other.httpUrl = null;
         assertFalse(server.equals(other));
 
-        server.keyPair = EccKeyPairGenerator.fromPublicKey(keyPair.getPublic().getEncoded());
+        server.keyPair = fromPublicKey(keyPair.getPublic().getEncoded());
         other.httpUrl = server.httpUrl;
         other.keyPair = keyPair;
         assertFalse(server.equals(other));
 
-        other.keyPair = EccKeyPairGenerator.fromPublicKey(keyPair.getPublic().getEncoded());
+        other.keyPair = fromPublicKey(keyPair.getPublic().getEncoded());
         assertTrue(server.equals(other));
 
         assertTrue(server.equals(server));

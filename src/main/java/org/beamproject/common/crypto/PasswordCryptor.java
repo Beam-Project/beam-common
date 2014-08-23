@@ -29,6 +29,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.initBouncyCastleProvider;
 import org.beamproject.common.util.Exceptions;
 
 /**
@@ -66,14 +68,14 @@ public class PasswordCryptor {
         this.password = password;
         this.salt = salt;
 
-        BouncyCastleIntegrator.initBouncyCastleProvider();
+        initBouncyCastleProvider();
         strengthenPasswordToAesKey();
         createCipher();
     }
 
     private void strengthenPasswordToAesKey() {
         try {
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBKDF_ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBKDF_ALGORITHM_NAME, PROVIDER_NAME);
             KeySpec keySpec = new PBEKeySpec(password, salt, NUMBER_OF_ITERATIONS, KEY_LENGTH_IN_BITS);
             SecretKey secretKey = keyFactory.generateSecret(keySpec);
             aesKey = new SecretKeySpec(secretKey.getEncoded(), SYMMETRIC_ALGORITHM_NAME);

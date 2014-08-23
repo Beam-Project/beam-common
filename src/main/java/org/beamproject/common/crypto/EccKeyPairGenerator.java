@@ -30,6 +30,8 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.initBouncyCastleProvider;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.beamproject.common.util.Exceptions;
@@ -49,10 +51,10 @@ public abstract class EccKeyPairGenerator {
      * @return The key pair.
      */
     public static KeyPair generate() {
-        BouncyCastleIntegrator.initBouncyCastleProvider();
+        initBouncyCastleProvider();
 
         try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM_NAME, PROVIDER_NAME);
             ECNamedCurveParameterSpec curveParameterSpec = ECNamedCurveTable.getParameterSpec(SEC_CURVE_NAME);
             keyPairGenerator.initialize(curveParameterSpec, new SecureRandom());
 
@@ -74,10 +76,10 @@ public abstract class EccKeyPairGenerator {
      */
     public static KeyPair fromPublicKey(byte[] publicKeyBytes) {
         Exceptions.verifyArgumentsNotNull((Object) publicKeyBytes);
-        BouncyCastleIntegrator.initBouncyCastleProvider();
+        initBouncyCastleProvider();
 
         try {
-            KeyFactory fact = KeyFactory.getInstance(ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
+            KeyFactory fact = KeyFactory.getInstance(ALGORITHM_NAME, PROVIDER_NAME);
             PublicKey publicKey = fact.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
 
             return new KeyPair(publicKey, null);
@@ -99,10 +101,10 @@ public abstract class EccKeyPairGenerator {
      */
     public static KeyPair fromBothKeys(byte[] publicKeyBytes, byte[] privateKeyBytes) {
         Exceptions.verifyArgumentsNotNull(publicKeyBytes, privateKeyBytes);
-        BouncyCastleIntegrator.initBouncyCastleProvider();
+        initBouncyCastleProvider();
 
         try {
-            KeyFactory fact = KeyFactory.getInstance(ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
+            KeyFactory fact = KeyFactory.getInstance(ALGORITHM_NAME, PROVIDER_NAME);
             PublicKey publicKey = fact.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
             PrivateKey privateKey = fact.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
 

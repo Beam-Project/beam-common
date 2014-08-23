@@ -21,6 +21,9 @@ package org.beamproject.common.crypto;
 import java.security.KeyPair;
 import java.security.Security;
 import org.beamproject.common.Participant;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromBothKeys;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,23 +41,23 @@ public class EccKeyPairGeneratorTest {
     public void setUp() {
         originalKeyPair = EccKeyPairGenerator.generate();
         bothOriginal = new Participant(originalKeyPair);
-        publicOnlyOriginal = new Participant(EccKeyPairGenerator.fromPublicKey(originalKeyPair.getPublic().getEncoded()));
+        publicOnlyOriginal = new Participant(fromPublicKey(originalKeyPair.getPublic().getEncoded()));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testFromPublicKeyOnNull() {
-        EccKeyPairGenerator.fromPublicKey(null);
+        fromPublicKey(null);
     }
 
     @Test
     public void testFromPublicKey() {
-        Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
+        Security.removeProvider(PROVIDER_NAME);
 
-        restoredKeyPair = EccKeyPairGenerator.fromPublicKey(originalKeyPair.getPublic().getEncoded());
+        restoredKeyPair = fromPublicKey(originalKeyPair.getPublic().getEncoded());
         publicOnlyRestored = new Participant(restoredKeyPair);
 
         assertEquals(publicOnlyOriginal, publicOnlyRestored);
-        assertTrue(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME) != null);
+        assertTrue(Security.getProvider(PROVIDER_NAME) != null);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -62,41 +65,41 @@ public class EccKeyPairGeneratorTest {
         byte[] publicKey = originalKeyPair.getPublic().getEncoded();
         publicKey[20] = 123;
         publicKey[50] = 123;
-        restoredKeyPair = EccKeyPairGenerator.fromPublicKey(publicKey);
+        restoredKeyPair = fromPublicKey(publicKey);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testFromPublicKeyOnWrongArgument() {
         byte[] privateKey = originalKeyPair.getPrivate().getEncoded();
-        restoredKeyPair = EccKeyPairGenerator.fromPublicKey(privateKey);
+        restoredKeyPair = fromPublicKey(privateKey);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testFromBothKeysOnNulls() {
-        EccKeyPairGenerator.fromBothKeys(null, null);
+        fromBothKeys(null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testFromBothKeysOnNullPublicKey() {
-        EccKeyPairGenerator.fromBothKeys(null, new byte[]{1, 2, 3});
+        fromBothKeys(null, new byte[]{1, 2, 3});
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testFromBothKeysOnNullPrivateKey() {
-        EccKeyPairGenerator.fromBothKeys(new byte[]{1, 2, 3}, null);
+        fromBothKeys(new byte[]{1, 2, 3}, null);
     }
 
     @Test
     public void testFromBothKeys() {
-        Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
+        Security.removeProvider(PROVIDER_NAME);
         byte[] publicKey = originalKeyPair.getPublic().getEncoded();
         byte[] privateKey = originalKeyPair.getPrivate().getEncoded();
 
-        restoredKeyPair = EccKeyPairGenerator.fromBothKeys(publicKey, privateKey);
+        restoredKeyPair = fromBothKeys(publicKey, privateKey);
         bothRestored = new Participant(restoredKeyPair);
 
         assertEquals(bothOriginal, bothRestored);
-        assertTrue(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME) != null);
+        assertTrue(Security.getProvider(PROVIDER_NAME) != null);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -106,7 +109,7 @@ public class EccKeyPairGeneratorTest {
         publicKey[10] = 123;
         publicKey[20] = 123;
 
-        restoredKeyPair = EccKeyPairGenerator.fromBothKeys(publicKey, privateKey);
+        restoredKeyPair = fromBothKeys(publicKey, privateKey);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -116,7 +119,7 @@ public class EccKeyPairGeneratorTest {
         privateKey[10] = 123;
         privateKey[20] = 123;
 
-        restoredKeyPair = EccKeyPairGenerator.fromBothKeys(publicKey, privateKey);
+        restoredKeyPair = fromBothKeys(publicKey, privateKey);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -124,6 +127,6 @@ public class EccKeyPairGeneratorTest {
         byte[] publicKey = originalKeyPair.getPublic().getEncoded();
         byte[] privateKey = originalKeyPair.getPrivate().getEncoded();
 
-        restoredKeyPair = EccKeyPairGenerator.fromBothKeys(privateKey, publicKey);
+        restoredKeyPair = fromBothKeys(privateKey, publicKey);
     }
 }

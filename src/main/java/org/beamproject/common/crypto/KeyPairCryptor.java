@@ -31,6 +31,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.initBouncyCastleProvider;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromBothKeys;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import org.beamproject.common.util.Base58;
 import org.beamproject.common.util.Exceptions;
 
@@ -67,7 +71,7 @@ public class KeyPairCryptor {
      */
     public static EncryptedKeyPair encrypt(String password, KeyPair keyPair) {
         Exceptions.verifyArgumentsNotNull(password, keyPair);
-        BouncyCastleIntegrator.initBouncyCastleProvider();
+        initBouncyCastleProvider();
 
         byte[] salt = generateSalt();
         char[] passwordAsChars = password.toCharArray();
@@ -90,7 +94,7 @@ public class KeyPairCryptor {
 
     private static Key strengthenPasswordToAesKey(char[] password, byte[] salt) {
         try {
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBKDF_ALGORITHM_NAME, BouncyCastleIntegrator.PROVIDER_NAME);
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBKDF_ALGORITHM_NAME, PROVIDER_NAME);
             KeySpec keySpec = new PBEKeySpec(password, salt, NUMBER_OF_ITERATIONS, KEY_LENGTH_IN_BITS);
             SecretKey secretKey = keyFactory.generateSecret(keySpec);
             return new SecretKeySpec(secretKey.getEncoded(), SYMMETRIC_ALGORITHM_NAME);
@@ -130,7 +134,7 @@ public class KeyPairCryptor {
      */
     public static KeyPair decrypt(String password, EncryptedKeyPair encryptedKeyPair) {
         Exceptions.verifyArgumentsNotNull(password, encryptedKeyPair);
-        BouncyCastleIntegrator.initBouncyCastleProvider();
+        initBouncyCastleProvider();
 
         char[] passwordAsChars = password.toCharArray();
         Key aesKey = strengthenPasswordToAesKey(passwordAsChars, encryptedKeyPair.getSaltAsBytes());
@@ -155,11 +159,11 @@ public class KeyPairCryptor {
         }
 
         if (decryptedPublicKey != null && decryptedPrivateKey != null) {
-            return EccKeyPairGenerator.fromBothKeys(decryptedPublicKey, decryptedPrivateKey);
+            return fromBothKeys(decryptedPublicKey, decryptedPrivateKey);
         }
 
         if (decryptedPublicKey != null) {
-            return EccKeyPairGenerator.fromPublicKey(decryptedPublicKey);
+            return fromPublicKey(decryptedPublicKey);
         }
 
         throw new IllegalArgumentException("Could not find non-null keys in the given KeyPair. At least the PublicKey has to be.");

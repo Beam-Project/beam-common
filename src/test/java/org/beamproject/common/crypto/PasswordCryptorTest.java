@@ -20,6 +20,7 @@ package org.beamproject.common.crypto;
 
 import java.security.Key;
 import java.security.Security;
+import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -57,11 +58,11 @@ public class PasswordCryptorTest {
 
     @Test
     public void testConstructor() {
-        Security.removeProvider(BouncyCastleIntegrator.PROVIDER_NAME);
+        Security.removeProvider(PROVIDER_NAME);
         cryptor = new PasswordCryptor(PASSWORD, salt);
         assertSame(PASSWORD, cryptor.password);
         assertSame(salt, cryptor.salt);
-        assertNotNull(Security.getProvider(BouncyCastleIntegrator.PROVIDER_NAME));
+        assertNotNull(Security.getProvider(PROVIDER_NAME));
         assertNotNull(cryptor.aesKey);
         assertNotNull(cryptor.cipher);
     }

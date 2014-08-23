@@ -26,6 +26,7 @@ import static org.beamproject.common.message.Message.VERSION;
 import static org.beamproject.common.message.Field.Cnt.*;
 import static org.beamproject.common.message.Field.Cnt.Typ.*;
 import org.beamproject.common.Participant;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import org.beamproject.common.util.Arrays;
 
 /**
@@ -74,7 +75,7 @@ public class HandshakeResponder extends Handshake {
         verifyChallengeCusumptionAuthorization();
         verifyChallengeValidity(challenge);
 
-        KeyPair remoteKeyPair = EccKeyPairGenerator.fromPublicKey(challenge.getContent(HS_PUBKEY));
+        KeyPair remoteKeyPair = fromPublicKey(challenge.getContent(HS_PUBKEY));
         remoteParticipant = new Participant(remoteKeyPair);
         remoteNonce = challenge.getContent(HS_NONCE);
     }

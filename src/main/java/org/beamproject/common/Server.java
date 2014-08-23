@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Objects;
 import lombok.Getter;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
+import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
+import org.beamproject.common.message.Message;
 import org.beamproject.common.util.Base58;
 import org.beamproject.common.util.Exceptions;
 import org.msgpack.MessagePack;
@@ -190,7 +192,7 @@ public class Server extends Participant {
     static KeyPair extractKeyPairFromAddress(String address) {
         try {
             Map<String, byte[]> addressValues = readAddressMap(address);
-            return EccKeyPairGenerator.fromPublicKey(addressValues.get(ADDRESS_PUBLIC_KEY_IDENTIFIER));
+            return fromPublicKey(addressValues.get(ADDRESS_PUBLIC_KEY_IDENTIFIER));
         } catch (IllegalStateException ex) {
             throw new IllegalArgumentException("The public key of the address is invalid: " + ex.getMessage());
         }
