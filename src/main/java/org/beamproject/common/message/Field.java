@@ -180,7 +180,7 @@ public enum Field {
              * This side has to send: An own challenge (nonce as bytes) of the
              * length of {@link Handshake#NONCE_LENGTH_IN_BYTES}. Further, this
              * side has to calculate a digest of [the own public key + the own
-             * nonce + the other sides nonce], so the own public key followed by
+             * nonce + the other sides nonce]. The own public key followed by
              * the own nonce followed by the other sides nonce have to be
              * concatenated to one large array of bytes. This large array is
              * then used to calculate the digest. This digest has to be signed
@@ -211,7 +211,7 @@ public enum Field {
              * <p>
              * This side has to send: The response to the challenge from phase
              * 2. Therefore, this side has to calculate a digest of [the own
-             * public key + the own nonce + the other sides nonce], so the own
+             * public key + the own nonce + the other sides nonce]. The own
              * public key followed by the own nonce followed by the other sides
              * nonce have to be concatenated to one large array of bytes. This
              * large array is then used to calculate the digest. (This sides
