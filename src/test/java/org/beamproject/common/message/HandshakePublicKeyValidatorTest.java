@@ -18,17 +18,15 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.Field.Cnt.TYP;
-import static org.beamproject.common.message.Field.Cnt.Typ;
-import static org.beamproject.common.message.Field.Cnt.Typ.*;
+import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
+import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 
-public class HandshakeTypeMessageValidatorTest {
+public class HandshakePublicKeyValidatorTest {
 
-    private final Typ[] VALID_TYPES = {HS_CHALLENGE, HS_RESPONSE, HS_SUCCESS, HS_INVALIDATE};
-    private HandshakeTypeMessageValidator validator;
+    private HandshakePublicKeyValidator validator;
     private Message message;
 
     @Before
@@ -42,32 +40,23 @@ public class HandshakeTypeMessageValidatorTest {
     }
 
     @Test
-    public void testIsValidOnInvalidType() {
-        message.putContent(TYP, FORWARD);
+    public void testIsValidOnInvalidPublicKey() {
+        message.putContent(HS_PUBKEY, new byte[0]);
         testValidator(false);
 
-        message.putContent(TYP, new byte[0]);
-        testValidator(false);
-
-        message.putContent(TYP, "something but not a phase".getBytes());
-        testValidator(false);
-
-        byte[] challengeBytes = HS_CHALLENGE.getBytes();
-        challengeBytes[2]++;
-        message.putContent(TYP, challengeBytes);
+        message.putContent(HS_PUBKEY, "something but not a public key".getBytes());
         testValidator(false);
     }
 
     @Test
     public void testIsValid() {
-        for (Typ value : VALID_TYPES) {
-            message.putContent(TYP, value);
-            testValidator(true);
-        }
+        byte[] bytes = EccKeyPairGenerator.generate().getPublic().getEncoded();
+        message.putContent(HS_PUBKEY, bytes);
+        testValidator(true);
     }
 
     private void testValidator(boolean exptected) {
-        validator = new HandshakeTypeMessageValidator();
+        validator = new HandshakePublicKeyValidator();
         assertEquals(exptected, validator.isValid(message));
     }
 

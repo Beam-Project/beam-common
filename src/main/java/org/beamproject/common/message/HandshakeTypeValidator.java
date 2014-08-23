@@ -31,7 +31,7 @@ import org.beamproject.common.crypto.Handshake;
  * @see Handshake
  * @see Handshake.Phase
  */
-public class HandshakeTypeMessageValidator implements MessageValidator {
+public class HandshakeTypeValidator implements MessageValidator {
 
     /**
      * Checks if the given message is a {@link Handshake} message and therefore

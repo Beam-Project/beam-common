@@ -25,7 +25,7 @@ import org.beamproject.common.util.Exceptions;
  *
  * @see Field
  */
-public class ContentFieldMessageValidator implements MessageValidator {
+public class ContentFieldValidator implements MessageValidator {
 
     private final Field.Cnt[] requiredFields;
 
@@ -35,7 +35,7 @@ public class ContentFieldMessageValidator implements MessageValidator {
      * @param requiredFields The required fields to pass this validator tests.
      * @throws IllegalArgumentException If at least one argument is null.
      */
-    public ContentFieldMessageValidator(Field.Cnt... requiredFields) {
+    public ContentFieldValidator(Field.Cnt... requiredFields) {
         Exceptions.verifyArgumentsNotNull((Object[]) requiredFields);
 
         this.requiredFields = requiredFields;

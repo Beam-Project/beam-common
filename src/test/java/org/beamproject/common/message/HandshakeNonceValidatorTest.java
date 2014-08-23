@@ -24,14 +24,14 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 
-public class HandshakeNonceMessageValidatorTest {
+public class HandshakeNonceValidatorTest {
 
-    private HandshakeNonceMessageValidator validator;
+    private HandshakeNonceValidator validator;
     private Message message;
 
     @Before
     public void setUp() {
-        validator = new HandshakeNonceMessageValidator();
+        validator = new HandshakeNonceValidator();
         message = new Message();
     }
 

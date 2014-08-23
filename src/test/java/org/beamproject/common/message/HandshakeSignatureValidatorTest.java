@@ -21,20 +21,20 @@ package org.beamproject.common.message;
 import static org.beamproject.common.message.Field.Cnt.HS_SIG;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.crypto.EccSigner;
-import static org.beamproject.common.message.HandshakeSignatureMessageValidator.MAXIMAL_SIGNATURE_LENGTH_IN_BYTES;
-import static org.beamproject.common.message.HandshakeSignatureMessageValidator.MINIMAL_SIGNATURE_LENGTH_IN_BYTES;
+import static org.beamproject.common.message.HandshakeSignatureValidator.MAXIMAL_SIGNATURE_LENGTH_IN_BYTES;
+import static org.beamproject.common.message.HandshakeSignatureValidator.MINIMAL_SIGNATURE_LENGTH_IN_BYTES;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 
-public class HandshakeSignatureMessageValidatorTest {
+public class HandshakeSignatureValidatorTest {
 
-    private HandshakeSignatureMessageValidator validator;
+    private HandshakeSignatureValidator validator;
     private Message message;
 
     @Before
     public void setUp() {
-        validator = new HandshakeSignatureMessageValidator();
+        validator = new HandshakeSignatureValidator();
         message = new Message();
     }
 

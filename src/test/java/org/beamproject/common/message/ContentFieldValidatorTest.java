@@ -23,9 +23,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 
-public class ContentFieldMessageValidatorTest {
+public class ContentFieldValidatorTest {
 
-    private ContentFieldMessageValidator validator;
+    private ContentFieldValidator validator;
     private Message message;
 
     @Before
@@ -35,17 +35,17 @@ public class ContentFieldMessageValidatorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNull() {
-        validator = new ContentFieldMessageValidator((Field.Cnt) null);
+        validator = new ContentFieldValidator((Field.Cnt) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnNulls() {
-        validator = new ContentFieldMessageValidator((Field.Cnt[]) null);
+        validator = new ContentFieldValidator((Field.Cnt[]) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnSingleNull() {
-        validator = new ContentFieldMessageValidator(HS_KEY, null);
+        validator = new ContentFieldValidator(HS_KEY, null);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class ContentFieldMessageValidatorTest {
     }
 
     private void testValidator(boolean exptected, Field.Cnt... fields) {
-        validator = new ContentFieldMessageValidator(fields);
+        validator = new ContentFieldValidator(fields);
         assertEquals(exptected, validator.isValid(message));
     }
 

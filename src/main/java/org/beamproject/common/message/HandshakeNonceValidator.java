@@ -18,43 +18,32 @@
  */
 package org.beamproject.common.message;
 
-import java.security.KeyPair;
-import java.security.PublicKey;
-import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
+import static org.beamproject.common.message.Field.Cnt.*;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.crypto.Handshake;
+import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
 
 /**
- * Verifies that a {@link Message} contains a valid {@link PublicKey} used for a
+ * Verifies that a {@link Message} contains a valid nonce used for a
  * {@link Handshake}.
  *
  * @see Handshake
  * @see EccKeyPairGenerator
  */
-public class HandshakePublicKeyMessageValidator implements MessageValidator {
+public class HandshakeNonceValidator implements MessageValidator {
 
     /**
-     * Verifies if the given message contains a valid {@link PublicKey}, stored
-     * under the key {@link MessageField.ContentField#HSPUBKEY}.
+     * Verifies if the given message contains a valid nonce, stored under the
+     * key {@link MessageField.ContentField#HSNONCE}.
      *
      * @param message The message to verify.
-     * @return true, if a valid public key is stored, false otherwise.
+     * @return true, if a valid nonce is stored, false otherwise.
      */
     @Override
     public boolean isValid(Message message) {
-        if (!message.containsContent(HS_PUBKEY)
-                || message.getContent(HS_PUBKEY) == null
-                || message.getContent(HS_PUBKEY).length == 0) {
-            return false;
-        }
-
-        try {
-            byte[] remotePublicKey = message.getContent(HS_PUBKEY);
-            KeyPair remoteKeyPair = EccKeyPairGenerator.fromPublicKey(remotePublicKey);
-            return remoteKeyPair != null;
-        } catch (IllegalArgumentException | IllegalStateException ex) {
-            return false;
-        }
+        return message.containsContent(HS_NONCE)
+                && message.getContent(HS_NONCE) != null
+                && message.getContent(HS_NONCE).length == NONCE_LENGTH_IN_BYTES;
     }
 
 }

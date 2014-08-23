@@ -32,7 +32,7 @@ import org.beamproject.common.crypto.Handshake;
  * @see Handshake
  * @see EccKeyPairGenerator
  */
-public class HandshakeSignatureMessageValidator implements MessageValidator {
+public class HandshakeSignatureValidator implements MessageValidator {
 
     public final static int MINIMAL_SIGNATURE_LENGTH_IN_BYTES = 90;
     public final static int MAXIMAL_SIGNATURE_LENGTH_IN_BYTES = 120;

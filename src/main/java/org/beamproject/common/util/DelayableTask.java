@@ -21,7 +21,7 @@ package org.beamproject.common.util;
 /**
  * Objects of classes that implement this interface can be invoked after a
  * specified delay.
- * 
+ *
  * @see Task
  * @see Executor
  */
