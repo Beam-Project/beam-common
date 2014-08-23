@@ -18,14 +18,17 @@
  */
 package org.beamproject.common.crypto;
 
-import org.beamproject.common.message.Message;
-import static org.beamproject.common.message.Field.Cnt.*;
-import static org.beamproject.common.message.Field.Cnt.Typ.*;
 import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.beamproject.common.message.Field.Cnt.MSG;
+import static org.beamproject.common.message.Field.Cnt.Typ.FORWARD;
+import org.beamproject.common.message.Message;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import org.junit.Before;
+import org.junit.Test;
 
 public class CryptoPackerTest {
 

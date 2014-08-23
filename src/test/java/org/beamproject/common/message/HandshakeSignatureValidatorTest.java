@@ -18,14 +18,15 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.Field.Cnt.HS_SIG;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.crypto.EccSigner;
+import static org.beamproject.common.message.Field.Cnt.HS_SIG;
 import static org.beamproject.common.message.HandshakeSignatureValidator.MAXIMAL_SIGNATURE_LENGTH_IN_BYTES;
 import static org.beamproject.common.message.HandshakeSignatureValidator.MINIMAL_SIGNATURE_LENGTH_IN_BYTES;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
+import org.junit.Test;
 
 public class HandshakeSignatureValidatorTest {
 

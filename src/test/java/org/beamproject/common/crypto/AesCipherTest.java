@@ -20,9 +20,12 @@ package org.beamproject.common.crypto;
 
 import java.security.Security;
 import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import org.junit.Before;
+import org.junit.Test;
 
 public class AesCipherTest {
 

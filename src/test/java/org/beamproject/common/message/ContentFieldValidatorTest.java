@@ -18,10 +18,13 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.Field.Cnt.*;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.beamproject.common.message.Field.Cnt.HS_KEY;
+import static org.beamproject.common.message.Field.Cnt.HS_NONCE;
+import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
+import static org.beamproject.common.message.Field.Cnt.TYP;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
+import org.junit.Test;
 
 public class ContentFieldValidatorTest {
 

@@ -28,6 +28,8 @@ import javax.crypto.BadPaddingException;
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
 import javax.crypto.IllegalBlockSizeException;
+import org.beamproject.common.Participant;
+import org.beamproject.common.util.Exceptions;
 import org.bouncycastle.crypto.agreement.ECDHBasicAgreement;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.engines.AESEngine;
@@ -39,8 +41,6 @@ import org.bouncycastle.crypto.paddings.PKCS7Padding;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.IESCipher;
 import org.bouncycastle.jce.spec.IESParameterSpec;
-import org.beamproject.common.Participant;
-import org.beamproject.common.util.Exceptions;
 
 /**
  * Allows to encrypt and decrypt data asymmetrically using Elliptic Curve

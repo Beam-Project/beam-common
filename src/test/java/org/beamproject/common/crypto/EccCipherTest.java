@@ -19,10 +19,14 @@
 package org.beamproject.common.crypto;
 
 import java.security.KeyPair;
-import static org.hamcrest.CoreMatchers.*;
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import org.junit.Before;
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class EccCipherTest {
 

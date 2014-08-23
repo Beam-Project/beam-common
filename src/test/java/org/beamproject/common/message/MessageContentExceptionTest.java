@@ -18,8 +18,8 @@
  */
 package org.beamproject.common.message;
 
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.msgpack.MessageTypeException;
 
 public class MessageContentExceptionTest {

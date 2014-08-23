@@ -22,8 +22,10 @@ import java.security.Security;
 import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
 import static org.beamproject.common.crypto.BouncyCastleIntegrator.initBouncyCastleProvider;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class BouncyCastleIntegratorTest {
 

@@ -20,10 +20,10 @@ package org.beamproject.common.message;
 
 import java.security.KeyPair;
 import java.security.PublicKey;
-import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import org.beamproject.common.crypto.Handshake;
+import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
 
 /**
  * Verifies that a {@link Message} contains a valid {@link PublicKey} used for a

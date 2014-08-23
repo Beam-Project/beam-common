@@ -18,13 +18,17 @@
  */
 package org.beamproject.common.carrier;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import org.fusesource.mqtt.client.BlockingConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.Assert.assertSame;
 import org.junit.Before;
+import org.junit.Test;
 
 public class MqttConnectionTest {
 

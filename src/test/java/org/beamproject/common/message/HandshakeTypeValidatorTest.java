@@ -19,11 +19,15 @@
 package org.beamproject.common.message;
 
 import static org.beamproject.common.message.Field.Cnt.TYP;
-import static org.beamproject.common.message.Field.Cnt.Typ;
-import static org.beamproject.common.message.Field.Cnt.Typ.*;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.beamproject.common.message.Field.Cnt.Typ;
+import static org.beamproject.common.message.Field.Cnt.Typ.FORWARD;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_CHALLENGE;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_INVALIDATE;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_RESPONSE;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_SUCCESS;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
+import org.junit.Test;
 
 public class HandshakeTypeValidatorTest {
 

@@ -33,9 +33,14 @@ import static org.beamproject.common.Server.MQTT_DEFAULT_PORT;
 import static org.beamproject.common.crypto.EccKeyPairGenerator.fromBothKeys;
 import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import org.beamproject.common.util.Base58;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
+import org.junit.Test;
 import org.msgpack.MessagePack;
 
 public class ServerTest {

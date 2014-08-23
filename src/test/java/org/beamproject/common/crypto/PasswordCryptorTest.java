@@ -21,10 +21,16 @@ package org.beamproject.common.crypto;
 import java.security.Key;
 import java.security.Security;
 import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
-import static org.hamcrest.CoreMatchers.*;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
+import org.junit.Test;
 
 public class PasswordCryptorTest {
 

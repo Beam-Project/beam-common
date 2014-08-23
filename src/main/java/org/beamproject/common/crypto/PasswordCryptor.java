@@ -96,7 +96,7 @@ public class PasswordCryptor {
      * @throws IllegalArgumentException If the argument is null.
      */
     public byte[] encrypt(byte[] plaintext) {
-        Exceptions.verifyArgumentsNotNull((Object) plaintext);
+        Exceptions.verifyArgumentsNotNull(plaintext);
 
         return cipher.encrypt(plaintext);
     }
@@ -109,7 +109,7 @@ public class PasswordCryptor {
      * @throws IllegalArgumentException If the argument is null.
      */
     public byte[] decrypt(byte[] ciphertext) {
-        Exceptions.verifyArgumentsNotNull((Object) ciphertext);
+        Exceptions.verifyArgumentsNotNull(ciphertext);
 
         return cipher.decrypt(ciphertext);
     }
@@ -125,7 +125,7 @@ public class PasswordCryptor {
      * @throws IllegalArgumentException If the argument is null.
      */
     public void changePassword(char[] newPassword) {
-        Exceptions.verifyArgumentsNotNull((Object) newPassword);
+        Exceptions.verifyArgumentsNotNull(newPassword);
 
         fillOldPasswordWithZeros();
 

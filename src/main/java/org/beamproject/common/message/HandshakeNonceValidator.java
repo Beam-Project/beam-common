@@ -18,10 +18,10 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.Field.Cnt.*;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.crypto.Handshake;
 import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
+import static org.beamproject.common.message.Field.Cnt.HS_NONCE;
 
 /**
  * Verifies that a {@link Message} contains a valid nonce used for a

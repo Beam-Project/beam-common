@@ -20,8 +20,10 @@ package org.beamproject.common.util;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class TimestampsTest {
 
@@ -30,7 +32,7 @@ public class TimestampsTest {
         DateTime timestamp = Timestamps.getUtcTimestamp();
 
         double allowedDeltaInMilliseconds = 100d;
-        assertEquals((double) System.currentTimeMillis(), timestamp.getMillis(), allowedDeltaInMilliseconds);
+        assertEquals(System.currentTimeMillis(), timestamp.getMillis(), allowedDeltaInMilliseconds);
         assertEquals(DateTimeZone.UTC, timestamp.getZone());
     }
 

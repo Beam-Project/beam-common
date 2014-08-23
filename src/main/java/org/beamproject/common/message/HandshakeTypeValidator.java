@@ -18,10 +18,13 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.Field.Cnt.TYP;
-import static org.beamproject.common.message.Field.Cnt.Typ.*;
-import static org.beamproject.common.message.Field.Cnt.Typ;
 import org.beamproject.common.crypto.Handshake;
+import static org.beamproject.common.message.Field.Cnt.TYP;
+import org.beamproject.common.message.Field.Cnt.Typ;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_CHALLENGE;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_INVALIDATE;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_RESPONSE;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_SUCCESS;
 
 /**
  * Checks if the given message is a {@link Handshake} message and therefore is

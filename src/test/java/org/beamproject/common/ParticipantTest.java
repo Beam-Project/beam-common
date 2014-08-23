@@ -24,9 +24,15 @@ import org.beamproject.common.crypto.EccKeyPairGenerator;
 import static org.beamproject.common.crypto.EccKeyPairGenerator.fromBothKeys;
 import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import org.beamproject.common.util.Base58;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Before;
+import org.junit.Test;
 
 public class ParticipantTest {
 
@@ -120,7 +126,7 @@ public class ParticipantTest {
     @Test
     public void testEquals() {
         Participant other = null;
-        assertFalse(participant.equals(null));
+        assertFalse(participant.equals(null)); // this has to be tested this way
         assertFalse(participant.equals(other));
 
         other = Participant.generate();
@@ -156,7 +162,7 @@ public class ParticipantTest {
         Participant other = Participant.generate();
 
         participant.keyPair = null;
-        assertFalse(participant.equals(null));
+        assertFalse(participant.equals(null)); // this has to be tested this way
         assertFalse(participant.equals(other));
 
         other.keyPair = null;

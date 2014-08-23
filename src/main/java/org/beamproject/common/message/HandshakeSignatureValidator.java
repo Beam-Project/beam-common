@@ -18,9 +18,9 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.Field.Cnt.HS_SIG;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.crypto.Handshake;
+import static org.beamproject.common.message.Field.Cnt.HS_SIG;
 
 /**
  * Verifies that a {@link Message} contains a syntactically signature used for a

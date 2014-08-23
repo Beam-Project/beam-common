@@ -21,11 +21,19 @@ package org.beamproject.common.message;
 import java.util.HashMap;
 import java.util.Map;
 import org.beamproject.common.Participant;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.beamproject.common.message.Field.Cnt.MSG;
+import static org.beamproject.common.message.Field.Cnt.TYP;
+import static org.beamproject.common.message.Field.Cnt.Typ.FORWARD;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_CHALLENGE;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_INVALIDATE;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
-import static org.beamproject.common.message.Field.Cnt.*;
-import static org.beamproject.common.message.Field.Cnt.Typ.*;
+import org.junit.Test;
 
 public class MessageTest {
 

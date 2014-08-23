@@ -23,10 +23,12 @@ import java.security.Security;
 import java.util.HashSet;
 import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
 import org.beamproject.common.util.Base58;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Test;
 
 public class EccSignerTest {
 
@@ -114,14 +116,14 @@ public class EccSignerTest {
     @Test
     public void testSignAndVerifyOnManipulatedSignature() {
         signature = signer.sign(data, keyPair.getPrivate());
-        signature[50] = (byte) 123;
+        signature[50] = 123;
         assertFalse(signer.verify(data, signature, keyPair.getPublic()));
     }
 
     @Test
     public void testSignAndVerifyOnManipulatedData() {
         signature = signer.sign(data, keyPair.getPrivate());
-        data[10] = (byte) 123;
+        data[10] = 123;
         assertFalse(signer.verify(data, signature, keyPair.getPublic()));
     }
 
@@ -146,7 +148,6 @@ public class EccSignerTest {
 
         long endTime = System.nanoTime();
 
-        System.out.println("time: " + (endTime - startTime) / 10e8 + " s");
     }
 
 }

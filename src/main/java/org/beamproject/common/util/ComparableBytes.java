@@ -30,7 +30,7 @@ public class ComparableBytes {
     byte[] bytes;
 
     public ComparableBytes(byte[] bytes) {
-        Exceptions.verifyArgumentsNotNull((Object) bytes);
+        Exceptions.verifyArgumentsNotNull(bytes);
 
         this.bytes = bytes;
     }

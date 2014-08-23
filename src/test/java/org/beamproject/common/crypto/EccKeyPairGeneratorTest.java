@@ -24,7 +24,8 @@ import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
 import static org.beamproject.common.crypto.EccKeyPairGenerator.fromBothKeys;
 import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 

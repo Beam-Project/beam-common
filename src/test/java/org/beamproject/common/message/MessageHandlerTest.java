@@ -19,9 +19,10 @@
 package org.beamproject.common.message;
 
 import org.beamproject.common.carrier.MessageException;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import org.junit.Before;
+import org.junit.Test;
 
 public class MessageHandlerTest {
 

@@ -20,11 +20,18 @@ package org.beamproject.common.carrier;
 
 import org.beamproject.common.ExecutorFake;
 import org.beamproject.common.User;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import org.easymock.IAnswer;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import org.junit.Before;
+import org.junit.Test;
 
 public class ClientCarrierImplTest {
 

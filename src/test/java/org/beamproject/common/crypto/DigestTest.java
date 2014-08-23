@@ -24,9 +24,10 @@ import java.security.NoSuchProviderException;
 import java.security.Security;
 import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
 import org.bouncycastle.util.encoders.Hex;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
+import org.junit.Test;
 
 public class DigestTest {
 

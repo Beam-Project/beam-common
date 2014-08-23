@@ -19,8 +19,9 @@
 package org.beamproject.common.crypto;
 
 import org.beamproject.common.util.Base58;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class EncryptedKeyPairTest {
 

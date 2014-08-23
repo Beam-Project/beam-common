@@ -18,8 +18,8 @@
  */
 package org.beamproject.common.util;
 
+import static org.junit.Assert.assertArrayEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class CharsTest {
 

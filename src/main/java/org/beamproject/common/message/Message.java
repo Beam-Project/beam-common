@@ -21,10 +21,10 @@ package org.beamproject.common.message;
 import java.util.HashMap;
 import java.util.Map;
 import org.beamproject.common.Participant;
+import org.beamproject.common.message.Field.Cnt;
+import static org.beamproject.common.message.Field.Cnt.TYP;
+import org.beamproject.common.message.Field.Cnt.Typ;
 import org.beamproject.common.util.Exceptions;
-import static org.beamproject.common.message.Field.Cnt;
-import static org.beamproject.common.message.Field.Cnt.*;
-import static org.beamproject.common.message.Field.Cnt.Typ;
 
 /**
  * A message contains all necessary information to encrypt the content for the

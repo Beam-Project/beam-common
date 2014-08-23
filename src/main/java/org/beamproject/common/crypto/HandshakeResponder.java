@@ -21,12 +21,17 @@ package org.beamproject.common.crypto;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import org.beamproject.common.message.Message;
-import static org.beamproject.common.message.Message.VERSION;
-import static org.beamproject.common.message.Field.Cnt.*;
-import static org.beamproject.common.message.Field.Cnt.Typ.*;
 import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
+import static org.beamproject.common.message.Field.Cnt.HS_NONCE;
+import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
+import static org.beamproject.common.message.Field.Cnt.HS_SIG;
+import static org.beamproject.common.message.Field.Cnt.TYP;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_CHALLENGE;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_RESPONSE;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_SUCCESS;
+import org.beamproject.common.message.Message;
+import static org.beamproject.common.message.Message.VERSION;
 import org.beamproject.common.util.Arrays;
 
 /**

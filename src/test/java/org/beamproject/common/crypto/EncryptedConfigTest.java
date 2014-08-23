@@ -20,10 +20,15 @@ package org.beamproject.common.crypto;
 
 import java.util.Properties;
 import org.beamproject.common.util.Base58;
-import static org.easymock.EasyMock.*;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
+import org.junit.Test;
 
 public class EncryptedConfigTest {
 

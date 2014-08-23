@@ -18,11 +18,11 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
+import org.junit.Test;
 
 public class HandshakePublicKeyValidatorTest {
 

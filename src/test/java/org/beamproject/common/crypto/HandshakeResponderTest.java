@@ -19,14 +19,27 @@
 package org.beamproject.common.crypto;
 
 import java.util.ArrayList;
+import static org.beamproject.common.crypto.Handshake.MAXIMAL_SIGNATURE_LENGTH_IN_BYTES;
+import static org.beamproject.common.crypto.Handshake.MINIMAL_SIGNATURE_LENGTH_IN_BYTES;
+import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
+import static org.beamproject.common.message.Field.Cnt.HS_NONCE;
+import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
+import static org.beamproject.common.message.Field.Cnt.HS_SIG;
+import static org.beamproject.common.message.Field.Cnt.TYP;
+import static org.beamproject.common.message.Field.Cnt.Typ.FORWARD;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_CHALLENGE;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_RESPONSE;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_SUCCESS;
 import org.beamproject.common.message.Message;
 import static org.beamproject.common.message.Message.VERSION;
-import static org.beamproject.common.message.Field.Cnt.*;
-import static org.beamproject.common.message.Field.Cnt.Typ.*;
-import static org.beamproject.common.crypto.HandshakeResponder.*;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Before;
+import org.junit.Test;
 
 public class HandshakeResponderTest extends HandshakeTest {
 

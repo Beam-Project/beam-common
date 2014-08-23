@@ -18,9 +18,11 @@
  */
 package org.beamproject.common.util;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
+import org.junit.Test;
 
 public class ComparableBytesTest {
 
@@ -54,7 +56,7 @@ public class ComparableBytesTest {
     public void testEquals() {
         comparableBytes = new ComparableBytes(bytes);
         ComparableBytes other = null;
-        assertFalse(comparableBytes.equals(null));
+        assertFalse(comparableBytes.equals(null)); // this has to be tested this way
         assertFalse(comparableBytes.equals(other));
 
         other = new ComparableBytes(otherBytes);

@@ -20,12 +20,13 @@ package org.beamproject.common.crypto;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import org.beamproject.common.message.Message;
-import static org.beamproject.common.message.Field.Cnt.*;
-import static org.beamproject.common.message.Field.Cnt.Typ.HS_INVALIDATE;
 import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
+import static org.beamproject.common.message.Field.Cnt.HS_KEY;
+import static org.beamproject.common.message.Field.Cnt.TYP;
+import static org.beamproject.common.message.Field.Cnt.Typ.HS_INVALIDATE;
+import org.beamproject.common.message.Message;
 import org.beamproject.common.util.Arrays;
 import static org.junit.Assert.assertArrayEquals;
 import org.junit.Before;

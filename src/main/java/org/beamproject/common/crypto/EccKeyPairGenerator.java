@@ -32,9 +32,9 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import static org.beamproject.common.crypto.BouncyCastleIntegrator.PROVIDER_NAME;
 import static org.beamproject.common.crypto.BouncyCastleIntegrator.initBouncyCastleProvider;
+import org.beamproject.common.util.Exceptions;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
-import org.beamproject.common.util.Exceptions;
 
 /**
  * This Generator generates {@link KeyPair}s for ECIES encryption and
@@ -75,7 +75,7 @@ public abstract class EccKeyPairGenerator {
      * generated with the given bytes.
      */
     public static KeyPair fromPublicKey(byte[] publicKeyBytes) {
-        Exceptions.verifyArgumentsNotNull((Object) publicKeyBytes);
+        Exceptions.verifyArgumentsNotNull(publicKeyBytes);
         initBouncyCastleProvider();
 
         try {

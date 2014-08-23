@@ -19,8 +19,9 @@
 package org.beamproject.common.util;
 
 import java.awt.image.BufferedImage;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class QrCodeTest {
 
