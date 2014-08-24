@@ -109,7 +109,12 @@ public class ClientCarrierImpl implements ClientCarrier {
 
     @Override
     public void receive(byte[] message, String topic) {
-        model.consumeMessage(message, topic);
+        if (!topic.startsWith(MQTT_IN_TOPIC_PREFIX)) {
+            throw new CarrierException("The topic has to start with the prefix " + MQTT_IN_TOPIC_PREFIX);
+        }
+
+        String username = topic.substring(MQTT_IN_TOPIC_PREFIX.length());
+        model.consumeMessage(message, username);
     }
 
     /**

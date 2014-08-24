@@ -36,7 +36,8 @@ import org.junit.Test;
 public class ClientCarrierImplTest {
 
     private final User USER = User.generate();
-    private final String TOPIC = "myTopic";
+    private final String TOPIC = "in/username";
+    private final String USERNAME = "username";
     private final byte[] MESSAGE = "myMessage".getBytes();
     private ExecutorFake executorFake;
     private MqttConnectionPool connectionPool;
@@ -125,13 +126,18 @@ public class ClientCarrierImplTest {
 
     @Test
     public void testReceive() {
-        model.consumeMessage(MESSAGE, TOPIC);
+        model.consumeMessage(MESSAGE, USERNAME);
         expectLastCall();
         replay(model);
 
         carrier.receive(MESSAGE, TOPIC);
 
         verify(model);
+    }
+    
+    @Test(expected = CarrierException.class)
+    public void testReceiveOnWrongTopicPrefix() {
+        carrier.receive(MESSAGE, "not really a topic");
     }
 
     @Test
