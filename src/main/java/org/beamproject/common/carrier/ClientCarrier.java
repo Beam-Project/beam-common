@@ -32,6 +32,23 @@ import org.beamproject.common.Participant;
 public interface ClientCarrier extends Carrier<ClientCarrierModel> {
 
     /**
+     * The prefix of MQTT topic prefix used for incoming messages, seen from the
+     * perspective of the server.
+     * <p>
+     * Example: A message is published by a user to {@code in/asdf123456} where
+     * {@code asdf123456} is the randomly generated MQTT username.
+     */
+    public static String MQTT_IN_TOPIC_PREFIX = "in/";
+    /**
+     * The prefix of MQTT topic prefix used for outgoing messages, seen from the
+     * perspective of the server.
+     * <p>
+     * Example: A message is published by the server to {@code out/asdf123456}
+     * where {@code asdf123456} is the MQTT username of the targeted user.
+     */
+    public static String MQTT_OUT_TOPIC_PREFIX = "out/";
+
+    /**
      * Binds the given {@link Participant} to the given {@code topic}. Messages,
      * whose recipient is the given {@link Participant}, are then being
      * published to this {@code topic}.
