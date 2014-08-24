@@ -57,13 +57,15 @@ public interface Carrier<T extends CarrierModel> {
     public void startReceiving();
 
     /**
-     * Takes received messages and redirects them to the configured
+     * Takes a received message and redirects it to the configured
      * {@link CarrierModel}. This may only be invoked after
-     * {@code this.startReceiving()} was successfully invoked.
+     * {@link #startReceiving()} was successfully invoked.
      *
      * @param message The new message to handle.
+     * @param info Additional information like the topic (MQTT), the path
+     * (HTTP), etc..
      */
-    public void receive(byte[] message);
+    public void receive(byte[] message, String info);
 
     /**
      * Do not receive further messages.

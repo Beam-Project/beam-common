@@ -120,7 +120,7 @@ public class MqttConnection {
         while (doReceive) {
             try {
                 message = connection.receive();
-                carrier.receive(message.getPayload());
+                carrier.receive(message.getPayload(), message.getTopic());
                 message.ack();
             } catch (Exception ex) {
                 logger.log(Level.WARNING, "Could not receive from topic: {0}", ex.getMessage());

@@ -134,7 +134,7 @@ public class ClientCarrierImplTest {
         expectLastCall();
         replay(model);
 
-        carrier.receive(MESSAGE);
+        carrier.receive(MESSAGE, TOPIC);
 
         verify(model);
     }
