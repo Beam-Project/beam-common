@@ -49,8 +49,10 @@ public interface CarrierModel<T extends Carrier> {
      * {@link Carrier}.
      *
      * @param message The message as byte array.
+     * @param info Additional information like the topic (MQTT), the path
+     * (HTTP), etc..
      */
-    public void consumeMessage(byte[] message);
+    public void consumeMessage(byte[] message, String info);
 
     /**
      * Encrypts the given message for its recipient and sends it to that via the

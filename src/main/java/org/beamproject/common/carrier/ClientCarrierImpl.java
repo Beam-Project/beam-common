@@ -114,7 +114,7 @@ public class ClientCarrierImpl implements ClientCarrier {
 
     @Override
     public void receive(byte[] message, String topic) {
-        model.consumeMessage(message);
+        model.consumeMessage(message, topic);
     }
 
     /**

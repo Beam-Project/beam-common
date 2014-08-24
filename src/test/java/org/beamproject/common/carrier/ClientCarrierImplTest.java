@@ -130,7 +130,7 @@ public class ClientCarrierImplTest {
 
     @Test
     public void testReceive() {
-        model.consumeMessage(MESSAGE);
+        model.consumeMessage(MESSAGE, TOPIC);
         expectLastCall();
         replay(model);
 
