@@ -23,9 +23,9 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
-import static org.beamproject.common.message.Field.Cnt.HS_NONCE;
-import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
-import static org.beamproject.common.message.Field.Cnt.HS_SIG;
+import static org.beamproject.common.message.Field.Cnt.NONCE;
+import static org.beamproject.common.message.Field.Cnt.PUBLIC_KEY;
+import static org.beamproject.common.message.Field.Cnt.SIGNATURE;
 import static org.beamproject.common.message.Field.Cnt.TYP;
 import static org.beamproject.common.message.Field.Cnt.Typ.HS_CHALLENGE;
 import static org.beamproject.common.message.Field.Cnt.Typ.HS_RESPONSE;
@@ -80,9 +80,9 @@ public class HandshakeResponder extends Handshake {
         verifyChallengeCusumptionAuthorization();
         verifyChallengeValidity(challenge);
 
-        KeyPair remoteKeyPair = fromPublicKey(challenge.getContent(HS_PUBKEY));
+        KeyPair remoteKeyPair = fromPublicKey(challenge.getContent(PUBLIC_KEY));
         remoteParticipant = new Participant(remoteKeyPair);
-        remoteNonce = challenge.getContent(HS_NONCE);
+        remoteNonce = challenge.getContent(NONCE);
     }
 
     private void verifyChallengeCusumptionAuthorization() {
@@ -107,13 +107,13 @@ public class HandshakeResponder extends Handshake {
                 || challenge.getContent(TYP) == null
                 || !HS_CHALLENGE.toString().equals(new String(challenge.getContent(TYP)))) {
             exceptionMessage += "phase not set or an unexpected one";
-        } else if (!challenge.containsContent(HS_PUBKEY)
-                || challenge.getContent(HS_PUBKEY) == null
-                || challenge.getContent(HS_PUBKEY).length == 0) {
+        } else if (!challenge.containsContent(PUBLIC_KEY)
+                || challenge.getContent(PUBLIC_KEY) == null
+                || challenge.getContent(PUBLIC_KEY).length == 0) {
             exceptionMessage += "challenger public key not set";
-        } else if (!challenge.containsContent(HS_NONCE)
-                || challenge.getContent(HS_NONCE) == null
-                || challenge.getContent(HS_NONCE).length != NONCE_LENGTH_IN_BYTES) {
+        } else if (!challenge.containsContent(NONCE)
+                || challenge.getContent(NONCE) == null
+                || challenge.getContent(NONCE).length != NONCE_LENGTH_IN_BYTES) {
             exceptionMessage += "challenger nonce not set or has invalid length";
         } else {
             return;
@@ -157,9 +157,9 @@ public class HandshakeResponder extends Handshake {
 
     private void assembleResponseMessage() {
         response = new Message(HS_RESPONSE, remoteParticipant);
-        response.putContent(HS_PUBKEY, localParticipant.getPublicKeyAsBytes());
-        response.putContent(HS_NONCE, localNonce);
-        response.putContent(HS_SIG, localSignature);
+        response.putContent(PUBLIC_KEY, localParticipant.getPublicKeyAsBytes());
+        response.putContent(NONCE, localNonce);
+        response.putContent(SIGNATURE, localSignature);
     }
 
     /**
@@ -182,7 +182,7 @@ public class HandshakeResponder extends Handshake {
         verifySuccessCusumptionAuthorization();
         verifySuccessValidity(success);
 
-        remoteSignature = success.getContent(HS_SIG);
+        remoteSignature = success.getContent(SIGNATURE);
         verifyRemoteSignature();
         calculateSessionKey();
     }
@@ -213,14 +213,14 @@ public class HandshakeResponder extends Handshake {
                 || success.getContent(TYP) == null
                 || !HS_SUCCESS.toString().equals(new String(success.getContent(TYP)))) {
             exceptionMessage += "phase not set or an unexpected one";
-        } else if (!success.containsContent(HS_PUBKEY)
-                || success.getContent(HS_PUBKEY) == null
-                || success.getContent(HS_PUBKEY).length == 0) {
+        } else if (!success.containsContent(PUBLIC_KEY)
+                || success.getContent(PUBLIC_KEY) == null
+                || success.getContent(PUBLIC_KEY).length == 0) {
             exceptionMessage += "challenger public key not set";
-        } else if (!success.containsContent(HS_SIG)
-                || success.getContent(HS_SIG) == null
-                || success.getContent(HS_SIG).length > MAXIMAL_SIGNATURE_LENGTH_IN_BYTES
-                || success.getContent(HS_SIG).length < MINIMAL_SIGNATURE_LENGTH_IN_BYTES) {
+        } else if (!success.containsContent(SIGNATURE)
+                || success.getContent(SIGNATURE) == null
+                || success.getContent(SIGNATURE).length > MAXIMAL_SIGNATURE_LENGTH_IN_BYTES
+                || success.getContent(SIGNATURE).length < MINIMAL_SIGNATURE_LENGTH_IN_BYTES) {
             exceptionMessage += "challenger signature not set or has invalid length";
         } else {
             return;

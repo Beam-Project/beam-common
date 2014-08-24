@@ -18,9 +18,9 @@
  */
 package org.beamproject.common.message;
 
-import static org.beamproject.common.message.Field.Cnt.HS_KEY;
-import static org.beamproject.common.message.Field.Cnt.HS_NONCE;
-import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
+import static org.beamproject.common.message.Field.Cnt.SESSION;
+import static org.beamproject.common.message.Field.Cnt.NONCE;
+import static org.beamproject.common.message.Field.Cnt.PUBLIC_KEY;
 import static org.beamproject.common.message.Field.Cnt.TYP;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
@@ -48,7 +48,7 @@ public class ContentFieldValidatorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorOnSingleNull() {
-        validator = new ContentFieldValidator(HS_KEY, null);
+        validator = new ContentFieldValidator(SESSION, null);
     }
 
     @Test
@@ -82,17 +82,17 @@ public class ContentFieldValidatorTest {
         message.getContent().put(TYP.toString(), "type".getBytes());
         testValidator(true, TYP);
 
-        message.getContent().put(HS_KEY.toString(), "mykey".getBytes());
+        message.getContent().put(SESSION.toString(), "mykey".getBytes());
         testValidator(false, TYP);
     }
 
     @Test
     public void testIsValidOnSeveralFields() {
         message.getContent().put(TYP.toString(), "type".getBytes());
-        message.getContent().put(HS_KEY.toString(), "mykey".getBytes());
-        message.getContent().put(HS_PUBKEY.toString(), "mypubkey".getBytes());
-        message.getContent().put(HS_NONCE.toString(), "213j0-NONCE-ldkjfsd".getBytes());
-        testValidator(true, TYP, HS_KEY, HS_PUBKEY, HS_NONCE);
+        message.getContent().put(SESSION.toString(), "mykey".getBytes());
+        message.getContent().put(PUBLIC_KEY.toString(), "mypubkey".getBytes());
+        message.getContent().put(NONCE.toString(), "213j0-NONCE-ldkjfsd".getBytes());
+        testValidator(true, TYP, SESSION, PUBLIC_KEY, NONCE);
     }
 
     private void testValidator(boolean exptected, Field.Cnt... fields) {

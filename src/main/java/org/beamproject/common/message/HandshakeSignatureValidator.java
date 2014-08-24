@@ -20,7 +20,7 @@ package org.beamproject.common.message;
 
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.crypto.Handshake;
-import static org.beamproject.common.message.Field.Cnt.HS_SIG;
+import static org.beamproject.common.message.Field.Cnt.SIGNATURE;
 
 /**
  * Verifies that a {@link Message} contains a syntactically signature used for a
@@ -50,10 +50,10 @@ public class HandshakeSignatureValidator implements MessageValidator {
      */
     @Override
     public boolean isValid(Message message) {
-        return message.containsContent(HS_SIG)
-                && message.getContent(HS_SIG) != null
-                && message.getContent(HS_SIG).length >= MINIMAL_SIGNATURE_LENGTH_IN_BYTES
-                && message.getContent(HS_SIG).length <= MAXIMAL_SIGNATURE_LENGTH_IN_BYTES;
+        return message.containsContent(SIGNATURE)
+                && message.getContent(SIGNATURE) != null
+                && message.getContent(SIGNATURE).length >= MINIMAL_SIGNATURE_LENGTH_IN_BYTES
+                && message.getContent(SIGNATURE).length <= MAXIMAL_SIGNATURE_LENGTH_IN_BYTES;
     }
 
 }

@@ -24,9 +24,9 @@ import org.beamproject.common.Participant;
 import static org.beamproject.common.crypto.Handshake.MAXIMAL_SIGNATURE_LENGTH_IN_BYTES;
 import static org.beamproject.common.crypto.Handshake.MINIMAL_SIGNATURE_LENGTH_IN_BYTES;
 import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
-import static org.beamproject.common.message.Field.Cnt.HS_NONCE;
-import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
-import static org.beamproject.common.message.Field.Cnt.HS_SIG;
+import static org.beamproject.common.message.Field.Cnt.NONCE;
+import static org.beamproject.common.message.Field.Cnt.PUBLIC_KEY;
+import static org.beamproject.common.message.Field.Cnt.SIGNATURE;
 import static org.beamproject.common.message.Field.Cnt.TYP;
 import static org.beamproject.common.message.Field.Cnt.Typ.HS_CHALLENGE;
 import static org.beamproject.common.message.Field.Cnt.Typ.HS_RESPONSE;
@@ -101,8 +101,8 @@ public class HandshakeChallenger extends Handshake {
 
     private void assembleChallengeMessage() {
         challenge = new Message(HS_CHALLENGE, remoteParticipant);
-        challenge.putContent(HS_PUBKEY, localParticipant.getPublicKeyAsBytes());
-        challenge.putContent(HS_NONCE, localNonce);
+        challenge.putContent(PUBLIC_KEY, localParticipant.getPublicKeyAsBytes());
+        challenge.putContent(NONCE, localNonce);
     }
 
     /**
@@ -124,8 +124,8 @@ public class HandshakeChallenger extends Handshake {
         verifyResponseCusumptionAuthorization();
         verifyResponseValidity(response);
 
-        remoteNonce = response.getContent(HS_NONCE);
-        remoteSignature = response.getContent(HS_SIG);
+        remoteNonce = response.getContent(NONCE);
+        remoteSignature = response.getContent(SIGNATURE);
 
         verifyRemoteSignature();
     }
@@ -154,18 +154,18 @@ public class HandshakeChallenger extends Handshake {
                 || response.getContent(TYP) == null
                 || !HS_RESPONSE.toString().equals(new String(response.getContent(TYP)))) {
             exceptionMessage += "type not set or an unexpected one";
-        } else if (!response.containsContent(HS_PUBKEY)
-                || response.getContent(HS_PUBKEY) == null
-                || response.getContent(HS_PUBKEY).length == 0) {
+        } else if (!response.containsContent(PUBLIC_KEY)
+                || response.getContent(PUBLIC_KEY) == null
+                || response.getContent(PUBLIC_KEY).length == 0) {
             exceptionMessage += "responder public key not set";
-        } else if (!response.containsContent(HS_NONCE)
-                || response.getContent(HS_NONCE) == null
-                || response.getContent(HS_NONCE).length != NONCE_LENGTH_IN_BYTES) {
+        } else if (!response.containsContent(NONCE)
+                || response.getContent(NONCE) == null
+                || response.getContent(NONCE).length != NONCE_LENGTH_IN_BYTES) {
             exceptionMessage += "responder nonce not set or has invalid length";
-        } else if (!response.containsContent(HS_SIG)
-                || response.getContent(HS_SIG) == null
-                || response.getContent(HS_SIG).length > MAXIMAL_SIGNATURE_LENGTH_IN_BYTES
-                || response.getContent(HS_SIG).length < MINIMAL_SIGNATURE_LENGTH_IN_BYTES) {
+        } else if (!response.containsContent(SIGNATURE)
+                || response.getContent(SIGNATURE) == null
+                || response.getContent(SIGNATURE).length > MAXIMAL_SIGNATURE_LENGTH_IN_BYTES
+                || response.getContent(SIGNATURE).length < MINIMAL_SIGNATURE_LENGTH_IN_BYTES) {
             exceptionMessage += "responder signature not set or has invalid length";
         } else {
             return;
@@ -209,8 +209,8 @@ public class HandshakeChallenger extends Handshake {
 
     private void assembleSuccessMessage() {
         success = new Message(HS_SUCCESS, remoteParticipant);
-        success.putContent(HS_PUBKEY, localParticipant.getPublicKeyAsBytes());
-        success.putContent(HS_SIG, localSignature);
+        success.putContent(PUBLIC_KEY, localParticipant.getPublicKeyAsBytes());
+        success.putContent(SIGNATURE, localSignature);
     }
 
     @Override

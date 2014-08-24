@@ -21,7 +21,7 @@ package org.beamproject.common.message;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import org.beamproject.common.crypto.Handshake;
 import static org.beamproject.common.crypto.Handshake.NONCE_LENGTH_IN_BYTES;
-import static org.beamproject.common.message.Field.Cnt.HS_NONCE;
+import static org.beamproject.common.message.Field.Cnt.NONCE;
 
 /**
  * Verifies that a {@link Message} contains a valid nonce used for a
@@ -41,9 +41,9 @@ public class HandshakeNonceValidator implements MessageValidator {
      */
     @Override
     public boolean isValid(Message message) {
-        return message.containsContent(HS_NONCE)
-                && message.getContent(HS_NONCE) != null
-                && message.getContent(HS_NONCE).length == NONCE_LENGTH_IN_BYTES;
+        return message.containsContent(NONCE)
+                && message.getContent(NONCE) != null
+                && message.getContent(NONCE).length == NONCE_LENGTH_IN_BYTES;
     }
 
 }

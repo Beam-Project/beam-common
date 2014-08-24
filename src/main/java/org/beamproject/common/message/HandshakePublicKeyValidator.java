@@ -23,7 +23,7 @@ import java.security.PublicKey;
 import org.beamproject.common.crypto.EccKeyPairGenerator;
 import static org.beamproject.common.crypto.EccKeyPairGenerator.fromPublicKey;
 import org.beamproject.common.crypto.Handshake;
-import static org.beamproject.common.message.Field.Cnt.HS_PUBKEY;
+import static org.beamproject.common.message.Field.Cnt.PUBLIC_KEY;
 
 /**
  * Verifies that a {@link Message} contains a valid {@link PublicKey} used for a
@@ -43,14 +43,14 @@ public class HandshakePublicKeyValidator implements MessageValidator {
      */
     @Override
     public boolean isValid(Message message) {
-        if (!message.containsContent(HS_PUBKEY)
-                || message.getContent(HS_PUBKEY) == null
-                || message.getContent(HS_PUBKEY).length == 0) {
+        if (!message.containsContent(PUBLIC_KEY)
+                || message.getContent(PUBLIC_KEY) == null
+                || message.getContent(PUBLIC_KEY).length == 0) {
             return false;
         }
 
         try {
-            byte[] remotePublicKey = message.getContent(HS_PUBKEY);
+            byte[] remotePublicKey = message.getContent(PUBLIC_KEY);
             KeyPair remoteKeyPair = fromPublicKey(remotePublicKey);
             return remoteKeyPair != null;
         } catch (IllegalArgumentException | IllegalStateException ex) {

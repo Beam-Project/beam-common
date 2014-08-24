@@ -21,7 +21,7 @@ package org.beamproject.common.crypto;
 import java.security.SecureRandom;
 import lombok.Getter;
 import org.beamproject.common.Participant;
-import static org.beamproject.common.message.Field.Cnt.HS_KEY;
+import static org.beamproject.common.message.Field.Cnt.SESSION;
 import static org.beamproject.common.message.Field.Cnt.Typ.HS_INVALIDATE;
 import org.beamproject.common.message.Message;
 import org.beamproject.common.util.Arrays;
@@ -135,7 +135,7 @@ public abstract class Handshake {
     public static Message getInvalidate(Participant remoteParticipant, byte[] sessionKey) {
         Exceptions.verifyArgumentsNotNull(remoteParticipant, sessionKey);
         Message message = new Message(HS_INVALIDATE, remoteParticipant);
-        message.putContent(HS_KEY, sessionKey);
+        message.putContent(SESSION, sessionKey);
         return message;
     }
 
