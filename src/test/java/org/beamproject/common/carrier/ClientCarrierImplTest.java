@@ -69,11 +69,6 @@ public class ClientCarrierImplTest {
         assertFalse(carrier.topics.contains(USER));
     }
 
-    @Test(expected = CarrierException.class)
-    public void testDeliverMessageOnMissingRecipientBinding() {
-        carrier.deliverMessage(MESSAGE, USER);
-    }
-
     @Test
     public void testDeliverMessage() throws Exception {
         carrier.bindParticipantToTopic(USER, TOPIC);
@@ -83,7 +78,7 @@ public class ClientCarrierImplTest {
         connectionPool.returnObject(connection);
         replay(connectionPool, connection);
 
-        carrier.deliverMessage(MESSAGE, USER);
+        carrier.deliverMessage(MESSAGE, TOPIC);
 
         verify(connectionPool, connection);
     }

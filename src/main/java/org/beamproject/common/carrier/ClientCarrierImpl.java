@@ -59,25 +59,20 @@ public class ClientCarrierImpl implements ClientCarrier {
     }
 
     /**
-     * Delivers the given message to the recipient.
+     * Delivers the given message to the given topic.
      *
      * @param message The message to send. This has to be already encrypted.
-     * @param recipient The recipient of the message.
-     * @throws CarrierException If the recipient is not bound to a topic or the
-     * message could not be sent.
+     * @param topic The topic to which to send this message to.
+     * @throws CarrierException If the message could not be sent.
      */
     @Override
-    public void deliverMessage(final byte[] message, final Participant recipient) {
+    public void deliverMessage(final byte[] message, final String topic) {
         executor.runAsync(new Task() {
             @Override
             public void run() {
-                if (!topics.containsKey(recipient)) {
-                    throw new CarrierException("The recipiant is not mapped to a topic.");
-                }
-
                 try {
                     MqttConnection connection = connectionPool.borrowObject();
-                    connection.publish(topics.get(recipient), message);
+                    connection.publish(topic, message);
                     connectionPool.returnObject(connection);
                 } catch (Exception ex) {
                     throw new CarrierException("The message could not be sent: " + ex.getMessage());

@@ -49,18 +49,22 @@ public interface CarrierModel<T extends Carrier> {
      * {@link Carrier}.
      *
      * @param message The message as byte array.
-     * @param info Additional information like the topic (MQTT), the path
-     * (HTTP), etc..
+     * @param sender Information about the sender, depending on the used
+     * transport medium. For example, when using MQTT, this would be the MQTT
+     * username of the sender.
      */
-    public void consumeMessage(byte[] message, String info);
+    public void consumeMessage(byte[] message, String sender);
 
     /**
      * Encrypts the given message for its recipient and sends it to that via the
      * {@link Carrier} of the {@link CarrierModel}.
      *
      * @param message The message to encrypt and sen.d
+     * @param target The target of this message, depending on the used transport
+     * medium. For example, when using MQTT, this would be the MQTT username of
+     * the target.
      */
-    public void encryptAndSend(Message message);
+    public void encryptAndSend(Message message, String target);
 
     /**
      * Shuts the {@link Carrier} of this model down and closes all connections.

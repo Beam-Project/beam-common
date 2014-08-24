@@ -44,12 +44,14 @@ import org.beamproject.common.Participant;
 public interface Carrier<T extends CarrierModel> {
 
     /**
-     * Delivers the given message to the recipient.
+     * Delivers the given message to the targeted recipient. Depending on the
+     * concrete transport medium, the target may be an MQTT topic or an HTTP
+     * server address.
      *
      * @param message The message to send. This has to be already encrypted.
-     * @param recipient The recipient of the message.
+     * @param target The target of the message.
      */
-    public void deliverMessage(byte[] message, Participant recipient);
+    public void deliverMessage(byte[] message, String target);
 
     /**
      * Start to receive messages.
@@ -62,10 +64,11 @@ public interface Carrier<T extends CarrierModel> {
      * {@link #startReceiving()} was successfully invoked.
      *
      * @param message The new message to handle.
-     * @param info Additional information like the topic (MQTT), the path
-     * (HTTP), etc..
+     * @param sender Information about the sender. Depending on the used
+     * transport medium, this may have a different content. For example when
+     * using MQTT, this would be the MQTT username.
      */
-    public void receive(byte[] message, String info);
+    public void receive(byte[] message, String sender);
 
     /**
      * Do not receive further messages.
