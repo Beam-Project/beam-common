@@ -67,6 +67,8 @@ public interface Carrier<T extends CarrierModel> {
      * @param sender Information about the sender. Depending on the used
      * transport medium, this may have a different content. For example when
      * using MQTT, this would be the MQTT username.
+     * @throws CarrierException If anything goes wrong during receiving the
+     * message.
      */
     public void receive(byte[] message, String sender);
 
