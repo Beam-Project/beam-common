@@ -33,6 +33,7 @@ import org.beamproject.common.util.Task;
  */
 public class ClientCarrierImpl implements ClientCarrier {
 
+    private final static String TOPIC_REGEX = "(" + MQTT_IN_TOPIC_PREFIX + "|" + MQTT_OUT_TOPIC_PREFIX + ")[a-zA-Z0-9]+";
     private final ClientCarrierModel model;
     private final Executor executor;
     private final MqttConnectionPool connectionPool;
@@ -109,11 +110,11 @@ public class ClientCarrierImpl implements ClientCarrier {
 
     @Override
     public void receive(byte[] message, String topic) {
-        if (!topic.startsWith(MQTT_IN_TOPIC_PREFIX)) {
-            throw new CarrierException("The topic has to start with the prefix " + MQTT_IN_TOPIC_PREFIX);
+        if (!topic.matches(TOPIC_REGEX)) {
+            throw new CarrierException("The topic has to look like [in|out]/[username].");
         }
 
-        String username = topic.substring(MQTT_IN_TOPIC_PREFIX.length());
+        String username = topic.substring(topic.indexOf('/') + 1);
         model.consumeMessage(message, username);
     }
 

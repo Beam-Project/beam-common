@@ -36,7 +36,8 @@ import org.junit.Test;
 public class ClientCarrierImplTest {
 
     private final User USER = User.generate();
-    private final String TOPIC = "in/username";
+    private final String IN_TOPIC = "in/username";
+    private final String OUT_TOPIC = "out/username";
     private final String USERNAME = "username";
     private final byte[] MESSAGE = "myMessage".getBytes();
     private ExecutorFake executorFake;
@@ -56,14 +57,14 @@ public class ClientCarrierImplTest {
 
     @Test
     public void testBindUserToTopic() {
-        carrier.bindParticipantToTopic(USER, TOPIC);
+        carrier.bindParticipantToTopic(USER, IN_TOPIC);
 
-        assertEquals(TOPIC, carrier.topics.get(USER));
+        assertEquals(IN_TOPIC, carrier.topics.get(USER));
     }
 
     @Test
     public void testUnbindUser() {
-        carrier.topics.put(USER, TOPIC);
+        carrier.topics.put(USER, IN_TOPIC);
 
         carrier.unbindParticipant(USER);
 
@@ -72,14 +73,14 @@ public class ClientCarrierImplTest {
 
     @Test
     public void testDeliverMessage() throws Exception {
-        carrier.bindParticipantToTopic(USER, TOPIC);
+        carrier.bindParticipantToTopic(USER, IN_TOPIC);
         expect(connectionPool.borrowObject()).andReturn(connection);
-        connection.publish(TOPIC, MESSAGE);
+        connection.publish(IN_TOPIC, MESSAGE);
         expectLastCall();
         connectionPool.returnObject(connection);
         replay(connectionPool, connection);
 
-        carrier.deliverMessage(MESSAGE, TOPIC);
+        carrier.deliverMessage(MESSAGE, IN_TOPIC);
 
         verify(connectionPool, connection);
     }
@@ -127,10 +128,11 @@ public class ClientCarrierImplTest {
     @Test
     public void testReceive() {
         model.consumeMessage(MESSAGE, USERNAME);
-        expectLastCall();
+        expectLastCall().times(2);
         replay(model);
 
-        carrier.receive(MESSAGE, TOPIC);
+        carrier.receive(MESSAGE, IN_TOPIC);
+        carrier.receive(MESSAGE, OUT_TOPIC);
 
         verify(model);
     }
